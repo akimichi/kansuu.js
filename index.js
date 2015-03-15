@@ -243,6 +243,17 @@ module.exports = {
 	};
   },
   /* #@range_end(curry) */
+  compose: function(fun1){
+	expect(fun1).to.a('function');
+	var self = this;
+	return function(fun2){
+	  expect(fun2).to.a('function');
+	  return function(arg){
+		//return fun1.call(self, fun2.call(self, arguments));
+  		return fun1.call(self, fun2.call(self, arg));
+	  };
+  	};
+  },
   loop: function(predicate){
 	expect(predicate).to.a('function');
 	var self = this;
@@ -257,16 +268,6 @@ module.exports = {
 	  };
 	  return doLoop;
 	};
-  },
-  compose: function(fun1){
-	expect(fun1).to.a('function');
-	var self = this;
-	return function(fun2){
-	  expect(fun2).to.a('function');
-	  return function(arg){
-  		return fun1.call(self, fun2.call(self, arg));
-	  };
-  	};
   },
   flip: function(fun) {
 	expect(fun).to.a('function');
@@ -283,17 +284,6 @@ module.exports = {
 	var self = this;
 	return self.flip.bind(self)(self.compose)(fun);
   },
-  // curry: function(fun) {
-  // 	return function curried(x,optionalY){
-  // 	  if(arguments.length > 1){
-  // 		return fun.call(this, x,optionalY);
-  // 	  } else {
-  // 		return function partiallyApplied(y) {
-  // 		  return fun.call(this, x,y);
-  // 		};
-  // 	  }
-  // 	};
-  // },
   list: {
 	// last:: [T] => T
 	last: function(list){

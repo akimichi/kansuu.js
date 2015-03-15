@@ -399,7 +399,7 @@ describe("Kansuu module", function() {
   	});
   });
   describe("functional composition", function() {
-  	it("'compose'", function(next) {
+  	it("'compose one argument functions'", function(next) {
 	  var increment = function(n){
 		return n + 1;
 	  };
@@ -418,6 +418,29 @@ describe("Kansuu module", function() {
   	  expect(__.compose.bind(__)(double)(increment)(5)).to.be(12);
       next();
   	});
+  	// it("'compose two argument functions'", function(next) {
+	//   var compose = function(fun1){
+	// 	expect(fun1).to.a('function');
+	// 	var self = this;
+	// 	return function(fun2){
+	// 	  expect(fun2).to.a('function');
+	// 	  return function(x){
+	// 		var partiallyApplied = fun2.call(self, x);
+	// 		return fun1.call(self, fun2.call(self, x));
+	// 	  };
+  	// 	};
+	//   };
+	//   var negate = function(x) {
+    //     return -x;
+	//   };
+	//   var multiply = function(x){
+	// 	return function(y) {
+	// 	  return x * y;
+	// 	};
+	//   };
+	//   expect(compose(negate)(multiply)(2)(3)).to.eql(0);
+    //   next();
+  	// });
   	it("'flip'", function(next) {
 	  var divide = function(x){
 		return function(y){
