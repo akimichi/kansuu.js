@@ -3,12 +3,77 @@
 var expect = require('expect.js');
 
 module.exports = {
+
   id: function(any){
 	return any;
   },
+  not: function(predicate){
+	return function applyNot(x) {
+	  return !predicate(x);
+	};
+  },
+  and: function(predicate1, predicate2){
+	return function applyAnd(arg) {
+	  return predicate1(arg) && predicate2(arg);
+	};
+  },
+  or: function(predicate1, predicate2){
+	return function applyOr(arg) {
+	  return predicate1(arg) || predicate2(arg);
+	};
+  },
+  add: function(n1){
+	return function (n2) {
+	  return n1 + n2;
+	};
+  },
+  multiply: function(n1){
+	return function(n2){
+	  return n1 * n2;
+	};
+  },
+  divide: function(n1){
+	return function(n2){
+	  return n1 / n2;
+	};
+  },
+  subtract: function(n1){
+	return function(n2){
+	  return n1 - n2;
+	};
+  },
+  equal: function(any1){
+	return function(any2){
+	  return (any1 === any2);
+	};
+  },
+  orify: function(predicateA){
+	expect(predicateA).to.a('function');
+	var self = this;
+	return function(predicateB){
+	  expect(predicateB).to.a('function');
+	  return function applyOr(any) {
+		return self.op['|'].bind(self)(predicateA(any))(predicateB(any));
+		//return predicateA(any) || predicateB(any);
+	  };
+	};
+  },
+  andify: function(predicate1){
+	expect(predicate1).to.a('function');
+	var self = this;
+	return function(predicate2){
+	  expect(predicate2).to.a('function');
+	  return function applyAnd(any) {
+		return self.op['&'].bind(self)(predicate1(any))(predicate2(any));
+		//return predicateA(any) || predicateB(any);
+	  };
+	};
+  },
   op: {
-	"&" : function(x){
-	  return function(y) { return x && y; };
+	"&" : function(n1){
+	  return function(n2) { 
+		return n1 && n2;
+	  };
 	},
 	"|" : function(x){
 	  return function(y) { return x || y; };
@@ -28,6 +93,11 @@ module.exports = {
 	"!" : function(x){
 	  return !x;
 	}
+  },
+  negate: function(fun){
+	return function applyNegate(n) {
+	  return - fun(n);
+	};
   },
   existy: function(any) {
     return any != null;
@@ -115,8 +185,8 @@ module.exports = {
       };
 	},
 	/* #@range_end(K_combinator) */
-	I: function(x) {
-      return x;
+	I: function(any) {
+      return any;
 	},
 	/*
 	 B f g x = f(g(x))
@@ -160,48 +230,27 @@ module.exports = {
 	  return target;
     };
   },
-  orify: function(predicateA){
-	expect(predicateA).to.a('function');
+  /* #@range_begin(curry) */
+  curry: function(fun) {
+	return function curried(x,optionalY){
+	  if(arguments.length > 1){
+		return fun.call(this, x,optionalY);
+	  } else {
+		return function partiallyApplied(y) {
+		  return fun.call(this, x,y);
+		};
+	  }
+	};
+  },
+  /* #@range_end(curry)
+   */
+  compose: function(fun1){
+	expect(fun1).to.a('function');
 	var self = this;
-	return function(predicateB){
-	  expect(predicateB).to.a('function');
-	  return function applyOr(any) {
-		return self.op['|'].bind(self)(predicateA(any))(predicateB(any));
-		//return predicateA(any) || predicateB(any);
-	  };
-	};
-  },
-  andify: function(predicateA){
-	expect(predicateA).to.a('function');
-	var self = this;
-	return function(predicateB){
-	  expect(predicateB).to.a('function');
-	  return function applyAnd(any) {
-		return self.op['&'].bind(self)(predicateA(any))(predicateB(any));
-		//return predicateA(any) || predicateB(any);
-	  };
-	};
-  },
-  not: function(predicate){
-	return function applyNot(x) {
-	  return !predicate(x);
-	};
-  },
-  and: function(predicate1, predicate2){
-	return function applyAnd(arg) {
-	  return predicate1(arg) && predicate2(arg);
-	};
-  },
-  or: function(predicate1, predicate2){
-	return function applyOr(arg) {
-	  return predicate1(arg) || predicate2(arg);
-	};
-  },
-  compose: function(latter){
-	var self = this;
-	return function(former){
+	return function(fun2){
+	  expect(fun2).to.a('function');
 	  return function(arg){
-  		return latter.call(self, former.call(self, arg));
+  		return fun1.call(self, fun2.call(self, arg));
 	  };
   	};
   },
@@ -220,17 +269,17 @@ module.exports = {
 	var self = this;
 	return self.flip.bind(self)(self.compose)(fun);
   },
-  curry: function(fun) {
-	return function curried(x,optionalY){
-	  if(arguments.length > 1){
-		return fun.call(this, x,optionalY);
-	  } else {
-		return function partiallyApplied(y) {
-		  return fun.call(this, x,y);
-		};
-	  }
-	};
-  },
+  // curry: function(fun) {
+  // 	return function curried(x,optionalY){
+  // 	  if(arguments.length > 1){
+  // 		return fun.call(this, x,optionalY);
+  // 	  } else {
+  // 		return function partiallyApplied(y) {
+  // 		  return fun.call(this, x,y);
+  // 		};
+  // 	  }
+  // 	};
+  // },
   list: {
 	// last:: [T] => T
 	last: function(list){
@@ -271,10 +320,6 @@ module.exports = {
 		//   return result;
 		// });
 	  };
-	  // return function (array){
-	  // 	expect(array).to.an('array');
-	  // 	return [value].concat(array);
-	  // };
 	},
 	// tail:: [T] => [T]
 	tail: function(array){
@@ -600,16 +645,6 @@ module.exports = {
   always: function(value){
 	return function applyAlways(_) {
 	  return value;
-	};
-  },
-  negate: function(fun){
-	return function applyNegate(n) {
-	  return - fun(n);
-	};
-  },
-  add: function(x){
-	return function (y) {
-	  return x + y;
 	};
   },
   thunk: function(val){

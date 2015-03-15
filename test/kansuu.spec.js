@@ -48,56 +48,52 @@ describe("Kansuu module", function() {
 	  expect(S(__.add)(I)(7)).to.eql(14);
 	  next();
 	});
-	it('succ == S(S(K plus)(K 1)) I', function(next) {
-	  var plus = function(x){
-		return function(y){
-		  return x + y;
-		};
-	  };
-	  var succ = S(S(K(plus))(K(1)))(I);
+	it('succ == S(S(K add)(K 1)) I', function(next) {
+	  var succ = S(S(K(__.add))(K(1)))(I);
 	  expect(succ(0)).to.eql(1);
 	  expect(succ(1)).to.eql(2);
 	  next();
 	});
 	it('fac', function(next) {
-	  var plus = function(x){
-		return function(y){
-		  return x + y;
-		};
-	  };
-	  var multiply = function(x){
-		return function(y){
-		  return x * y;
-		};
-	  };
-	  var divide = function(x){
-		return function(y){
-		  return x / y;
-		};
-	  };
-	  var minus = function(x){
-		return function(y){
-		  return x - y;
-		};
-	  };
-	  var eq = function(x){
-		return function(y){
-		  return (x === y);
-		};
-	  };
-	  var cond = function(pred){
-		return function(x){
-		  return function(y){
-			if(pred){
-			  return x();
-			} else {
-			  return y();
-			}
-		  };
-		};
-	  };
+	  // var plus = function(x){
+	  // 	return function(y){
+	  // 	  return x + y;
+	  // 	};
+	  // };
+	  // var multiply = function(x){
+	  // 	return function(y){
+	  // 	  return x * y;
+	  // 	};
+	  // };
+	  // var divide = function(x){
+	  // 	return function(y){
+	  // 	  return x / y;
+	  // 	};
+	  // };
+	  // var minus = function(x){
+	  // 	return function(y){
+	  // 	  return x - y;
+	  // 	};
+	  // };
+	  // var eq = function(x){
+	  // 	return function(y){
+	  // 	  return (x === y);
+	  // 	};
+	  // };
+	  // var cond = function(pred){
+	  // 	return function(x){
+	  // 	  return function(y){
+	  // 		if(pred){
+	  // 		  return x();
+	  // 		} else {
+	  // 		  return y();
+	  // 		}
+	  // 	  };
+	  // 	};
+	  // };
 	  var averageX = function(x){
-		return C(B(divide)(plus(x)))(2);
+		return C(B(__.divide)(__.add(x)))(2);
+		//return C(B(divide)(plus(x)))(2);
 	  };
 	  expect(averageX(1)(3)).to.eql(2);
 	  expect(averageX(2)(4)).to.eql(3);
@@ -154,161 +150,193 @@ describe("Kansuu module", function() {
   });
   describe("higher-order functions", function() {
 	describe("curry", function() {
-	  
-	});
-	
-  });
-  describe("list module", function() {
-  	it("'cons' should construct a list", function(next) {
-  	  expect(__.list.cons.bind(__)(1)([])).to.eql([1]);
-  	  expect(__.list.cons.bind(__)("a")(["b","c"])).to.eql(["a","b","c"]);
-  	  //expect(__.list.cons(1)([])).to.eql([1]);
-  	  //expect(__.list.cons.bind(__)(1)(2)).to.eql([]);
-	  //expect(__.list.cons.bind(__)(1)(2)).fail();
-      next();
-  	});
-  	it("'head' should return the 1st element", function(next) {
-  	  expect(__.list.head.bind(__)([0,1,2,3])).to.eql(0);
-      next();
-  	});
-  	it("'tail' should return the tail element", function(next) {
-  	  expect(__.list.tail.bind(__)([0,1,2,3])).to.eql([1,2,3]);
-      next();
-  	});
-  	it("'append'", function(next) {
-	  var xs = [0,1];
-	  var ys = [2,3];
-  	  expect(__.list.append.bind(__)(xs)(ys)).to.eql([0,1,2,3]);
-	  expect(xs).to.eql([0,1]);
-	  expect(ys).to.eql([2,3]);
-      next();
-  	});
-  	it("'reverse' is immutable", function(next) {
-	  var array = [0,1,2];
-  	  expect(__.list.reverse.bind(__)(array)).to.eql([2,1,0]);
-  	  expect(array).to.eql([0,1,2]);
-      next();
-  	});
-  	it("'last' uses compose", function(next) {
-	  var array = [0,1,2];
-  	  expect(__.list.last.bind(__)(array)).to.eql(2);
-  	  expect(array).to.eql([0,1,2]);
-  	  expect(__.list.last.bind(__)([0])).to.eql(0);
-      next();
-  	});
-  	it("'init' uses compose", function(next) {
-	  var array = [0,1,2];
-  	  expect(__.list.init.bind(__)(array)).to.eql([0,1]);
-  	  expect(array).to.eql([0,1,2]);
-  	  expect(__.list.init.bind(__)([0])).to.eql([]);
-      next();
-  	});
-  	it("'take'", function(next) {
-	  var array = [0,1,2];
-  	  expect(__.list.take.bind(__)(array)(1)).to.eql([0]);
-  	  expect(__.list.take.bind(__)(array)(2)).to.eql([0,1]);
-  	  expect(__.list.take.bind(__)(array)(3)).to.eql([0,1,2]);
-  	  expect(__.list.take.bind(__)(array)(4)).to.eql([0,1,2]);
-  	  expect(__.list.take.bind(__)(array)(0)).to.eql([]);
-  	  expect(array).to.eql([0,1,2]);
-      next();
-  	});
-  	it("'drop'", function(next) {
-	  var array = [0,1,2];
-  	  expect(__.list.drop.bind(__)(array)(1)).to.eql([1,2]);
-  	  expect(__.list.drop.bind(__)(array)(2)).to.eql([2]);
-  	  expect(__.list.drop.bind(__)(array)(0)).to.eql(array);
-  	  expect(array).to.eql([0,1,2]);
-      next();
-  	});
-  	describe("'map'", function() {
-  	  it("'map [T] double'", function(next) {
-		var array = [0,1,2];
-		var double = function(n){
-		  return 2 * n;
+  	  it("'curry' should curry function", function(next) {
+		var addUncurried = function(n1,n2){
+		  return n1 + n2;
 		};
-  		expect(__.list.map.bind(__)(array)(double)).to.eql([0,2,4]);
-  		expect(array).to.eql([0,1,2]);
-		next();
-  	  });
-  	  it("'map id == id'", function(next) {
-		var list = [0,1,2];
-		expect(__.list.map.bind(__)(list)(__.id)).to.eql(__.id(list));
-		next();
-  	  });
-      // it 'map (f . g) == map f . map g', ->
-      //   (expect fj.map ary, fj.compose(square, step1)).toEqual fj.compose(fj.flip(fj.map)(square), fj.flip(fj.map)(step1))(ary)
-	});
-  	it("'splitAt'", function(next) {
-	  var array = [0,1,2,3];
-  	  expect(__.list.splitAt.bind(__)(array)(2)).to.eql([ [ 0, 1 ], [ 2, 3 ] ]);
-      next();
-  	});
-  	it("'takeWhile'", function(next) {
-	  var list = [2,4,6,1,5,6];
-      var even = function(n){
-		return 0 === (n % 2);
-	  };
-      expect(__.list.takeWhile.bind(__)(list)(even)).to.eql([2,4,6]);
-      expect(__.list.takeWhile.bind(__)([2,4,1,3])(function(n){
-		return n > 1;
-	  })).to.eql([2,4]);
-      next();
-  	});
-  	it("'dropWhile'", function(next) {
-	  var list = [2,4,6,1,5,6];
-      var even = function(n){
-		return 0 === (n % 2);
-	  };
-      expect(__.list.dropWhile.bind(__)(list)(even)).to.eql([1,5,6]);
-      expect(__.list.dropWhile.bind(__)([2,4,1,3])(function(n){
-		return n > 1;
-	  })).to.eql([1,3]);
-      expect(__.list.dropWhile.bind(__)([2,3,4])(function(n){
-		return n > 1;
-	  })).to.eql([ ]);
-      next();
-  	});
-  	it("'zip'", function(next) {
-	  var listX = [0,1,2,3,4];
-	  var listY = ["h","a","l","l","o"];
-	  expect(__.list.zip.bind(__)(listX)(listY)).to.eql([[0,'h'],[1,'a'],[2,'l'],[3,'l'],[4,'o']]);
-      next();
-  	});
-	describe("filter", function() {
-  	  it("'単純なフィルター'", function(next) {
-		var even = function(n){
-          return (n % 2) === 0;
-		};
-        expect(__.list.filter.bind(__)([1,2,3,4,5])(even)).to.eql([ 2, 4]);
-        expect(__.list.filter.bind(__)([1,2,3,4,5])(function(n){
-		  return n > 3;
-		})).to.eql([4,5]);
-		var odd = function(n){
-          return __.not(even)(n);
-		};
-		expect(__.list.filter.bind(__)([1,2,3])(odd)).to.eql([1,3]);
-		next();
-  	  });
-      it('は複雑な条件をフィルターできる', function(next){
-        var one = function(n){
-          return n === 1;
-		};
-        var two = function(n){
-          return n === 2;
-		};
-		var list = [1,2,3,4,5,6,7,8,9,10,11,12,13];
-		var multipleOf2 = function(n){
-          return 0 === (n % 2);
-		};
-		var multipleOf3 = function(n){
-          return 0 === (n % 3);
-		};
-		expect(__.list.filter.bind(__)(list)(__.andify.bind(__)(multipleOf2)(multipleOf3))).to.eql([6,12]);
-		next();
-  	  });
-  	});
-  });
+		expect(
+		  addUncurried(1,2)
+		).to.eql(
+		  3
+		);
+		var addCurried = __.curry(addUncurried);
+		 expect(
+		   addCurried(1)(2)
+		 ).to.eql(
+		   3
+		 );
+		 next();
+	   });
+	 });
+   });
+   describe("list module", function() {
+	 it("'cons' should construct a list", function(next) {
+	   expect(
+		 __.list.cons.bind(__)(1)([])
+	   ).to.eql(
+		 [1]
+	   );
+	   expect(
+		 __.list.cons.bind(__)("a")(["b","c"])
+	   ).to.eql(
+		 ["a","b","c"]
+	   );
+	   next();
+	 });
+	 it("'head' should return the 1st element", function(next) {
+	   expect(__.list.head.bind(__)([0,1,2,3])).to.eql(0);
+	   next();
+	 });
+	 it("'tail' should return the tail element", function(next) {
+	   expect(__.list.tail.bind(__)([0,1,2,3])).to.eql([1,2,3]);
+	   next();
+	 });
+	 it("'append'", function(next) {
+	   var xs = [0,1];
+	   var ys = [2,3];
+	   expect(__.list.append.bind(__)(xs)(ys)).to.eql([0,1,2,3]);
+	   expect(xs).to.eql([0,1]);
+	   expect(ys).to.eql([2,3]);
+	   next();
+	 });
+	 it("'reverse' is immutable", function(next) {
+	   var array = [0,1,2];
+	   expect(__.list.reverse.bind(__)(array)).to.eql([2,1,0]);
+	   expect(array).to.eql([0,1,2]);
+	   next();
+	 });
+	 it("'last' uses compose", function(next) {
+	   var array = [0,1,2];
+	   expect(__.list.last.bind(__)(array)).to.eql(2);
+	   expect(array).to.eql([0,1,2]);
+	   expect(__.list.last.bind(__)([0])).to.eql(0);
+	   next();
+	 });
+	 it("'init' uses compose", function(next) {
+	   var array = [0,1,2];
+	   expect(__.list.init.bind(__)(array)).to.eql([0,1]);
+	   expect(array).to.eql([0,1,2]);
+	   expect(__.list.init.bind(__)([0])).to.eql([]);
+	   next();
+	 });
+	 it("'take'", function(next) {
+	   var array = [0,1,2];
+	   expect(__.list.take.bind(__)(array)(1)).to.eql([0]);
+	   expect(__.list.take.bind(__)(array)(2)).to.eql([0,1]);
+	   expect(__.list.take.bind(__)(array)(3)).to.eql([0,1,2]);
+	   expect(__.list.take.bind(__)(array)(4)).to.eql([0,1,2]);
+	   expect(__.list.take.bind(__)(array)(0)).to.eql([]);
+	   expect(array).to.eql([0,1,2]);
+	   next();
+	 });
+	 it("'drop'", function(next) {
+	   var array = [0,1,2];
+	   expect(__.list.drop.bind(__)(array)(1)).to.eql([1,2]);
+	   expect(__.list.drop.bind(__)(array)(2)).to.eql([2]);
+	   expect(__.list.drop.bind(__)(array)(0)).to.eql(array);
+	   expect(array).to.eql([0,1,2]);
+	   next();
+	 });
+	 describe("'map'", function() {
+	   it("'map [number] double'", function(next) {
+		 var array = [0,1,2];
+		 var double = function(n){
+		   return 2 * n;
+		 };
+		 expect(
+		   __.list.map.bind(__)(array)(double)
+		 ).to.eql(
+		   [0,2,4]
+		 );
+  		 expect(array).to.eql([0,1,2]);
+		 next();
+  	   });
+  	   it("'map id == id'", function(next) {
+		 var sequence = [0,1,2];
+		 expect(
+		   __.list.map.bind(__)(sequence)(__.id)
+		 ).to.eql(
+		   __.id(sequence)
+		 );
+		 next();
+  	   });
+       // it 'map (f . g) == map f . map g', ->
+       //   (expect fj.map ary, fj.compose(square, step1)).toEqual fj.compose(fj.flip(fj.map)(square), fj.flip(fj.map)(step1))(ary)
+	 });
+  	 it("'splitAt'", function(next) {
+	   var array = [0,1,2,3];
+  	   expect(
+		 __.list.splitAt.bind(__)(array)(2)
+	   ).to.eql(
+		 [ [ 0, 1 ], [ 2, 3 ] ]
+	   );
+       next();
+  	 });
+  	 it("'takeWhile'", function(next) {
+	   var list = [2,4,6,1,5,6];
+       var even = function(n){
+		 return 0 === (n % 2);
+	   };
+       expect(__.list.takeWhile.bind(__)(list)(even)).to.eql([2,4,6]);
+       expect(__.list.takeWhile.bind(__)([2,4,1,3])(function(n){
+		 return n > 1;
+	   })).to.eql([2,4]);
+       next();
+  	 });
+  	 it("'dropWhile'", function(next) {
+	   var list = [2,4,6,1,5,6];
+       var even = function(n){
+		 return 0 === (n % 2);
+	   };
+       expect(__.list.dropWhile.bind(__)(list)(even)).to.eql([1,5,6]);
+       expect(__.list.dropWhile.bind(__)([2,4,1,3])(function(n){
+		 return n > 1;
+	   })).to.eql([1,3]);
+       expect(__.list.dropWhile.bind(__)([2,3,4])(function(n){
+		 return n > 1;
+	   })).to.eql([ ]);
+       next();
+  	 });
+  	 it("'zip'", function(next) {
+	   var listX = [0,1,2,3,4];
+	   var listY = ["h","a","l","l","o"];
+	   expect(__.list.zip.bind(__)(listX)(listY)).to.eql([[0,'h'],[1,'a'],[2,'l'],[3,'l'],[4,'o']]);
+       next();
+  	 });
+	 describe("filter", function() {
+  	   it("'単純なフィルター'", function(next) {
+		 var even = function(n){
+           return (n % 2) === 0;
+		 };
+         expect(__.list.filter.bind(__)([1,2,3,4,5])(even)).to.eql([ 2, 4]);
+         expect(__.list.filter.bind(__)([1,2,3,4,5])(function(n){
+		   return n > 3;
+		 })).to.eql([4,5]);
+		 var odd = function(n){
+           return __.not(even)(n);
+		 };
+		 expect(__.list.filter.bind(__)([1,2,3])(odd)).to.eql([1,3]);
+		 next();
+  	   });
+       it('は複雑な条件をフィルターできる', function(next){
+         var one = function(n){
+           return n === 1;
+		 };
+         var two = function(n){
+           return n === 2;
+		 };
+		 var list = [1,2,3,4,5,6,7,8,9,10,11,12,13];
+		 var multipleOf2 = function(n){
+           return 0 === (n % 2);
+		 };
+		 var multipleOf3 = function(n){
+           return 0 === (n % 3);
+		 };
+		 expect(__.list.filter.bind(__)(list)(__.andify.bind(__)(multipleOf2)(multipleOf3))).to.eql([6,12]);
+		 next();
+  	   });
+  	 });
+   });
   describe("math", function() {
   	describe("approximate", function() {
   	  it("'sqrt'", function(next) {
@@ -413,6 +441,6 @@ describe("Kansuu module", function() {
   // 	  expect(__.cons(1,[]).bind(__)).to.be([]);
   //     next();
   // 	});
-	
+  
   // });
 });
