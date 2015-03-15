@@ -23,5 +23,8 @@
   "homepage": "https://github.com/akimichi/kansuu.js",
   "dependencies": {
     "expect.js": "^0.3.1"
+  },
+  "devDependencies": {
+    "mocha": "^2.2.1"
   }
 }
