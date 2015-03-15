@@ -242,8 +242,22 @@ module.exports = {
 	  }
 	};
   },
-  /* #@range_end(curry)
-   */
+  /* #@range_end(curry) */
+  loop: function(predicate){
+	expect(predicate).to.a('function');
+	var self = this;
+	return function(accumulator) {
+	  var doLoop = function(fun){
+		expect(fun).to.a('function');
+		if(self.truthy(predicate(accumulator))){
+		  return self.loop(predicate)(fun(accumulator))(fun);
+		} else {
+		  return accumulator;
+		}
+	  };
+	  return doLoop;
+	};
+  },
   compose: function(fun1){
 	expect(fun1).to.a('function');
 	var self = this;

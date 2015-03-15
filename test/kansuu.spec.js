@@ -149,6 +149,20 @@ describe("Kansuu module", function() {
 	});
   });
   describe("higher-order functions", function() {
+	describe("loop", function() {
+	  it('can iterate', function(next) {
+		var lessThan = function(n){
+		  return function(x){
+			return x < n;
+		  };
+		};
+		var succ = function(n){
+		  return n + 1;
+		};
+		expect(__.loop(lessThan(3))(0)(succ)).to.eql(3);
+		next();
+	  });
+	});
 	describe("curry", function() {
   	  it("'curry' should curry function", function(next) {
 		var addUncurried = function(n1,n2){
