@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/akimichi/kansuu.js/issues"
   },
-  "homepage": "https://github.com/akimichi/kansuu.js"
+  "homepage": "https://github.com/akimichi/kansuu.js",
+  "dependencies": {
+    "expect.js": "^0.3.1"
+  }
 }
