@@ -24,6 +24,134 @@ describe("Kansuu module", function() {
       next();
   	});
   });
+  describe("combinators", function() {
+	var S = __.combinator.S;
+	var K = __.combinator.K;
+	var I = __.combinator.I;
+	var B = __.combinator.B;
+	var C = __.combinator.C;
+	it('I', function(next){
+	  expect(I(1)).to.eql(1);
+	  next();
+	});
+	it('SKK == I', function(next) {
+	  expect(S(K)(K)(0)).to.eql(0);
+	  expect(S(K)(K)("a")).to.eql("a");
+	  next();
+	});
+	it('T == K', function(next) {
+	  var T = K;
+	  expect(T(1)(0)).to.eql(1);
+	  next();
+	});
+	it('S add I 7 == 14', function(next) {
+	  expect(S(__.add)(I)(7)).to.eql(14);
+	  next();
+	});
+	it('succ == S(S(K plus)(K 1)) I', function(next) {
+	  var plus = function(x){
+		return function(y){
+		  return x + y;
+		};
+	  };
+	  var succ = S(S(K(plus))(K(1)))(I);
+	  expect(succ(0)).to.eql(1);
+	  expect(succ(1)).to.eql(2);
+	  next();
+	});
+	it('fac', function(next) {
+	  var plus = function(x){
+		return function(y){
+		  return x + y;
+		};
+	  };
+	  var multiply = function(x){
+		return function(y){
+		  return x * y;
+		};
+	  };
+	  var divide = function(x){
+		return function(y){
+		  return x / y;
+		};
+	  };
+	  var minus = function(x){
+		return function(y){
+		  return x - y;
+		};
+	  };
+	  var eq = function(x){
+		return function(y){
+		  return (x === y);
+		};
+	  };
+	  var cond = function(pred){
+		return function(x){
+		  return function(y){
+			if(pred){
+			  return x();
+			} else {
+			  return y();
+			}
+		  };
+		};
+	  };
+	  var averageX = function(x){
+		return C(B(divide)(plus(x)))(2);
+	  };
+	  expect(averageX(1)(3)).to.eql(2);
+	  expect(averageX(2)(4)).to.eql(3);
+	  // var average = C(B(C(B(B(divide))(plus)))(2));
+	  // expect(average(1)(3)).to.eql(2);
+	  // var fac = S(C(B(cond(eq(0))))(1)
+	  // 			  S(multiply(B(fac(C(minus)(1))))));
+	  next();
+	});
+	// it('SK == false', function() {
+	// 	var F = function(x){
+	// 	  return function(y){
+	// 		return S(K)(x)(y);
+	// 	  };
+	// 	};
+	// 	expect(F(1)(0)).to.eql(1);
+	// });
+  });
+  describe("tap", function() {
+	it('can successfully hide sideeffects', function(next) {
+	  /* #@range_begin(tap_combinator_test) */
+	  var consoleSideEffect = function(any){
+		console.log(any);
+	  };
+	  var target = 1;
+	  expect(
+		__.tap(target)(consoleSideEffect)
+	  ).to.eql(
+		1
+	  );
+	  var updateSideEffect = function(any){
+		any = any + 1;
+	  };
+	  expect(
+		__.tap(target)(updateSideEffect)
+	  ).to.eql(
+		1
+	  );
+	  /* #@range_end(tap_combinator_test) */
+	  next();
+	});
+	it('can not hide exception', function(next) {
+	  /* #@range_begin(tap_combinator_exception_test) */
+	  var exceptionSideEffect = function(any){
+		throw new Error(any);
+	  };
+	  var target = "error";
+	  expect(function(){
+		return __.tap(target)(exceptionSideEffect);
+	  }).to.throwError();
+	  /* #@range_end(tap_combinator_exception_test) */
+	  next();
+	});
+  });
   describe("higher-order functions", function() {
 	describe("curry", function() {
 	  

@@ -97,25 +97,69 @@ module.exports = {
 	}
     return true;
   },
-  // op: {
-  // 	"+" : function(x,y) { return x + y; },
-  // 	"-" : function(x,y) { return x - y; },
-  // 	"*" : function(x,y) { return x * y; },
-  // 	"/" : function(x,y) { return x / y; },
-  // 	"!" : function(x) { return !x; }
-  // },
+  combinator: {
+	/*
+	 * S x y z = (x z)(y z)
+	 */
+	S: function(x) {
+      return function(y){
+		return function(z){
+		  return (x(z))(y(z));
+		};
+	  };
+	},
+	/* #@range_begin(K_combinator) */
+	K: function(x){
+      return function(y){
+		return x;
+      };
+	},
+	/* #@range_end(K_combinator) */
+	I: function(x) {
+      return x;
+	},
+	/*
+	 B f g x = f(g(x))
+	 */
+	B: function(x) {
+      return function(y){
+		return function(z){
+		  return x(y(z));
+		};
+	  };
+	},
+	/*
+	 C f g x = f x g
+	 */
+	C: function(x) {
+      return function(y){
+		return function(z){
+		  return (x(z))(y);
+		};
+	  };
+	},
+	/* #@range_begin(Y_combinator) */
+	Y: function(F) {
+	  return (function(g) {
+		return function(x) {
+		  return F(g(g))(x);
+		};
+	  })(function(g) {
+		return function(x) {
+		  return F(g(g))(x);
+		};
+	  });
+	},
+	/* #@range_end(Y_combinator) */
+  },
   tap: function(target) {
     var original = target;
     return function doSideEffect(sideEffect) {
-      sideEffect(target);
-      expect(original).to.eql(target);
-      return target;
+	  sideEffect(target);
+	  expect(original).to.eql(target);
+	  return target;
     };
   },
-  // tap: function(target, sideEffect) {
-  // 	sideEffect(target);
-  // 	return target;
-  // },
   orify: function(predicateA){
 	expect(predicateA).to.a('function');
 	var self = this;
@@ -399,6 +443,10 @@ module.exports = {
 	},
   },
   // end of 'list' module
+  /*
+   * math module
+   *
+   */
   math: {
 	isPrime: function(n){
 	  expect(n).to.a('number');
