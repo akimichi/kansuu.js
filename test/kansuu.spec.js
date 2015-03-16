@@ -174,15 +174,36 @@ describe("Kansuu module", function() {
 		  3
 		);
 		var addCurried = __.curry(addUncurried);
-		 expect(
-		   addCurried(1)(2)
-		 ).to.eql(
-		   3
-		 );
+		expect(
+		  addCurried(1)(2)
+		).to.eql(
+		  3
+		);
+		next();
+	  });
+	});
+	describe("uncurry", function() {
+  	  it("'uncurry' should curry function", function(next) {
+		var addCurried = function(n1){
+		  return function (n2){
+			return n1 + n2;
+		  };
+		};
+		var addUncurried = __.uncurry(addCurried);
+		expect(
+		  addUncurried(1,2)
+		).to.eql(
+		  3
+		);
 		 next();
 	   });
 	 });
    });
+  /*
+   curry (uncurry E ) = E
+   uncurry (curry E ) = E
+   */
+
    describe("list module", function() {
 	 it("'cons' should construct a list", function(next) {
 	   expect(

@@ -243,6 +243,22 @@ module.exports = {
 	};
   },
   /* #@range_end(curry) */
+  /*
+   * def uncurry g [a,b] = g a b
+   *
+   */
+  uncurry : function (fun) {
+	expect(fun).to.a('function');
+	return function() {
+      var result = fun;
+      for (var i = 0; i < arguments.length; i++)
+		result = result(arguments[i]);
+      return result;
+	};
+  },
+  // uncurry: function(fun,arg){
+  //   return fun(arg);
+  // },
   compose: function(fun1){
 	expect(fun1).to.a('function');
 	var self = this;
@@ -725,6 +741,37 @@ module.exports = {
 		  return falseCase();
 		}
 	  };
+	};
+  },
+  /*
+   words            :: String -> [String]
+   words s          =  case dropWhile Char.isSpace s of
+                       "" -> []
+                       s' -> w : words s''
+                            where (w, s'') = break Char.isSpace s'
+   */
+  /*
+   break             :: (a -> Bool) -> [a] -> ([a],[a])
+   break p                 =  span (not . p)
+   */
+  /*
+   'span' is kind of like takeWhile, only it returns a pair of lists. The first list
+   contains everything the resulting list from takeWhile would contain if it were
+   called with the same predicate and the same list. The second list contains the
+   part of the list that would have been dropped.
+
+   span             :: (a -> Bool) -> [a] -> ([a],[a])
+   span p []            = ([],[])
+   span p xs@(x:xs') 
+            | p x       =  (x:ys,zs) 
+            | otherwise =  ([],xs)
+                           where (ys,zs) = span p xs'
+   */
+  span: function(predicate){
+	expect(predicate).to.a('function');
+	return function(list){
+	  expect(list).to.an('array');
+	  
 	};
   }
 };

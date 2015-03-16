@@ -29,3 +29,6 @@ node_modules
 
 # emacs related
 .emacs.desktop*
+
+# docco
+docs/
