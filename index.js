@@ -300,6 +300,25 @@ module.exports = {
 	var self = this;
 	return self.flip.bind(self)(self.compose)(fun);
   },
+  pair: {
+	mkPair: function(left){
+	  return function(right){
+		return {
+		  type : 'pair',
+		  left : left,
+		  right : right
+		};
+	  };
+	},
+	left: function(pair){
+	  var self = this;
+	  return self.get("left")(pair);
+	},
+	right: function(pair){
+	  var self = this;
+	  return self.get("right")(pair);
+	},
+  },
   list: {
 	// last:: [T] => T
 	last: function(list){
@@ -613,8 +632,7 @@ module.exports = {
 		};
 	  };
 	}
-  },
-  // end of 'math' module
+  }, /* end of 'math' module */
   reduce: function(array, glue, accumulator){
   	return function(self){
 	  if(self.isEmpty(array)) {
@@ -743,124 +761,61 @@ module.exports = {
 	  };
 	};
   },
-  /*
-   words            :: String -> [String]
-   words s          =  case dropWhile Char.isSpace s of
-                       "" -> []
-                       s' -> w : words s''
-                            where (w, s'') = break Char.isSpace s'
-   */
-  /*
-   break             :: (a -> Bool) -> [a] -> ([a],[a])
-   break p                 =  span (not . p)
-   */
-  /*
-   'span' is kind of like takeWhile, only it returns a pair of lists. The first list
-   contains everything the resulting list from takeWhile would contain if it were
-   called with the same predicate and the same list. The second list contains the
-   part of the list that would have been dropped.
+   // 'span' is kind of like takeWhile, only it returns a pair of lists. The first list
+   // contains everything the resulting list from takeWhile would contain if it were
+   // called with the same predicate and the same list. The second list contains the
+   // part of the list that would have been dropped.
 
-   span             :: (a -> Bool) -> [a] -> ([a],[a])
-   span p []            = ([],[])
-   span p xs@(x:xs') 
-            | p x       =  (x:ys,zs) 
-            | otherwise =  ([],xs)
-                           where (ys,zs) = span p xs'
-   */
+   // ~~~haskell
+   // span :: (a -> Bool) -> [a] -> ([a],[a])
+   // span p []            = ([],[])
+   // span p xs@(x:xs') 
+   //          | p x       =  (x:ys,zs) 
+   //          | otherwise =  ([],xs)
+   //                         where (ys,zs) = span p xs'
+   // ~~~
   span: function(predicate){
 	expect(predicate).to.a('function');
+	var self = this;
 	return function(list){
 	  expect(list).to.an('array');
-	  
+	  if(self.isEmpty(list)){
+		return self.pair.mkPair([])([]);
+	  } else {
+		var head = self.list.head(list);
+		var tail = self.list.tail(list);
+		expect(list).to.an('array');
+		var rest = self.span.bind(self)(predicate)(tail);
+		expect(rest).to.an('object');
+		expect(rest["type"]).to.be('pair');
+		if(self.truthy(predicate(head))){
+		  return self.pair.mkPair(
+			self.list.cons(head)(rest.left)
+		  )(
+			rest.right
+		  );
+		} else {
+		  return self.pair.mkPair([])(rest.left);
+		}
+	  }
 	};
+  },
+  // ~~~haskell
+  // break             :: (a -> Bool) -> [a] -> ([a],[a])
+  // break p           =  span (not . p)
+  // ~~~
+  break: function(predicate){
+	expect(predicate).to.a('function');
+	var self = this;
+	return self.span(self.compose(self.not)(predicate));
   }
+  // ~~~haskell
+  // words            :: String -> [String]
+  // words s          =  case dropWhile Char.isSpace s of
+  //                     "" -> []
+  //                     s' -> w : words s''
+  //                          where (w, s'') = break Char.isSpace s'
+  // ~~~
 };
 
 
-  // bind: function(fun, context){
-  //   return function(){
-  //     return fun.apply(context, arguments);
-  // 	  //return fun.call(context, args);
-  // 	};
-  // },
-
-  // FLIP: function(fun) {
-  // 	return function (first) {
-  // 	  return function (second) {
-  // 		return fun.call(this, second, first);
-  // 	  };
-  // 	};
-  // },
-  // flip: function(fun) {
-  // 	return function flipped(x,y){
-  // 	  return fun.call(this, y,x);
-  // 	};
-  // },
-
-  // take: function(n, list){
-  // 	return function(self){
-  // 	  if (n === 0)
-  // 		return [];
-  // 	  else {
-  // 		if(self.isEmpty(list))
-  // 		  return [];
-  // 		else {
-  // 		  var head = self.head(list);
-  // 		  var tail = self.tail(list);
-  // 		  return self.cons(head, self.take(n-1,tail));
-  // 		}
-  // 	  }
-  // 	}(this);
-  // },
-  // drop: function(n, list){
-  // 	return function(self){
-  // 	  if (n === 0)
-  // 		return list;
-  // 	  else {
-  // 		if(self.isEmpty(list))
-  // 		  return [];
-  // 		else {
-  // 		  var tail = self.tail(list);
-  // 		  return self.drop(n-1,tail);
-  // 		}
-  // 	  }
-  // 	}(this);
-  // },
-
-  // head :: [T] => T
-  // head: function(array){
-  //   //@demand [@isArray(ary), ary.length > 0]
-  //   return array[0];
-  // },
-  // // tail :: [T] => [T]
-  // tail: function(array){
-  //   //@demand [@isArray(ary)], "argument should be array, but a #{@typeOf ary}"
-  //   //@demand [ary.length > 0], "argument should have more than 1 element"
-  //   return array.slice(1,array.length);
-  // },
-  // last: function(list){
-  // 	return function(self){
-  //     return self.compose(self.head, self.reverse)(list)
-  // 	}(this);
-  // 	// return array[array.length - 1];
-  //   // return this.compose(this.head, this.reverse)(list)
-  // },
-  // init = reverse . tail . reverse
-  // init: function(list){
-  // 	return function(self){
-  //     return self.compose(self.reverse, self.compose(self.tail, self.reverse))(list)
-  // 	}(this);
-  // },
-
-  // reverse: function(list){
-  //   return list.reduce((function(accumulator, item) {
-  //     return [item].concat(accumulator);
-  //   }), []);
-  // },
-
-  // cons :: (T,[T]) => [T]
-  // cons: function(value, array){
-  // 	this.demand([this.beArray(array)]);
-  //   return [value].concat(array);
-  // },
-  // snoc :: (T,[T]) => [T]

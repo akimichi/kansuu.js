@@ -318,6 +318,22 @@ describe("Kansuu module", function() {
 	   })).to.eql([2,4]);
        next();
   	 });
+  	 it("'span'", function(next) {
+	   var isPositive = function(n){
+	   	 return n > 0;
+	   };
+       expect(
+		 __.span.bind(__)(isPositive)([])
+	   ).to.eql(
+		 { type: 'pair', left: [], right: [] }
+	   );
+       expect(
+	   	 __.span.bind(__)(isPositive)([1,2,3,0,1,2])
+	   ).to.eql(
+	   	 { type: 'pair', left: [ 1, 2, 3 ], right: [ 1, 2 ] }
+	   );
+       next();
+  	 });
   	 it("'dropWhile'", function(next) {
 	   var list = [2,4,6,1,5,6];
        var even = function(n){
