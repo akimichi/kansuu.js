@@ -54,7 +54,6 @@ module.exports = {
 	  expect(predicateB).to.a('function');
 	  return function applyOr(any) {
 		return self.op['|'].bind(self)(predicateA(any))(predicateB(any));
-		//return predicateA(any) || predicateB(any);
 	  };
 	};
   },
@@ -65,7 +64,6 @@ module.exports = {
 	  expect(predicate2).to.a('function');
 	  return function applyAnd(any) {
 		return self.op['&'].bind(self)(predicate1(any))(predicate2(any));
-		//return predicateA(any) || predicateB(any);
 	  };
 	};
   },
@@ -223,6 +221,7 @@ module.exports = {
 	/* #@range_end(Y_combinator) */
   },
   tap: function(target) {
+	var self = this;
     var original = target;
     return function doSideEffect(sideEffect) {
 	  sideEffect(target);
@@ -300,7 +299,32 @@ module.exports = {
 	var self = this;
 	return self.flip.bind(self)(self.compose)(fun);
   },
+  //
+  // pair module
+  //
   pair: {
+	// ## censor
+	// ### type
+	// censor: OBJ => OBJ
+	//
+	// ### usage
+	// ~~~
+	// expect(
+	// 	 pair.censor(obj)
+	// ).to.eql(
+	// 	 {
+	// 	   type: "pair",
+	// 	   left: 1,
+	// 	   right: 2
+	// 	 }
+	// );
+	// ~~~
+	censor: function(obj){
+	  expect(obj).to.have.property('type','pair');
+	  expect(obj).to.have.property('left');
+	  expect(obj).to.have.property('right');
+	  return obj;
+	},
 	mkPair: function(left){
 	  return function(right){
 		return {
@@ -319,15 +343,30 @@ module.exports = {
 	  return self.get("right")(pair);
 	},
   },
+  //
+  // list module
+  //
   list: {
+	mkList: function(any1){
+	  var self = this;
+	  return function(any2){
+		return self.list.cons(any1,[any2]);
+	  };
+	},
+	// cons:: (T)([T]) => [T]
+	cons: function(value){
+	  var self = this;
+	  return function (array){
+		expect(array).to.an('array');
+		return [value].concat(array);
+	  };
+	},
 	// last:: [T] => T
 	last: function(list){
 	  expect(list).to.an('array');
 	  expect(list).to.not.be.empty();
 	  var self = this;
 	  return self.compose(self.list.head)(self.list.reverse)(list);
-	  // return array[array.length - 1];
-      // return this.compose(this.head, this.reverse)(list)
 	},
 	// init = reverse . tail . reverse
 	init: function(list){
@@ -347,18 +386,6 @@ module.exports = {
       return list.reduce((function(accumulator, item) {
 		return [item].concat(accumulator);
       }), []);
-	},
-	// cons:: (T)([T]) => [T]
-	cons: function(value){
-	  var self = this;
-	  return function (array){
-		expect(array).to.an('array');
-		return [value].concat(array);
-		// return self.tap.bind(self)([value].concat(array), function(result){
-	    //   expect(result).to.an('array');
-		//   return result;
-		// });
-	  };
 	},
 	// tail:: [T] => [T]
 	tail: function(array){
@@ -458,17 +485,6 @@ module.exports = {
 		}
 	  };
 	},
-	// takeWhile : function(pred, gen, continues){
-	//   return function(self){
-	// 	var current = gen();
-	// 	if (pred(current))
-	// 	  return self.takeWhile(pred, gen, function(t0){
-	// 		return continues(self.cons(current, t0));
-	// 	  });
-	// 	else
-	// 	  return continues([]);
-	//   }(this);
-	// },
 	//dropWhile :: (T=>Bool,[T]) => [T]
 	dropWhile: function(list){
 	  expect(list).to.an('array');
@@ -525,12 +541,11 @@ module.exports = {
 		}
 	  };
 	},
-  },
-  // end of 'list' module
-  /*
-   * math module
-   *
-   */
+  }, /* end of 'list' module */
+  // 
+  // math module
+  //
+  //
   math: {
 	isPrime: function(n){
 	  expect(n).to.a('number');
@@ -665,15 +680,6 @@ module.exports = {
   length: function(list){
     return list.length;
   },
-  // map: function(mappable, fun){
-  //   if (this.isEmpty(mappable)) {
-  //     return [];
-  //   } else {
-  //     var x = this.head(mappable);
-  //     var xs = this.tail(mappable);
-  //     return this.cons(fun(x), this.map(xs,fun));
-  // 	}
-  // },
   fluent: function(body){
 	return function applyFluent() {
 	  body.apply(this, arguments);
@@ -705,7 +711,7 @@ module.exports = {
 	  return function (step) {
 		var current = initial;
 		return function generate(){
-		  return self.tap(current, function(the_current){
+		  return self.tap(current)(function(the_current){
 			current = step(the_current);
 		  });
 		};

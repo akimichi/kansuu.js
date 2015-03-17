@@ -203,7 +203,27 @@ describe("Kansuu module", function() {
    curry (uncurry E ) = E
    uncurry (curry E ) = E
    */
-
+   describe("pair module", function() {
+	 var pair = __.pair;
+	 it("'censor' should assert a pair object", function(next) {
+	   var obj = pair.mkPair(1)(2);
+	   expect(
+		 pair.censor(obj)
+	   ).to.eql(
+	   	 {
+	   	   type: "pair",
+	   	   left: 1,
+	   	   right: 2
+	   	 }
+	   );
+	   expect(
+	   	 __.tap(obj)(pair.censor)
+	   ).to.eql(
+		 obj
+	   );
+	   next();
+	 });
+   });
    describe("list module", function() {
 	 it("'cons' should construct a list", function(next) {
 	   expect(
@@ -389,6 +409,11 @@ describe("Kansuu module", function() {
   	 });
    });
   describe("math", function() {
+	var math = require('../index.js').math;
+  	  it("'isPrime'", function(next) {
+  		expect(math.isPrime(3)).to.be(true);
+  		next();
+  	  });
   	describe("approximate", function() {
   	  it("'sqrt'", function(next) {
   		var sqrt = __.math.approximate.bind(__)(__.math.improve_sqrt.bind(__))(0.001);
