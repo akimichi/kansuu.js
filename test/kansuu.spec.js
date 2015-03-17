@@ -223,6 +223,20 @@ describe("Kansuu module", function() {
 	   );
 	   next();
 	 });
+    it("pair exctractors", function(next) {
+	  var obj = __.pair.mkPair(1)(2);
+      expect(
+		__.pair.left.bind(__)(obj)
+	  ).to.eql(
+		1
+	  );
+      expect(
+		__.pair.right.bind(__)(obj)
+	  ).to.eql(
+		2
+	  );
+      next();
+    });
    });
    describe("list module", function() {
 	 it("'cons' should construct a list", function(next) {
