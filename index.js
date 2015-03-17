@@ -547,6 +547,20 @@ module.exports = {
   //
   //
   math: {
+	isLessThan: function(n1){
+	  expect(n1).to.a('number');
+	  return function(n2){
+		expect(n2).to.a('number');
+		return n2 < n1;
+	  };
+	},
+	isMoreThan: function(n1){
+	  expect(n1).to.a('number');
+	  return function(n2){
+		expect(n2).to.a('number');
+		return n2 > n1;
+	  };
+	},
 	isPrime: function(n){
 	  expect(n).to.a('number');
 	  if (n == 1 || n == 2) {
@@ -801,11 +815,19 @@ module.exports = {
 			rest.right
 		  );
 		} else {
-		  return self.pair.mkPair([])(rest.left);
+		  return self.pair.mkPair([])(list);
 		}
 	  }
 	};
   },
+  // Synopsis
+  // ========
+  //
+  // break, applied to a predicate p and a list xs, returns a tuple where first element is longest prefix (possibly empty) of xs of elements that do not satisfy p and second element is the remainder of the list:
+  //
+  // Definition
+  // ==========
+  //
   // ~~~haskell
   // break             :: (a -> Bool) -> [a] -> ([a],[a])
   // break p           =  span (not . p)

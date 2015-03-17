@@ -343,17 +343,42 @@ describe("Kansuu module", function() {
 	   	 return n > 0;
 	   };
        expect(
-		 __.span.bind(__)(isPositive)([])
+	   	 __.span.bind(__)(isPositive)([])
 	   ).to.eql(
-		 { type: 'pair', left: [], right: [] }
+	   	 { type: 'pair', left: [], right: [] }
 	   );
+	   // span (< 3) [1,2,3,4,1,2,3,4] == ([1,2],[3,4,1,2,3,4])
        expect(
-	   	 __.span.bind(__)(isPositive)([1,2,3,0,1,2])
+	   	 __.span.bind(__)(function(n){ return n < 3;})([1,2,3,4,1,2,3,4])
 	   ).to.eql(
-	   	 { type: 'pair', left: [ 1, 2, 3 ], right: [ 1, 2 ] }
+	   	 __.pair.mkPair([1,2])([3,4,1,2,3,4])
+	   );
+	   // span (< 9) [1,2,3] == ([1,2,3],[])
+       expect(
+	   	 __.span.bind(__)(__.math.isLessThan(9))([1,2,3])
+	   ).to.eql(
+	   	 __.pair.mkPair([1,2,3])([])
+	   );
+	   // span (< 0) [1,2,3] == ([],[1,2,3])
+       expect(
+	   	 __.span.bind(__)(__.math.isLessThan(0))([1,2,3])
+	   ).to.eql(
+	   	 __.pair.mkPair([])([1,2,3])
 	   );
        next();
   	 });
+	 
+	 // break (> 3) [1,2,3,4,1,2,3,4] == ([1,2,3],[4,1,2,3,4])
+	 // break (< 9) [1,2,3] == ([],[1,2,3])
+	 // break (> 9) [1,2,3] == ([1,2,3],[])
+  	 // it("'break'", function(next) {
+     //   expect(
+	 // 	 __.break.bind(__)(function(n){ return n > 3;})([1,2,3,4,1,2,3,4])
+	 //   ).to.eql(
+	 // 	 { type: 'pair', left: [], right: [] }
+	 //   );
+     //   next();
+  	 // });
   	 it("'dropWhile'", function(next) {
 	   var list = [2,4,6,1,5,6];
        var even = function(n){

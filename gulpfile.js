@@ -23,4 +23,4 @@ gulp.task('doc', function() {
 });
 
 
-gulp.task('default', ['test']);
+gulp.task('default', ['test','doc']);
