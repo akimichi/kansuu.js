@@ -923,11 +923,20 @@ module.exports = {
 	  break;
 	}
   },
-  tail: function(string){
-	expect(string).to.a('string');
+  tail: function(mappable){
 	var self = this;
-	expect(self.isNonEmpty(string)).to.be.ok();
-	return string.substring(1);
+	expect(self.isNonEmpty(mappable)).to.be.ok();
+	switch (self.typeOf(mappable)){
+	case 'array':
+	  return self.list.tail.bind(self)(mappable);
+	  break;
+	case 'string':
+	  return self.string.tail.bind(self)(mappable);
+	  break;
+	default:
+	  expect.fail();
+	  break;
+	}
   },
   // string module
   string: {

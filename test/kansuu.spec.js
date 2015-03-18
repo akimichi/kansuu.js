@@ -402,11 +402,20 @@ describe("Kansuu module", function() {
 	//   );
     //   next();
   	// });
+  	it("'break'", function(next) {
+      expect(
+		 __.break.bind(__)(__.math.isMoreThan(3))([1,2,3,4,1,2,3,4])
+	  ).to.eql(
+		 [ [ 'a', 'b', 'c', '\n', 'd', 'e', 'f' ] ]
+	  );
+      next();
+	});
+
   	it("'lines'", function(next) {
       expect(
 		 __.lines.bind(__)("abc\ndef")
 	  ).to.eql(
-		 []
+		 [ [ 'a', 'b', 'c', '\n', 'd', 'e', 'f' ] ]
 	  );
       next();
   	});
