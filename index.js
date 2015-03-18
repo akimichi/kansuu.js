@@ -3,7 +3,6 @@
 var expect = require('expect.js');
 
 module.exports = {
-
   id: function(any){
 	return any;
   },
@@ -165,6 +164,10 @@ module.exports = {
 	}
     return true;
   },
+  isNonEmpty: function(obj) {
+	var self = this;
+	return ! self.isEmpty(obj);
+  },
   combinator: {
 	/*
 	 * S x y z = (x z)(y z)
@@ -300,6 +303,36 @@ module.exports = {
 	return self.flip.bind(self)(self.compose)(fun);
   },
   //
+  // failure
+  //
+  lazyList:{
+	censor: function(obj){
+	  expect(obj).to.have.property('type','lazyList');
+	  expect(obj).to.have.property('head');
+	  expect(obj).to.have.property('tail');
+	  expect(obj.tail).to.a('function');
+	  return obj;
+	},
+	mkLazyList: function(head){
+	  var self = this;
+	  return function(tail){
+		return {
+		  type : 'lazyList',
+		  "head" : head,
+		  "tail" : function(){ return tail; }
+		};
+	  };
+	},
+	head: function(lazyList){
+	  var self = this;
+	  return self.get.bind(self)("head")(lazyList);
+	},
+	tail: function(lazyList){
+	  var self = this;
+	  return self.get.bind(self)("tail")(lazyList)();
+	},
+  },
+  //
   // pair module
   //
   pair: {
@@ -336,11 +369,11 @@ module.exports = {
 	},
 	left: function(pair){
 	  var self = this;
-	  return self.get("left")(pair);
+	  return self.get.bind(self)("left")(pair);
 	},
 	right: function(pair){
 	  var self = this;
-	  return self.get("right")(pair);
+	  return self.get.bind(self)("right")(pair);
 	},
   },
   //
@@ -381,13 +414,53 @@ module.exports = {
 	  expect(array).to.not.be.empty();
       return array[0];
 	},
+	// reverse :: [a] -> [a] Source
+	// reverse xs returns the elements of xs in reverse order. xs must be finite.
 	reverse: function(list){
 	  expect(list).to.an('array');
       return list.reduce((function(accumulator, item) {
 		return [item].concat(accumulator);
       }), []);
 	},
-	// tail:: [T] => [T]
+	// intersperse :: a -> [a] -> [a] Source
+	//
+	// The intersperse function takes an element and a list and `intersperses' that element between the elements of the list. For example,
+	//
+	// intersperse ',' "abcde" == "a,b,c,d,e"
+	intersperse: function(any){
+	  return function(list){
+		expect(list).to.an('array');
+	  };
+	},
+	// intercalate :: [a] -> [[a]] -> [a] Source
+	// intercalate xs xss is equivalent to (concat (intersperse xs xss)). It inserts the list xs in between the lists in xss and concatenates the result.
+	
+	// transpose :: [[a]] -> [[a]] Source
+	// The transpose function transposes the rows and columns of its argument. For example,
+	// transpose [[1,2,3],[4,5,6]] == [[1,4],[2,5],[3,6]]	// tail:: [T] => [T]
+	
+	// subsequences :: [a] -> [[a]] Source
+	//
+	// The subsequences function returns the list of all subsequences of the argument.
+	//
+	// subsequences "abc" == ["","a","b","ab","c","ac","bc","abc"]
+
+	// permutations :: [a] -> [[a]] Source
+	//
+	// The permutations function returns the list of all permutations of the argument.
+	//
+	// permutations "abc" == ["abc","bac","cba","bca","cab","acb"]
+
+	// -- repeat x is an infinite list, with x the value of every element.
+	// repeat           :: a -> [a]
+	// repeat x         =  xs where xs = x:xs
+	repeat: function(any){
+	  var self = this;
+	  var tail = function(){
+		return self.repeat(any);
+	  };
+	  return self.list.cons(any)(self.repeat(any));
+	},
 	tail: function(array){
 	  expect(array).to.an('array');
 	  expect(array).to.not.be.empty();
@@ -662,15 +735,29 @@ module.exports = {
 	  };
 	}
   }, /* end of 'math' module */
-  reduce: function(array, glue, accumulator){
-  	return function(self){
-	  if(self.isEmpty(array)) {
-		return accumulator;
-	  } else {
-		return glue(self.head(array), self.reduce(self.tail(array), glue, accumulator));
-	  }
-  	}(this);
+  reduce: function(mappable){
+	var self = this;
+  	return function(accumulator){
+  	  return function(glue){
+		expect(glue).to.a('function');
+		if(self.isEmpty(mappable)) {
+		  return accumulator;
+		} else {
+		  var item = self.head(mappable);
+		  return glue(item)(self.reduce(self.tail(mappable))(accumulator)(glue));
+		}
+  	  };
+	};
   },
+  // reduce: function(array, glue, accumulator){
+  // 	return function(self){
+  // 	  if(self.isEmpty(array)) {
+  // 		return accumulator;
+  // 	  } else {
+  // 		return glue(self.head(array), self.reduce(self.tail(array), glue, accumulator));
+  // 	  }
+  // 	}(this);
+  // },
   foldr: function(op, init, array) {
 	return function(context){
       if (context.isEmpty(array)) {
@@ -757,6 +844,8 @@ module.exports = {
   },
   get: function(key){
     return function(obj){
+	  expect(obj).to.an('object');
+	  expect(obj).to.have.property(key);
 	  return obj[key];
 	};
   },
@@ -798,13 +887,13 @@ module.exports = {
 	expect(predicate).to.a('function');
 	var self = this;
 	return function(list){
-	  expect(list).to.an('array');
+	  //expect(list).to.an('array');
 	  if(self.isEmpty(list)){
 		return self.pair.mkPair([])([]);
 	  } else {
-		var head = self.list.head(list);
-		var tail = self.list.tail(list);
-		expect(list).to.an('array');
+		var head = self.head(list);
+		var tail = self.tail(list);
+		//expect(list).to.an('array');
 		var rest = self.span.bind(self)(predicate)(tail);
 		expect(rest).to.an('object');
 		expect(rest["type"]).to.be('pair');
@@ -820,6 +909,52 @@ module.exports = {
 	  }
 	};
   },
+  head: function(mappable){
+	var self = this;
+	switch (self.typeOf(mappable)){
+	case 'array':
+	  return self.list.head.bind(self)(mappable);
+	  break;
+	case 'string':
+	  return self.string.head.bind(self)(mappable);
+	  break;
+	default:
+	  expect.fail();
+	  break;
+	}
+  },
+  tail: function(string){
+	expect(string).to.a('string');
+	var self = this;
+	expect(self.isNonEmpty(string)).to.be.ok();
+	return string.substring(1);
+  },
+  // string module
+  string: {
+	head: function(string){
+	  expect(string).to.a('string');
+	  var self = this;
+	  expect(self.isNonEmpty(string)).to.be.ok();
+	  return string[0];
+	},
+	tail: function(string){
+	  expect(string).to.a('string');
+	  var self = this;
+	  expect(self.isNonEmpty(string)).to.be.ok();
+	  return string.substring(1);
+	},
+  	toArray: function(string){
+  	  expect(string).to.a('string');
+  	  var self = this;
+	  var glue = function(item){
+		return function(rest) {
+  		  return [item].concat(rest);
+		};
+	  };
+  	  return self.reduce(string)([])(glue);
+	}
+  },
+  // },
   // Synopsis
   // ========
   //
@@ -836,6 +971,38 @@ module.exports = {
 	expect(predicate).to.a('function');
 	var self = this;
 	return self.span(self.compose(self.not)(predicate));
+  },
+  // lines breaks a string up into a list of strings at newline characters.
+  // The resulting strings do not contain newlines.  Similary, words
+  // breaks a string up into a list of words, which were delimited by
+  // white space.  unlines and unwords are the inverse operations.
+  // unlines joins lines with terminating newlines, and unwords joins
+  // words with separating spaces.
+  //
+  // ~~~haskell
+  // lines            :: String -> [String]
+  // lines ""         =  []
+  // lines s          =  let (l, s') = break (== '\n') s
+  //                       in  l : case s' of
+  //                                 []      -> []
+  //                                 (_:s'') -> lines s''
+  // ~~~
+  lines: function(string) {
+	expect(string).to.a('string');
+	var self = this;
+	if(self.isEmpty(string)){
+	  return [];
+	} else {
+	  var isNewline = function(ch){
+		return ch === '\n';
+	  };
+	  var broken = self.break(isNewline)(string);
+	  if(self.isEmpty(broken.right)){
+		return self.list.cons(broken.left)([]);
+	  } else {
+		return self.list.cons(broken.left)(self.lines(broken.right));
+	  }
+	}
   }
   // ~~~haskell
   // words            :: String -> [String]
