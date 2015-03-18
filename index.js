@@ -870,45 +870,6 @@ module.exports = {
 	  };
 	};
   },
-   // 'span' is kind of like takeWhile, only it returns a pair of lists. The first list
-   // contains everything the resulting list from takeWhile would contain if it were
-   // called with the same predicate and the same list. The second list contains the
-   // part of the list that would have been dropped.
-
-   // ~~~haskell
-   // span :: (a -> Bool) -> [a] -> ([a],[a])
-   // span p []            = ([],[])
-   // span p xs@(x:xs') 
-   //          | p x       =  (x:ys,zs) 
-   //          | otherwise =  ([],xs)
-   //                         where (ys,zs) = span p xs'
-   // ~~~
-  span: function(predicate){
-	expect(predicate).to.a('function');
-	var self = this;
-	return function(list){
-	  //expect(list).to.an('array');
-	  if(self.isEmpty(list)){
-		return self.pair.mkPair([])([]);
-	  } else {
-		var head = self.head(list);
-		var tail = self.tail(list);
-		//expect(list).to.an('array');
-		var rest = self.span.bind(self)(predicate)(tail);
-		expect(rest).to.an('object');
-		expect(rest["type"]).to.be('pair');
-		if(self.truthy(predicate(head))){
-		  return self.pair.mkPair(
-			self.list.cons(head)(rest.left)
-		  )(
-			rest.right
-		  );
-		} else {
-		  return self.pair.mkPair([])(list);
-		}
-	  }
-	};
-  },
   head: function(mappable){
 	var self = this;
 	switch (self.typeOf(mappable)){
@@ -963,7 +924,45 @@ module.exports = {
   	  return self.reduce(string)([])(glue);
 	}
   },
-  // },
+   // 'span' is kind of like takeWhile, only it returns a pair of lists. The first list
+   // contains everything the resulting list from takeWhile would contain if it were
+   // called with the same predicate and the same list. The second list contains the
+   // part of the list that would have been dropped.
+
+   // ~~~haskell
+   // span :: (a -> Bool) -> [a] -> ([a],[a])
+   // span p []            = ([],[])
+   // span p xs@(x:xs') 
+   //          | p x       =  (x:ys,zs) 
+   //          | otherwise =  ([],xs)
+   //                         where (ys,zs) = span p xs'
+   // ~~~
+  span: function(predicate){
+	expect(predicate).to.a('function');
+	var self = this;
+	return function(list){
+	  //expect(list).to.an('array');
+	  if(self.isEmpty(list)){
+		return self.pair.mkPair([])([]);
+	  } else {
+		var head = self.head(list);
+		var tail = self.tail(list);
+		//expect(list).to.an('array');
+		var rest = self.span.bind(self)(predicate)(tail);
+		expect(rest).to.an('object');
+		expect(rest["type"]).to.be('pair');
+		if(self.truthy(predicate(head))){
+		  return self.pair.mkPair(
+			self.list.cons(head)(rest.left)
+		  )(
+			rest.right
+		  );
+		} else {
+		  return self.pair.mkPair([])(list);
+		}
+	  }
+	};
+  },
   // Synopsis
   // ========
   //
@@ -979,7 +978,7 @@ module.exports = {
   break: function(predicate){
 	expect(predicate).to.a('function');
 	var self = this;
-	return self.span(self.compose(self.not)(predicate));
+	return self.span.bind(self)(self.compose(self.not)(predicate));
   },
   // lines breaks a string up into a list of strings at newline characters.
   // The resulting strings do not contain newlines.  Similary, words
