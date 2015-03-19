@@ -401,25 +401,25 @@ describe("Kansuu module", function() {
 	//   );
     //   next();
   	// });
-  	// it("'break'", function(next) {
-	//   // Input: break (3==) [1,2,3,4,5]
-	//   // Output: ([1,2],[3,4,5])
+  	it("'break'", function(next) {
+	  // Input: break (3==) [1,2,3,4,5]
+	  // Output: ([1,2],[3,4,5])
+      expect(
+		 __.break.bind(__)(__.math.isEqual(3))([1,2,3,4,5])
+	  ).to.eql(
+		{ type: 'pair', left: [ 1, 2 ], right: [ 3, 4, 5 ] }
+	  );
+      next();
+	});
+
+  	// it("'lines'", function(next) {
     //   expect(
-	// 	 __.break.bind(__)(__.math.isEqual(3))([1,2,3,4,5])
+	// 	 __.lines.bind(__)("abc\ndef")
 	//   ).to.eql(
 	// 	 [ [ 'a', 'b', 'c', '\n', 'd', 'e', 'f' ] ]
 	//   );
     //   next();
-	// });
-
-  	it("'lines'", function(next) {
-      expect(
-		 __.lines.bind(__)("abc\ndef")
-	  ).to.eql(
-		 [ [ 'a', 'b', 'c', '\n', 'd', 'e', 'f' ] ]
-	  );
-      next();
-  	});
+  	// });
   	it("'dropWhile'", function(next) {
 	  var list = [2,4,6,1,5,6];
       var even = function(n){
@@ -450,7 +450,8 @@ describe("Kansuu module", function() {
 		  return n > 3;
 		})).to.eql([4,5]);
 		var odd = function(n){
-          return __.not(even)(n);
+		  return __.not(even(n));
+          //return __.not(even)(n);
 		};
 		expect(__.list.filter.bind(__)([1,2,3])(odd)).to.eql([1,3]);
 		next();
