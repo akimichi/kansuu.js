@@ -218,6 +218,12 @@ describe("Kansuu module", function() {
    */
   describe("pair module", function() {
 	var pair = __.pair;
+	it("pair object is frozen", function(next) {
+	  var obj = pair.mkPair(1)(2);
+	  obj.left = 10;
+	  expect(obj.left).to.be(1);
+	  next();
+	});
 	it("'censor' should assert a pair object", function(next) {
 	  var obj = pair.mkPair(1)(2);
 	  expect(
@@ -389,30 +395,45 @@ describe("Kansuu module", function() {
 	  );
       next();
   	});
-	
-	// break (> 3) [1,2,3,4,1,2,3,4] == ([1,2,3],[4,1,2,3,4])
-	// break (< 9) [1,2,3] == ([],[1,2,3])
-	// break (> 9) [1,2,3] == ([1,2,3],[])
-  	// it("'break'", function(next) {
-    //   expect(
-	// 	 __.break.bind(__)(function(n){ return n > 3;})([1,2,3,4,1,2,3,4])
-	//   ).to.eql(
-	// 	 { type: 'pair', left: [], right: [] }
-	//   );
-    //   next();
-  	// });
   	it("'break'", function(next) {
-	  // Input: break (3==) [1,2,3,4,5]
-	  // Output: ([1,2],[3,4,5])
+	  // break (3==) [1,2,3,4,5] == ([1,2],[3,4,5])
       expect(
 		 __.break.bind(__)(__.math.isEqual(3))([1,2,3,4,5])
 	  ).to.eql(
 		{ type: 'pair', left: [ 1, 2 ], right: [ 3, 4, 5 ] }
 	  );
+	  // break (> 3) [1,2,3,4,1,2,3,4] == ([1,2,3],[4,1,2,3,4])
+      expect(
+		 __.break.bind(__)(__.math.isMoreThan(3))([1,2,3,4,1,2,3,4])
+	  ).to.eql(
+		{ type: 'pair',
+		  left: [ 1, 2, 3 ],
+		  right: [ 4, 1, 2, 3, 4 ] 
+		} 
+	  );
+	  // break (< 9) [1,2,3] == ([],[1,2,3])
+      expect(
+		 __.break.bind(__)(__.math.isLessThan(9))([1,2,3])
+	  ).to.eql(
+		{ type: 'pair',
+		  left: [ ],
+		  right: [ 1, 2, 3 ] 
+		} 
+	  );
+	  // break (> 9) [1,2,3] == ([1,2,3],[])
+      expect(
+		 __.break.bind(__)(__.math.isMoreThan(9))([1,2,3])
+	  ).to.eql(
+		{ type: 'pair',
+		  left: [ 1, 2, 3 ],
+		  right: [ ]
+		} 
+	  );
       next();
 	});
-
   	// it("'lines'", function(next) {
+	//   // lines "hello world\nit's me,\neric\n"
+	//   // ["hello world", "it's me,", "eric"]
     //   expect(
 	// 	 __.lines.bind(__)("abc\ndef")
 	//   ).to.eql(
@@ -470,7 +491,11 @@ describe("Kansuu module", function() {
 		var multipleOf3 = function(n){
           return 0 === (n % 3);
 		};
-		expect(__.list.filter.bind(__)(list)(__.andify.bind(__)(multipleOf2)(multipleOf3))).to.eql([6,12]);
+		expect(
+		  __.list.filter.bind(__)(list)(__.andify.bind(__)(multipleOf2)(multipleOf3))
+		).to.eql(
+		  [6,12]
+		);
 		next();
   	  });
   	});
@@ -501,8 +526,21 @@ describe("Kansuu module", function() {
   // });
   describe("math", function() {
 	var math = require('../index.js').math;
+  	// it("'lower'", function(next) {
+  	//   expect(math.lower.bind(__)(17.3)).to.be(-1);
+  	//   next();
+  	// });
   	it("'isPrime'", function(next) {
   	  expect(math.isPrime(3)).to.be(true);
+  	  next();
+  	});
+  	it("'leq'", function(next) {
+  	  expect(
+		math.leq.bind(__)(0)(0)
+	  ).to.be(true);
+  	  expect(
+		math.leq.bind(__)(0)(2)
+	  ).to.be(true);
   	  next();
   	});
   	describe("approximate", function() {
@@ -551,6 +589,16 @@ describe("Kansuu module", function() {
   	  });
   	});
   });
+  describe("misc", function() {
+  	it("'until'", function(next) {
+	  expect(
+		__.until(__.math.isMoreThan(100))(__.math.times(7))(1)
+	  ).to.eql(
+		343
+	  );
+	  next();
+	});
+  }),
   describe("functional composition", function() {
 	describe("'compose'", function() {
   	  it("'compose one argument functions'", function(next) {

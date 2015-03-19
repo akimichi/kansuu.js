@@ -15,14 +15,16 @@ module.exports = {
   // 	  return !predicate(x);
   // 	};
   // },
-  // and: function(predicate1, predicate2){
-  // 	return function applyAnd(arg) {
-  // 	  return predicate1(arg) && predicate2(arg);
-  // 	};
-  // },
-  or: function(predicate1, predicate2){
-	return function applyOr(arg) {
-	  return predicate1(arg) || predicate2(arg);
+  and: function(predicate1){
+	var self = this;
+	return function(predicate2){
+	  return predicate1 && predicate2;
+	};
+  },
+  or: function(predicate1){
+	var self = this;
+	return function(predicate2){
+	  return predicate1 || predicate2;
 	};
   },
   add: function(n1){
@@ -56,7 +58,7 @@ module.exports = {
 	return function(predicateB){
 	  expect(predicateB).to.a('function');
 	  return function applyOr(any) {
-		return self.op['|'].bind(self)(predicateA(any))(predicateB(any));
+	  	return self.op['|'].bind(self)(predicateA(any))(predicateB(any));
 	  };
 	};
   },
@@ -66,7 +68,7 @@ module.exports = {
 	return function(predicate2){
 	  expect(predicate2).to.a('function');
 	  return function applyAnd(any) {
-		return self.op['&'].bind(self)(predicate1(any))(predicate2(any));
+	  	return self.op['&'].bind(self)(predicate1(any))(predicate2(any));
 	  };
 	};
   },
@@ -77,7 +79,9 @@ module.exports = {
 	  };
 	},
 	"|" : function(x){
-	  return function(y) { return x || y; };
+	  return function(y) { 
+		return x || y; 
+	  };
 	},
 	"+" : function(x){
 	  return function(y) { return x + y; };
@@ -93,7 +97,26 @@ module.exports = {
 	},
 	"!" : function(x){
 	  return !x;
-	}
+	},
+	">" : function(n1){
+	  expect(n1).to.a('number');
+	  return function(n2) { 
+		expect(n2).to.a('number');
+		return n1 > n2;
+	  };
+	},
+	"<" : function(n1){
+	  expect(n1).to.a('number');
+	  return function(n2) { 
+		expect(n2).to.a('number');
+		return n1 < n2;
+	  };
+	},
+	"==" : function(n1){
+	  return function(n2) { 
+		return n1 === n2;
+	  };
+	},
   },
   negate: function(fun){
 	return function applyNegate(n) {
@@ -370,11 +393,14 @@ module.exports = {
 	},
 	mkPair: function(left){
 	  return function(right){
-		return {
+		var pair = {
 		  type : 'pair',
 		  left : left,
 		  right : right
 		};
+		//Object.observe(pair,self.pair.watch);
+		Object.freeze(pair);
+		return pair;
 	  };
 	},
 	left: function(pair){
@@ -385,6 +411,8 @@ module.exports = {
 	  var self = this;
 	  return self.get.bind(self)("right")(pair);
 	},
+	// freeze: function(changeRecords) {
+	// }
   },
   //
   // list module
@@ -630,6 +658,47 @@ module.exports = {
   //
   //
   math: {
+	times: function(n1){
+	  expect(n1).to.a('number');
+	  return function(n2){
+		return n1 * n2;
+	  };
+	},
+	signum: function(n){
+	  expect(n).to.a('number');
+	  if(n < 0){
+		return -1;
+	  } else {
+		if(n === 0){
+		  return 0;
+		} else {
+		  return 1;
+		}
+	  }
+	},
+	// lower: function(n){
+	//   expect(n).to.a('number');
+	//   var self = this;
+	//   return self.until.bind(self)(self.math.geq.bind(self)(n))(self.math.times.bind(self)(2))(-1);
+	// },
+	leq: function(n1){
+	  expect(n1).to.a('number');
+	  var self = this;
+	  return function(n2){
+		expect(n2).to.a('number');
+		return (n1 < n2) || (n1 == n2);
+		//return self.or.bind(self)(self.op['<'].bind(self)(n1)(n2))(self.op['=='].bind(self)(n1)(n2));
+		//return self.orify.bind(self)(self.op['<'].bind(self)(n1)(n2))(self.op['=='].bind(self)(n1)(n2));
+	  };
+	},
+	geq: function(n1){
+	  expect(n1).to.a('number');
+	  var self = this;
+	  return function(n2){
+		expect(n2).to.a('number');
+		return (n1 > n2) || (n1 == n2);
+	  };
+	},
 	isEqual: function(n1){
 	  expect(n1).to.a('number');
 	  return function(n2){
@@ -866,15 +935,27 @@ module.exports = {
 	  return obj[key];
 	};
   },
-  until: function(condition){
-	return function(self){
-      return function(fun){
-		if(self.falsy(condition)) {
-          fun();
-          return self.until(condition)(fun);
+  // 'until' p f  yields the result of applying f until p holds.
+  //
+  // ~~~haskell
+  // until :: (a -> Bool) -> (a -> a) -> a -> a
+  // until p f x 
+  //       | p x       =  x
+  //       | otherwise =  until p f (f x)
+  // ~~~
+  until: function(predicate){
+	expect(predicate).to.a('function');
+	var self = this;
+    return function(fun){
+	  expect(fun).to.a('function');
+	  return function(any){
+		if(self.truthy(predicate(any))) {
+		  return any;
+		} else {
+		  return self.until.bind(self)(predicate)(fun)(fun(any));
 		}
 	  };
-	}(this);
+	};
   },
   cond: function(predicate){
     return function(trueCase){
@@ -918,6 +999,13 @@ module.exports = {
   },
   // string module
   string: {
+	mkString: function(string){
+	  return {
+		type : 'string',
+		head : self.string.head(string),
+		tail : self.thunk(self.string.tail(string))
+	  };
+	},
 	head: function(string){
 	  expect(string).to.a('string');
 	  var self = this;
@@ -1020,6 +1108,26 @@ module.exports = {
   //                                 []      -> []
   //                                 (_:s'') -> lines s''
   // ~~~
+  //
+  // type:	lines :: String -> [String]
+  // description:	applied to a list of characters containing newlines, returns a list of lists by breaking the original list into lines using the newline character as a delimiter. The newline characters are removed from the result.
+  //
+  // definition:	
+  //
+  // lines [] = []
+  // lines (x:xs)
+  //   = l : ls
+  //   where
+  //   (l, xs') = break (== '\n') (x:xs)
+  //   ls
+  //     | xs' == [] = []
+  //     | otherwise = lines (tail xs')
+  //
+  // usage:	
+  // ~~~haskell
+  // lines "hello world\nit's me,\neric\n"
+  // ["hello world", "it's me,", "eric"]
+  // ~~~
   lines: function(string) {
 	expect(string).to.a('string');
 	var self = this;
@@ -1029,11 +1137,13 @@ module.exports = {
 	  var isNewline = function(ch){
 		return ch === '\n';
 	  };
-	  var broken = self.break(isNewline)(string);
-	  if(self.isEmpty(broken.right)){
-		return self.list.cons(broken.left)([]);
+	  var broken = self.break.bind(self)(isNewline)(self.string.toArray.bind(self)(string));
+	  var l = broken.left;
+	  var xs_ = broken.right;
+	  if(self.isEmpty(xs_)){
+		return self.list.cons.bind(self)(l)([]);
 	  } else {
-		return self.list.cons(broken.left)(self.lines(broken.right));
+		return self.list.cons.bind(self)(l)(self.lines.bind(self)(self.list.tail.bind(self)(xs_)));
 	  }
 	}
   }
