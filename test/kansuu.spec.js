@@ -18,9 +18,8 @@ describe("Kansuu module", function() {
       next();
   	});
   	it("'falsy'", function(next) {
-  	  expect(__.falsy(1)).to.be(false);
   	  expect(__.falsy.bind(__)(1)).to.be(false);
-  	  //expect(__.bind(__.falsy, __)(1)).to.be(false);
+  	  //expect(__.falsy.bind(__)(1)).to.be(false);
       next();
   	});
   });
@@ -402,14 +401,16 @@ describe("Kansuu module", function() {
 	//   );
     //   next();
   	// });
-  	it("'break'", function(next) {
-      expect(
-		 __.break.bind(__)(__.math.isMoreThan(3))([1,2,3,4,1,2,3,4])
-	  ).to.eql(
-		 [ [ 'a', 'b', 'c', '\n', 'd', 'e', 'f' ] ]
-	  );
-      next();
-	});
+  	// it("'break'", function(next) {
+	//   // Input: break (3==) [1,2,3,4,5]
+	//   // Output: ([1,2],[3,4,5])
+    //   expect(
+	// 	 __.break.bind(__)(__.math.isEqual(3))([1,2,3,4,5])
+	//   ).to.eql(
+	// 	 [ [ 'a', 'b', 'c', '\n', 'd', 'e', 'f' ] ]
+	//   );
+    //   next();
+	// });
 
   	it("'lines'", function(next) {
       expect(
@@ -550,48 +551,53 @@ describe("Kansuu module", function() {
   	});
   });
   describe("functional composition", function() {
-  	it("'compose one argument functions'", function(next) {
-	  var increment = function(n){
-		return n + 1;
-	  };
-	  var decrement = function(n){
-		return n - 1;
-	  };
-	  var double = function(n){
-		return 2 * n;
-	  };
-  	  expect(__.compose.bind(__)(increment)(decrement)(5)).to.be(5);
-  	  expect(__.compose.bind(__)(decrement)(increment)(5)).to.be(5);
-  	  expect(__.compose.bind(__)(increment)(increment)(5)).to.be(7);
-	  // (n * 2) + 1
-  	  expect(__.compose.bind(__)(increment)(double)(5)).to.be(11);
-	  // (n + 1) * 2
-  	  expect(__.compose.bind(__)(double)(increment)(5)).to.be(12);
-      next();
+	describe("'compose'", function() {
+  	  it("'compose one argument functions'", function(next) {
+		var increment = function(n){
+		  return n + 1;
+		};
+		var decrement = function(n){
+		  return n - 1;
+		};
+		var double = function(n){
+		  return 2 * n;
+		};
+  		expect(__.compose.bind(__)(increment)(decrement)(5)).to.be(5);
+  		expect(__.compose.bind(__)(decrement)(increment)(5)).to.be(5);
+  		expect(__.compose.bind(__)(increment)(increment)(5)).to.be(7);
+		// (n * 2) + 1
+  		expect(__.compose.bind(__)(increment)(double)(5)).to.be(11);
+		// (n + 1) * 2
+  		expect(__.compose.bind(__)(double)(increment)(5)).to.be(12);
+		next();
+  	  });
+  	  it("'compose two argument functions'", function(next) {
+		var negate = function(x) {
+          return -x;
+		};
+		var multiply = function(x,y){
+		  return x * y;
+		};
+		expect((__.compose.bind(__)(negate)(multiply))(2,3)).to.eql(-6);
+		next();
+  	  });
+  	  it("compose several functions", function(next) {
+		var not = function(x){
+		  return ! x;
+		};
+		expect(
+		  __.compose.bind(__)(not)(__.math.isEqual(3))(3)
+		).to.eql(
+			false
+		);
+		// expect(
+		//   __.compose.bind(__)(__.not)(__.math.isEqual(3))(3)
+		// ).to.eql(
+		// 	false
+		// );
+		next();
+  	  });
   	});
-  	// it("'compose two argument functions'", function(next) {
-	//   var compose = function(fun1){
-	// 	expect(fun1).to.a('function');
-	// 	var self = this;
-	// 	return function(fun2){
-	// 	  expect(fun2).to.a('function');
-	// 	  return function(x){
-	// 		var partiallyApplied = fun2.call(self, x);
-	// 		return fun1.call(self, fun2.call(self, x));
-	// 	  };
-  	// 	};
-	//   };
-	//   var negate = function(x) {
-    //     return -x;
-	//   };
-	//   var multiply = function(x){
-	// 	return function(y) {
-	// 	  return x * y;
-	// 	};
-	//   };
-	//   expect(compose(negate)(multiply)(2)(3)).to.eql(0);
-    //   next();
-  	// });
   	it("'flip'", function(next) {
 	  var divide = function(x){
 		return function(y){

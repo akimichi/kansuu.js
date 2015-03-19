@@ -6,16 +6,20 @@ module.exports = {
   id: function(any){
 	return any;
   },
-  not: function(predicate){
-	return function applyNot(x) {
-	  return !predicate(x);
-	};
+  not: function(any){
+	return ! any;
+	//return !predicate(any);
   },
-  and: function(predicate1, predicate2){
-	return function applyAnd(arg) {
-	  return predicate1(arg) && predicate2(arg);
-	};
-  },
+  // not: function(predicate){
+  // 	return function applyNot(x) {
+  // 	  return !predicate(x);
+  // 	};
+  // },
+  // and: function(predicate1, predicate2){
+  // 	return function applyAnd(arg) {
+  // 	  return predicate1(arg) && predicate2(arg);
+  // 	};
+  // },
   or: function(predicate1, predicate2){
 	return function applyOr(arg) {
 	  return predicate1(arg) || predicate2(arg);
@@ -103,7 +107,10 @@ module.exports = {
     return any !== false && any != null;
   },
   falsy: function(any) {
-    return this.not(this.truthy)(any);
+	var self = this;
+	return self.not.bind(self)(self.truthy(any));
+	// return this.not(any);
+    // return this.not(this.truthy)(any);
   },
   // typeOf:: obj => String
   typeOf: function(obj) {
@@ -266,10 +273,13 @@ module.exports = {
 	var self = this;
 	return function(fun2){
 	  expect(fun2).to.a('function');
-	  return function(arg){
-		//return fun1.call(self, fun2.call(self, arguments));
-  		return fun1.call(self, fun2.call(self, arg));
+	  return function(_){
+		return fun1.call(self, fun2.apply(self, arguments));
 	  };
+	  // return function(arg){
+	  // 	//return fun1.call(self, fun2.call(self, arguments));
+  	  // 	//return fun1.call(self, fun2.call(self, arg));
+	  // };
   	};
   },
   loop: function(predicate){
@@ -620,6 +630,13 @@ module.exports = {
   //
   //
   math: {
+	isEqual: function(n1){
+	  expect(n1).to.a('number');
+	  return function(n2){
+		expect(n2).to.a('number');
+		return n2 === n1;
+	  };
+	},
 	isLessThan: function(n1){
 	  expect(n1).to.a('number');
 	  return function(n2){
@@ -978,7 +995,15 @@ module.exports = {
   break: function(predicate){
 	expect(predicate).to.a('function');
 	var self = this;
-	return self.span.bind(self)(self.compose(self.not)(predicate));
+	var not = function(x){
+	  return ! x;
+	};
+	return self.span.bind(self)(self.compose.bind(self)(self.not)(predicate));
+	// return self.span.bind(self)(self.not(predicate));
+	// return function(listLike){
+	//   return self.span.bind(self)(self.not(predicate))(listLike);
+	//   //return self.span.bind(self)(self.compose.bind(self)(not)(predicate))(listLike);
+	// };
   },
   // lines breaks a string up into a list of strings at newline characters.
   // The resulting strings do not contain newlines.  Similary, words
