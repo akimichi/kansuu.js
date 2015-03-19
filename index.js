@@ -393,12 +393,19 @@ module.exports = {
 	},
 	mkPair: function(left){
 	  return function(right){
+		// return this.tap(
+		//   {
+		// 	type : 'pair',
+		// 	left : left,
+		// 	right : right
+		//   })(function(pair){
+		// 	Object.freeze(pair);
+		//   });
 		var pair = {
 		  type : 'pair',
 		  left : left,
 		  right : right
 		};
-		//Object.observe(pair,self.pair.watch);
 		Object.freeze(pair);
 		return pair;
 	  };

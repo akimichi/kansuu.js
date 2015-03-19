@@ -1,3 +1,5 @@
+"use strict";
+
 var expect = require('expect.js');
 var __ = require('../index.js');
 
@@ -220,8 +222,9 @@ describe("Kansuu module", function() {
 	var pair = __.pair;
 	it("pair object is frozen", function(next) {
 	  var obj = pair.mkPair(1)(2);
-	  obj.left = 10;
-	  expect(obj.left).to.be(1);
+	  expect(function(){
+		obj.left = 10; // TypeErrorが投げられる
+	  }).to.throwError();
 	  next();
 	});
 	it("'censor' should assert a pair object", function(next) {
