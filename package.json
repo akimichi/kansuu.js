@@ -28,6 +28,7 @@
     "gulp-docco": "0.0.4",
     "gulp-exit": "0.0.2",
     "gulp-mocha": "^2.0.0",
-    "mocha": "^2.2.1"
+    "mocha": "^2.2.1",
+    "quickcheck": "0.0.4"
   }
 }
