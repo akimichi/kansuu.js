@@ -1,6 +1,6 @@
 {
   "name": "kansuu.js",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Yet another functional programming library for node.js",
   "main": "index.js",
   "scripts": {
@@ -20,7 +20,6 @@
     "url": "https://github.com/akimichi/kansuu.js/issues"
   },
   "homepage": "https://github.com/akimichi/kansuu.js",
-  // 最初に読まれるファイル. エントリポイント.
   "main": "lib/kansuu.js",
   "dependencies": {
     "expect.js": "^0.3.1"

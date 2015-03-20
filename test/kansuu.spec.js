@@ -653,10 +653,20 @@ describe("Kansuu module", function() {
   });
   describe("stream module", function() {
 	it("integer example", function(next) {
-	  var stream = __.stream.next.bind(__)(0);
+	  // ints = 0,1,2,3,4,...
+	  var ints = __.stream.next.bind(__)(0)(function (n){
+		return n + 1;
+	  });
 	  expect(
-		__.stream.head.bind(__)(__.stream.tail.bind(__)(__.stream.tail.bind(__)(stream)))
+		__.stream.head.bind(__)(__.stream.tail.bind(__)(__.stream.tail.bind(__)(ints)))
 	  ).to.eql(2);
+	  // double = 1,2,4,8,...
+	  var doubles = __.stream.next.bind(__)(1)(function (n){
+		return 2*n;
+	  });
+	  expect(
+		__.stream.head.bind(__)(__.stream.tail.bind(__)(__.stream.tail.bind(__)(doubles)))
+	  ).to.eql(4);
 	  next();
 	});
   });
