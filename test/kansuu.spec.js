@@ -513,6 +513,10 @@ describe("Kansuu module", function() {
   	  expect(math.isPrime(3)).to.be(true);
   	  next();
   	});
+  	it("'isMoreThan'", function(next) {
+  	  expect(math.isMoreThan(3)(2)).to.be(false);
+  	  next();
+  	});
   	it("'leq'", function(next) {
   	  expect(
 		math.leq.bind(__)(0)(0)
@@ -698,6 +702,21 @@ describe("Kansuu module", function() {
 	  ).to.eql([0,1,2]);
 	  next();
 	});
+  });
+  describe("folding functions", function() {
+  	it("'reduce'", function(next) {
+	  var list = [1,2,3];
+  	  expect(
+		__.reduce(list)(0)(function(item){
+		  return function(accumulator){
+			return item + accumulator;
+		  };
+		})
+	  ).to.be(
+		6
+	  );
+      next();
+  	});
   });
   // describe("logical operators", function() {
   // 	it("'not'", function(next) {
