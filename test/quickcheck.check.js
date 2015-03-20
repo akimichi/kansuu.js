@@ -24,6 +24,15 @@ describe("quickcheck", function() {
 	while (d.length < 1) { d = qc.arbArray(fn); }
 	return d;
   }
+  var arbInterval = function arbInterval() {
+	var a = Math.floor(Math.random() * 10);
+	var b = Math.floor(Math.random() * 10);
+	if (a < b) {
+	  return __.pair.mkPair(a)(b); 
+	} else { 
+	  return __.pair.mkPair(b)(a); 
+	}
+  }
   describe("forAll", function() {
 	it("random numbers should not all be even", function() {
 	  expect(
