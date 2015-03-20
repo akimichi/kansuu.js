@@ -1,7 +1,7 @@
 "use strict";
 
 var expect = require('expect.js');
-var __ = require('../index.js');
+var __ = require('../lib/kansuu.js');
 
 describe("Kansuu module", function() {
   it("'id''", function(next) {
@@ -528,7 +528,7 @@ describe("Kansuu module", function() {
 	
   // });
   describe("math", function() {
-	var math = require('../index.js').math;
+	var math = require('../lib/kansuu.js').math;
   	// it("'lower'", function(next) {
   	//   expect(math.lower.bind(__)(17.3)).to.be(-1);
   	//   next();
