@@ -669,6 +669,35 @@ describe("Kansuu module", function() {
 	  ).to.eql(4);
 	  next();
 	});
+	it("random float example", function(next) {
+	  var generate = function(seed){
+		var seedrandom = require('seedrandom');
+		var rng = seedrandom(seed);
+		var stream = __.stream.next.bind(__)(rng())(function (n){
+		  return rng();
+		});
+		return stream;
+	  };
+	  var randoms = generate('init');
+	  expect(
+		__.stream.head.bind(__)(randoms)
+	  ).to.eql(0.035281094681737984);
+	  expect(
+		__.stream.head.bind(__)(__.stream.tail.bind(__)(randoms))
+	  ).to.eql(
+		0.7063175514107337
+	  );
+	  next();
+	});
+	it("take(stream)(n)", function(next) {
+	  var ints = __.stream.next.bind(__)(0)(function (n){
+		return n + 1;
+	  });
+	  expect(
+		__.stream.take.bind(__)(ints)(3)
+	  ).to.eql([0,1,2]);
+	  next();
+	});
   });
   // describe("logical operators", function() {
   // 	it("'not'", function(next) {

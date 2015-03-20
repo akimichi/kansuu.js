@@ -1,5 +1,6 @@
 "use strict";
 
+// c.f. http://www.yellosoft.us/quickcheck
 var qc = require("quickcheck");
 var expect = require('expect.js');
 var __ = require('../lib/kansuu.js');
@@ -8,22 +9,22 @@ var __ = require('../lib/kansuu.js');
 describe("quickcheck", function() {
   var propertyEven = function propertyEven(x) { 
 	return x % 2 === 0; 
-  }
+  };
   var arbEven = function arbEven() {
 	var b = qc.arbByte();
 	if (b % 2 === 0) { return b; }
 	else { return (b + 1) % 256; }
-  }
+  };
   var validInteger = function validInteger(s) {
 	var i = parseInt(s, 10);
 	return typeof i === "number" && !isNaN(i);
-  }
+  };
   var arbDigits = function arbDigits() {
 	var d = "",
 	    fn = function () { return String.fromCharCode(48 + Math.floor(Math.random() * 10)); };
 	while (d.length < 1) { d = qc.arbArray(fn); }
 	return d;
-  }
+  };
   var arbInterval = function arbInterval() {
 	var a = Math.floor(Math.random() * 10);
 	var b = Math.floor(Math.random() * 10);
@@ -32,7 +33,7 @@ describe("quickcheck", function() {
 	} else { 
 	  return __.pair.mkPair(b)(a); 
 	}
-  }
+  };
   describe("forAll", function() {
 	it("random numbers should not all be even", function() {
 	  expect(
