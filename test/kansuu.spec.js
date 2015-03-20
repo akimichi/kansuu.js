@@ -9,7 +9,7 @@ describe("Kansuu module", function() {
   	expect(__.id(null)).to.be(null);
     next();
   });
-  describe("judgment operators", function() {
+  describe("judgment predicates", function() {
   	it("'existy'", function(next) {
   	  expect(__.existy(1)).to.be(true);
   	  expect(__.existy(null)).to.be(false);
@@ -21,8 +21,35 @@ describe("Kansuu module", function() {
   	});
   	it("'falsy'", function(next) {
   	  expect(__.falsy.bind(__)(1)).to.be(false);
-  	  //expect(__.falsy.bind(__)(1)).to.be(false);
       next();
+  	});
+  	describe("'isEmpty'", function() {
+  	  it("isEmpty(list) ", function(next) {
+  		expect(
+		  __.isEmpty.bind(__)([])
+		).to.be(
+		  true
+		);
+		expect(
+		  __.isEmpty.bind(__)([1,2,3])
+		).to.be(
+		  false
+		);
+		next();
+  	  });
+  	  it("isEmpty(string) ", function(next) {
+  		expect(
+		  __.isEmpty.bind(__)("")
+		).to.be(
+		  true
+		);
+		expect(
+		  __.isEmpty.bind(__)("123")
+		).to.be(
+		  false
+		);
+		next();
+  	  });
   	});
   });
   describe("string module", function() {
