@@ -503,30 +503,6 @@ describe("Kansuu module", function() {
   	  });
   	});
   });
-  // describe("lazyList module", function() {
-  // 	it("'mkLazyList'", function(next) {
-  // 	  var ones = __.lazyList.mkLazyList.bind(__)(1)(ones);
-  // 	  // var ones = function(){
-  // 	  // 	return __.lazyList.mkLazyList.bind(__)(1)(ones);
-  // 	  // }();
-  // 	  // var ones = function() {
-  // 	  // 	return __.list.cons(1, ones);
-  //     // };
-  // 	  expect(
-  // 		__.lazyList.head.bind(__)(ones)
-  // 	  ).to.be(
-  // 		1
-  // 	  );
-  // 	  expect(
-  // 		//__.compose.bind(__)(__.lazyList.head.bind(__))(__.lazyList.tail.bind(__))(ones)
-  // 		__.lazyList.head.bind(__)(__.lazyList.tail.bind(__)(ones))
-  // 	  ).to.be(
-  // 		1
-  // 	  );
-  // 	  next();
-  // 	});
-	
-  // });
   describe("math", function() {
 	var math = require('../lib/kansuu.js').math;
   	// it("'lower'", function(next) {
@@ -675,6 +651,15 @@ describe("Kansuu module", function() {
       next();
   	});
   });
+  describe("stream module", function() {
+	it("integer example", function(next) {
+	  var stream = __.stream.next.bind(__)(0);
+	  expect(
+		__.stream.head.bind(__)(__.stream.tail.bind(__)(__.stream.tail.bind(__)(stream)))
+	  ).to.eql(2);
+	  next();
+	});
+  });
   // describe("logical operators", function() {
   // 	it("'not'", function(next) {
   // 	  expect(__.not(__.existy)).to.be(true);
@@ -688,5 +673,28 @@ describe("Kansuu module", function() {
   //     next();
   // 	});
   
+  // });
+  // describe("lazyList module", function() {
+  // 	it("'mkLazyList'", function(next) {
+  // 	  var ones = __.lazyList.mkLazyList.bind(__)(1)(ones);
+  // 	  // var ones = function(){
+  // 	  // 	return __.lazyList.mkLazyList.bind(__)(1)(ones);
+  // 	  // }();
+  // 	  // var ones = function() {
+  // 	  // 	return __.list.cons(1, ones);
+  //     // };
+  // 	  expect(
+  // 		__.lazyList.head.bind(__)(ones)
+  // 	  ).to.be(
+  // 		1
+  // 	  );
+  // 	  expect(
+  // 		//__.compose.bind(__)(__.lazyList.head.bind(__))(__.lazyList.tail.bind(__))(ones)
+  // 		__.lazyList.head.bind(__)(__.lazyList.tail.bind(__)(ones))
+  // 	  ).to.be(
+  // 		1
+  // 	  );
+  // 	  next();
+  // 	});
   // });
 });
