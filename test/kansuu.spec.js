@@ -684,10 +684,13 @@ describe("Kansuu module", function() {
   });
   describe("stream module", function() {
 	describe("mkStream", function() {
+	  var stream = __.stream.mkStream.bind(__)(0)(function (n){
+		return n + 1;
+	  });
 	  it("can make a stream", function(next) {
-		var stream = __.stream.mkStream.bind(__)(0)(function (n){
-		  return n + 1;
-		});
+		// var stream = __.stream.mkStream.bind(__)(0)(function (n){
+		//   return n + 1;
+		// });
 		expect(
 		  stream.value
 		).to.eql(0);
@@ -700,6 +703,12 @@ describe("Kansuu module", function() {
 		expect(
 		  stream.next().next().next().value
 	  ).to.eql(3);
+		next();
+	  });
+	  it("can be checked by 'censor'", function(next) {
+		expect(
+		  __.stream.censor(stream)
+		).to.eql(stream);
 		next();
 	  });
 	  it("integer example", function(next) {
@@ -786,15 +795,15 @@ describe("Kansuu module", function() {
 	//   );
 	//   next();
 	// });
-	it("take(stream)(n)", function(next) {
-	  var ints = __.stream.next.bind(__)(0)(function (n){
-		return n + 1;
-	  });
-	  expect(
-		__.stream.take.bind(__)(ints)(3)
-	  ).to.eql([0,1,2]);
-	  next();
-	});
+	// it("take(stream)(n)", function(next) {
+	//   var ints = __.stream.next.bind(__)(0)(function (n){
+	// 	return n + 1;
+	//   });
+	//   expect(
+	// 	__.stream.take.bind(__)(ints)(3)
+	//   ).to.eql([0,1,2]);
+	//   next();
+	// });
   });
   describe("folding functions", function() {
   	it("'reduce'", function(next) {
