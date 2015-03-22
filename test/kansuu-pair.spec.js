@@ -39,4 +39,17 @@ describe("'pair' module", function() {
 	);
 	next();
   });
+  it("'swap' should swap the content of a pair", function(next) {
+	var obj = __.pair.mkPair(1)(2);
+	expect(
+	  __.pair.swap.bind(__)(obj)
+	).to.eql(
+	  {
+	   	type: "pair",
+	   	left: 2,
+	   	right: 1
+	  }
+	);
+	next();
+  });
 });
