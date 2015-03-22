@@ -1,8 +1,8 @@
 {
   "name": "kansuu.js",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Yet another functional programming library for node.js",
-  "main": "index.js",
+  "main": "lib/kansuu.js",
   "scripts": {
     "test": "mocha -R spec test/*.js"
   },
@@ -24,10 +24,13 @@
     "expect.js": "^0.3.1"
   },
   "devDependencies": {
+    "docco": "^0.7.0",
     "gulp": "^3.8.11",
     "gulp-docco": "0.0.4",
     "gulp-exit": "0.0.2",
     "gulp-mocha": "^2.0.0",
-    "mocha": "^2.2.1"
+    "mocha": "^2.2.1",
+    "quickcheck": "0.0.4",
+    "seedrandom": "^2.3.11"
   }
 }

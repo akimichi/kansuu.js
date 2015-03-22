@@ -5,7 +5,7 @@ var docco = require("gulp-docco");
 //var run = require('gulp-run');
 
 gulp.task('test', function() {
-  return gulp.src(['test/*.spec.js'], { read: false })
+  return gulp.src(['test/*.js'], { read: false })
     .pipe(mocha({
       reporter: 'spec',
       globals: {
@@ -17,10 +17,10 @@ gulp.task('test', function() {
 
 
 gulp.task('doc', function() {
-  return gulp.src("./index.js")
+  return gulp.src("./lib/kansuu.js")
 	.pipe(docco())
 	.pipe(gulp.dest('./docs'));
 });
 
 
-gulp.task('default', ['test']);
+gulp.task('default', ['test','doc']);
