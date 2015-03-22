@@ -12,12 +12,12 @@ describe("Kansuu module", function() {
   describe("array", function() {
 	it("'cons' should construct a list", function(next) {
 	  expect(
-		__.list.cons.bind(__)(1)([])
+		__.cons.bind(__)(1)([])
 	  ).to.eql(
 		[1]
 	  );
 	  expect(
-		__.list.cons.bind(__)("a")(["b","c"])
+		__.cons.bind(__)("a")(["b","c"])
 	  ).to.eql(
 		["a","b","c"]
 	  );
@@ -84,7 +84,7 @@ describe("Kansuu module", function() {
 		  return 2 * n;
 		};
 		expect(
-		  __.list.map.bind(__)(array)(double)
+		  __.map.bind(__)(array)(double)
 		).to.eql(
 		  [0,2,4]
 		);
@@ -94,7 +94,7 @@ describe("Kansuu module", function() {
   	  it("'map id == id'", function(next) {
 		var sequence = [0,1,2];
 		expect(
-		  __.list.map.bind(__)(sequence)(__.id)
+		  __.map.bind(__)(sequence)(__.id)
 		).to.eql(
 		  __.id(sequence)
 		);
@@ -117,8 +117,8 @@ describe("Kansuu module", function() {
       var even = function(n){
 		return 0 === (n % 2);
 	  };
-      expect(__.list.takeWhile.bind(__)(list)(even)).to.eql([2,4,6]);
-      expect(__.list.takeWhile.bind(__)([2,4,1,3])(function(n){
+      expect(__.takeWhile.bind(__)(list)(even)).to.eql([2,4,6]);
+      expect(__.takeWhile.bind(__)([2,4,1,3])(function(n){
 		return n > 1;
 	  })).to.eql([2,4]);
       next();
@@ -203,11 +203,11 @@ describe("Kansuu module", function() {
       var even = function(n){
 		return 0 === (n % 2);
 	  };
-      expect(__.list.dropWhile.bind(__)(list)(even)).to.eql([1,5,6]);
-      expect(__.list.dropWhile.bind(__)([2,4,1,3])(function(n){
+      expect(__.dropWhile.bind(__)(list)(even)).to.eql([1,5,6]);
+      expect(__.dropWhile.bind(__)([2,4,1,3])(function(n){
 		return n > 1;
 	  })).to.eql([1,3]);
-      expect(__.list.dropWhile.bind(__)([2,3,4])(function(n){
+      expect(__.dropWhile.bind(__)([2,3,4])(function(n){
 		return n > 1;
 	  })).to.eql([ ]);
       next();
@@ -215,7 +215,7 @@ describe("Kansuu module", function() {
 	it("'zip'", function(next) {
 	  var listX = [0,1,2,3,4];
 	  var listY = ["h","a","l","l","o"];
-	  expect(__.list.zip.bind(__)(listX)(listY)).to.eql([[0,'h'],[1,'a'],[2,'l'],[3,'l'],[4,'o']]);
+	  expect(__.zip.bind(__)(listX)(listY)).to.eql([[0,'h'],[1,'a'],[2,'l'],[3,'l'],[4,'o']]);
       next();
 	});
 	describe("filter", function() {
@@ -223,15 +223,15 @@ describe("Kansuu module", function() {
 		var even = function(n){
           return (n % 2) === 0;
 		};
-		expect(__.list.filter.bind(__)([1,2,3,4,5])(even)).to.eql([ 2, 4]);
-		expect(__.list.filter.bind(__)([1,2,3,4,5])(function(n){
+		expect(__.filter.bind(__)([1,2,3,4,5])(even)).to.eql([ 2, 4]);
+		expect(__.filter.bind(__)([1,2,3,4,5])(function(n){
 		  return n > 3;
 		})).to.eql([4,5]);
 		var odd = function(n){
 		  return __.not(even(n));
           //return __.not(even)(n);
 		};
-		expect(__.list.filter.bind(__)([1,2,3])(odd)).to.eql([1,3]);
+		expect(__.filter.bind(__)([1,2,3])(odd)).to.eql([1,3]);
 		next();
   	  });
       it('は複雑な条件をフィルターできる', function(next){
@@ -249,7 +249,7 @@ describe("Kansuu module", function() {
           return 0 === (n % 3);
 		};
 		expect(
-		  __.list.filter.bind(__)(list)(__.andify.bind(__)(multipleOf2)(multipleOf3))
+		  __.filter.bind(__)(list)(__.andify.bind(__)(multipleOf2)(multipleOf3))
 		).to.eql(
 		  [6,12]
 		);

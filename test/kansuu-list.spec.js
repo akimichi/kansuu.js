@@ -52,9 +52,9 @@ describe("'list' module", function() {
 	});
 	it("'list.init'", function(next) {
 	  expect(
-		list.init()
+		list.bind(list).init().length()
 	  ).to.eql(
-		4
+		list.length() - 1
 	  );
 	  next();
 	});
