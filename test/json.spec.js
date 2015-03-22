@@ -18,6 +18,11 @@ describe("json test", function() {
   	  expect(array.length).to.be(13);
       next();
 	});
+	it("'mkList''", function(next) {
+	  var list = __.list.mkList.bind(__)(array);
+  	  expect(array.length).to.be(13);
+      next();
+	});
   });
 });
 

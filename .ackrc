@@ -1,6 +1,5 @@
---type-set=coffee=.coffee,.js
 --type-set=src=.coffee,.js
---type-set=txt:ext:se
+--type-set=txt=.md,.txt
 --nogroup
 
 --ignore-dir=node_modules
