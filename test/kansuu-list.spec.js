@@ -112,7 +112,42 @@ describe("'list' module", function() {
 	);
 	next();
   });
-  it("'list.zip' should zip two lists");
+  it("'list.zip' should zip two lists",function(next){
+	var keys = __.list.mkList.bind(__)(["a","b","c"]);
+	var values = __.list.mkList.bind(__)([1,2,3]);
+	var zipped = __.list.zip.bind(__)(keys)(values);
+	expect(
+	  __.list.length.bind(__)(zipped)
+	).to.eql(
+	  3
+	);
+	expect(
+	  __.list.toArray.bind(__)(zipped)
+	).to.eql(
+	  [ { type: 'pair', left: 'a', right: 1 },
+		{ type: 'pair', left: 'b', right: 2 },
+		{ type: 'pair', left: 'c', right: 3 } ] 
+	);
+	next();
+  });
+  it("'list.zipWith' should zip two lists",function(next){
+	var keys = __.list.mkList.bind(__)(["a","b","c"]);
+	var values = __.list.mkList.bind(__)([1,2,3]);
+	var zippedWithPair = __.list.zipWith.bind(__)(__.pair.mkPair)(keys)(values);
+	expect(
+	  __.list.length.bind(__)(zippedWithPair)
+	).to.eql(
+	  3
+	);
+	expect(
+	  __.list.toArray.bind(__)(zippedWithPair)
+	).to.eql(
+	  [ { type: 'pair', left: 'a', right: 1 },
+		{ type: 'pair', left: 'b', right: 2 },
+		{ type: 'pair', left: 'c', right: 3 } ] 
+	);
+	next();
+  });
   it("'list#length'", function(next) {
 	var list = __.list.mkList.bind(__)([0,1,2,3]);
 	expect(
