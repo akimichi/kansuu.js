@@ -98,6 +98,20 @@ describe("'list' module", function() {
 	);
 	next();
   });
+  it("'list#filter'", function(next) {
+
+	var even = function(n){
+      return (n % 2) === 0;
+	};
+	var list = __.list.mkList.bind(__)([0,1,2,3,4]);
+	var result = __.list.filter.bind(__)(list)(even);
+	expect(
+	  __.list.toArray.bind(__)(result)
+	).to.eql(
+	  [0,2,4]
+	);
+	next();
+  });
   it("'list#length'", function(next) {
 	var list = __.list.mkList.bind(__)([0,1,2,3]);
 	expect(
