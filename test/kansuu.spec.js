@@ -31,10 +31,10 @@ describe("Kansuu module", function() {
 	  expect(__.tail.bind(__)([0,1,2,3])).to.eql([1,2,3]);
 	  next();
 	});
-	it("'append'", function(next) {
+	it("'concat'", function(next) {
 	  var xs = [0,1];
 	  var ys = [2,3];
-	  expect(__.list.append.bind(__)(xs)(ys)).to.eql([0,1,2,3]);
+	  expect(__.concat.bind(__)(xs)(ys)).to.eql([0,1,2,3]);
 	  expect(xs).to.eql([0,1]);
 	  expect(ys).to.eql([2,3]);
 	  next();

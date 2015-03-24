@@ -4,7 +4,6 @@ var expect = require('expect.js');
 var __ = require('../lib/kansuu.js');
 
 describe("'list' module", function() {
-
   it("'cons' should construct a list object", function(next) {
 	var list = __.list.cons.bind(__)(0)(__.list.nil);
 	expect(
@@ -16,6 +15,24 @@ describe("'list' module", function() {
 	  list.tail()
 	).to.eql(
 	  __.list.nil
+	);
+	next();
+  });
+  it("'list#head' should return the head of a list", function(next) {
+	var list = __.list.mkList.bind(__)([0,1,2,3]);
+	expect(
+	  list.head
+	).to.eql(
+	  0
+	);
+	next();
+  });
+  it("'list.tail' should return the tail of a list", function(next) {
+	var list = __.list.mkList.bind(__)([0,1,2,3]);
+	expect(
+	  list.tail.bind(__)().head
+	).to.eql(
+	  1
 	);
 	next();
   });
@@ -57,7 +74,6 @@ describe("'list' module", function() {
   	).to.eql(
   	  4
   	);
-  	//expect(array).to.eql([0,1,2]);
   	next();
   });
   it("'list#map'", function(next) {
@@ -110,74 +126,17 @@ describe("'list' module", function() {
 	);
 	next();
   });
-  describe("inside list object", function() {
+  it("'list#reduce'", function(next) {
 	var list = __.list.mkList.bind(__)([0,1,2,3]);
-	it("'list.length'", function(next) {
-	  expect(
-		list.length()
-	  ).to.eql(
-		4
-	  );
-	  next();
-	});
-	it("'list.init'", function(next) {
-	  var list = __.list.mkList.bind(__)([0,1,2,3]);
-	  var init = list.init()
-	  expect(
-		__.list.take.bind(__)(init)(__.list.length.bind(__)(init))
-	  ).to.eql(
-		[0,1,2]
-	  );
-	  next();
-	});
-	it("'list.head' should return the head of a list", function(next) {
-	  var list = __.list.mkList.bind(__)([0,1,2,3]);
-	  expect(
-		list.head
-	  ).to.eql(
-		0
-	  );
-	  next();
-	});
-	it("'list.tail' should return the tail of a list", function(next) {
-	  var list = __.list.mkList.bind(__)([0,1,2,3]);
-	  expect(
-		list.tail.bind(__)().head
-	  ).to.eql(
-		1
-	  );
-	  next();
-	});
-	it("'list.take'", function(next) {
-	  var list = __.list.mkList.bind(__)([0,1,2,3]);
-	  expect(
-		list.take.bind(__)(2)
-	  ).to.eql(
-		[0,1]
-	  );
-	  next();
-	});
-	it("'list.reduce'", function(next) {
-	  var list = __.list.mkList.bind(__)([0,1,2,3]);
-	  expect(
-		list.reduce.bind(__)(0)(function(item){
-		  return function(accumulator){
-			return item + accumulator;
-		  };
-		})
-	  ).to.eql(
-		6
-	  );
-	  next();
-	});
-	it("'list.take'", function(next) {
-	  var list = __.list.mkList.bind(__)([0,1,2,3]);
-	  expect(
-		list.take.bind(__)(2)
-	  ).to.eql(
-		[0,1]
-	  );
-	  next();
-	});
+	expect(
+	  __.list.reduce.bind(__)(list)(0)(function(item){
+		return function(accumulator){
+		  return item + accumulator;
+		};
+	  })
+	).to.eql(
+	  6
+	);
+	next();
   });
 });
