@@ -50,20 +50,23 @@ describe("'list' module", function() {
 	  );
 	  next();
 	});
-	// it("'list.init'", function(next) {
-	//   expect(
-	// 	list.bind(list).init().length()
-	//   ).to.eql(
-	// 	list.length() - 1
-	//   );
-	//   next();
-	// });
+	it("'list.init'", function(next) {
+	  var list = __.list.mkList.bind(__)([0,1,2,3]);
+	  var init = list.init()
+	  expect(
+		__.list.take.bind(__)(init)(__.list.length.bind(__)(init))
+	  ).to.eql(
+		[0,1,2]
+	  );
+	  next();
+	});
 	it("'list#init'", function(next) {
 	  var list = __.list.mkList.bind(__)([0,1,2,3]);
+	  var init = __.list.init.bind(__)(list)
 	  expect(
-		__.list.init.bind(__)(list).length()
+		__.list.take.bind(__)(init)(__.list.length.bind(__)(init))
 	  ).to.eql(
-		list.length() - 1
+		[0,1,2]
 	  );
 	  next();
 	});
