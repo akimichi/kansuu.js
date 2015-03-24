@@ -44,17 +44,22 @@ describe("'list' module", function() {
 	);
 	next();
   });
-  // it("'list#reverse'", function(next) {
-  // 	var list = __.list.mkList.bind(__)([0,1,2,3]);
-  // 	var result = __.list.reverse.bind(__)(list);
-  // 	expect(
-  // 	  result.head.bind(__)
-  // 	).to.eql(
-  // 	  [2,1,0]
-  // 	);
-  // 	//expect(array).to.eql([0,1,2]);
-  // 	next();
-  // });
+  it("'list#reverse'", function(next) {
+  	var list = __.list.mkList.bind(__)([0,1,2,3]);
+  	var result = __.list.reverse.bind(__)(list);
+  	expect(
+  	  result.head
+  	).to.eql(
+  	  3
+  	);
+  	expect(
+  	  __.list.length.bind(__)(result)
+  	).to.eql(
+  	  4
+  	);
+  	//expect(array).to.eql([0,1,2]);
+  	next();
+  });
   it("'list#map'", function(next) {
 	var list = __.list.mkList.bind(__)([0,1,2,3]);
 	var result = __.list.map.bind(__)(list)(function(item){
