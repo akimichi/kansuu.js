@@ -112,6 +112,7 @@ describe("'list' module", function() {
 	);
 	next();
   });
+  it("'list.zip' should zip two lists");
   it("'list#length'", function(next) {
 	var list = __.list.mkList.bind(__)([0,1,2,3]);
 	expect(
