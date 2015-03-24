@@ -47,9 +47,9 @@ describe("Kansuu module", function() {
 	});
 	it("'last' uses compose", function(next) {
 	  var array = [0,1,2];
-	  expect(__.list.last.bind(__)(array)).to.eql(2);
+	  expect(__.last.bind(__)(array)).to.eql(2);
 	  expect(array).to.eql([0,1,2]);
-	  expect(__.list.last.bind(__)([0])).to.eql(0);
+	  expect(__.last.bind(__)([0])).to.eql(0);
 	  next();
 	});
 	it("'init' uses compose", function(next) {
