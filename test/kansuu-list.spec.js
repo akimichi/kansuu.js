@@ -50,9 +50,18 @@ describe("'list' module", function() {
 	  );
 	  next();
 	});
-	it("'list.init'", function(next) {
+	// it("'list.init'", function(next) {
+	//   expect(
+	// 	list.bind(list).init().length()
+	//   ).to.eql(
+	// 	list.length() - 1
+	//   );
+	//   next();
+	// });
+	it("'list#init'", function(next) {
+	  var list = __.list.mkList.bind(__)([0,1,2,3]);
 	  expect(
-		list.bind(list).init().length()
+		__.list.init.bind(__)(list).length()
 	  ).to.eql(
 		list.length() - 1
 	  );
