@@ -189,4 +189,19 @@ describe("'list' module", function() {
 	);
 	next();
   });
+  it("'list#and'", function(next) {
+	var trueList = __.list.mkList.bind(__)([true,true,true]);
+	expect(
+	  __.list.and.bind(__)(trueList)
+	).to.eql(
+	  true
+	);
+	var falseList = __.list.mkList.bind(__)([true,true,false]);
+	expect(
+	  __.list.and.bind(__)(falseList)
+	).to.eql(
+	  false
+	);
+	next();
+  });
 });
