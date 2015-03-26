@@ -49,6 +49,15 @@ describe("'list' module", function() {
 	);
 	next();
   });
+  it("'list#toArray'", function(next) {
+	var list = __.list.mkList.bind(__)([0,1,2,3]);
+	expect(
+	  __.list.toArray.bind(__)(list)
+	).to.eql(
+	  [0,1,2,3]
+	);
+	next();
+  });
   it("'list#concat'", function(next) {
 	var list1 = __.list.mkList.bind(__)([0,1]);
 	var list2 = __.list.mkList.bind(__)([2,3]);
@@ -59,7 +68,7 @@ describe("'list' module", function() {
 	  4
 	);
 	expect(
-	  __.list.take.bind(__)(result)(4)
+	  __.list.toArray.bind(__)(__.list.take.bind(__)(result)(4))
 	).to.eql(
 	  [0,1,2,3]
 	);
@@ -163,10 +172,21 @@ describe("'list' module", function() {
   });
   it("'list#take'", function(next) {
 	var list = __.list.mkList.bind(__)([0,1,2,3]);
+	var take = __.list.take.bind(__)(list)(2);
 	expect(
-	  __.list.take.bind(__)(list)(2)
+	  __.list.toArray.bind(__)(take)
 	).to.eql(
 	  [0,1]
+	);
+	next();
+  });
+  it("'list#drop'", function(next) {
+	var list = __.list.mkList.bind(__)([0,1,2,3]);
+	var drop = __.list.drop.bind(__)(list)(2);
+	expect(
+	  __.list.toArray.bind(__)(drop)
+	).to.eql(
+	  [2,3]
 	);
 	next();
   });
@@ -174,7 +194,7 @@ describe("'list' module", function() {
 	var list = __.list.mkList.bind(__)([0,1,2,3]);
 	var init = __.list.init.bind(__)(list);
 	expect(
-	  __.list.take.bind(__)(init)(__.list.length.bind(__)(init))
+	  __.list.toArray.bind(__)(init)
 	).to.eql(
 	  [0,1,2]
 	);
@@ -216,6 +236,21 @@ describe("'list' module", function() {
 	  __.list.toArray.bind(__)(merged)
 	).to.eql(
 	  [ 0, 1, 2, 3, 4, 5 ]
+	);
+	next();
+  });
+  it("'list#halve'", function(next) {
+	var list = __.list.mkList.bind(__)([0,1,2,3]);
+	var halve = __.list.halve.bind(__)(list);
+	expect(
+	  __.list.toArray.bind(__)(halve.left)
+	).to.eql(
+	  [ 0, 1 ]
+	);
+	expect(
+	  __.list.toArray.bind(__)(halve.right)
+	).to.eql(
+	  [ 2,3 ]
 	);
 	next();
   });
