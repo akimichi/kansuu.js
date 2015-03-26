@@ -259,4 +259,19 @@ describe("'list' module", function() {
 	);
 	next();
   });
+  it("'list#sort'", function(next) {
+	expect(function(){
+	  var list = __.list.mkList.bind(__)([2,0,3,1]);
+	  return __.list.toArray.bind(__)(__.list.sort.bind(__)(list));
+	}()).to.eql(
+	  [0,1,2,3]
+	);
+	expect(function(){
+	  var nil = __.list.nil;
+	  return __.list.toArray.bind(__)(__.list.sort.bind(__)(nil));
+	}()).to.eql(
+	  []
+	);
+	next();
+  });
 });
