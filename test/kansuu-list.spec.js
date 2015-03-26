@@ -168,6 +168,11 @@ describe("'list' module", function() {
 	).to.eql(
 	  4
 	);
+	expect(
+	  __.list.length.bind(__)(__.list.nil)
+	).to.eql(
+	  0
+	);
 	next();
   });
   it("'list#take'", function(next) {
