@@ -4,6 +4,10 @@ var expect = require('expect.js');
 var __ = require('../lib/kansuu.js');
 
 describe("'list' module", function() {
+  var fixtures = {
+	ints: __.list.mkList.bind(__)([0,1,2,3])
+  };
+
   it("'cons' should construct a list object", function(next) {
 	var list = __.list.cons.bind(__)(0)(__.list.nil);
 	expect(
@@ -201,6 +205,17 @@ describe("'list' module", function() {
 	  __.list.and.bind(__)(falseList)
 	).to.eql(
 	  false
+	);
+	next();
+  });
+  it("'list#merge'", function(next) {
+	var listX = __.list.mkList.bind(__)([0,2,4]);
+	var listY = __.list.mkList.bind(__)([1,3,5]);
+	var merged = __.list.merge.bind(__)(listX)(listY);
+	expect(
+	  __.list.toArray.bind(__)(merged)
+	).to.eql(
+	  [ 0, 1, 2, 3, 4, 5 ]
 	);
 	next();
   });
