@@ -22,9 +22,30 @@ describe("Kensho module", function() {
 	var intStream = qc.ints(1);
 	var intUpto10 = __.stream.take.bind(__)(intStream)(10);
 	qc.forAll(intUpto10)(function(item){
-	  return item > 0;
+	  return (item > 0) && (item < 11);
 	});
 	next();
   });
+  
+  // ~~~haskell
+  // prop_RevUnit x =
+  //   reverse [x] == [x]
+  // ~~~
+  it("property", function(next) {
+  	var prop_RevUnit = function(x){
+  	  var list = __.list.mkList.bind(__)([x]);
+  	  return __.list.reverse.bind(__)(list).isEqual(list);
+  	};
+  	var intStream = qc.ints(1);
+  	var intUpto10 = __.stream.take.bind(__)(intStream)(10);
+  	qc.forAll(intUpto10)(prop_RevUnit);
+  	next();
+  });
+  // ~~~haskell
+  // prop_RevApp xs ys =
+  //   reverse (xs++ys) == reverse ys++reverse xs
+  // prop_RevRev xs =
+  //   reverse (reverse xs) == xs
+  // ~~~
 });
 
