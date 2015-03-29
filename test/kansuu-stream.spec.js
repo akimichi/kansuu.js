@@ -69,13 +69,37 @@ describe("'stream' module", function() {
 	  );
 	  next();
 	});
-	it("stream.take(n)", function(next) {
-	  var ints = __.stream.mkStream.bind(__)(0)(function (n){
+	it("stream#cons", function(next) {
+	  var ints = __.stream.cons.bind(__)(0)(function (n){
 		return n + 1;
 	  });
 	  expect(
-		ints.take(3)
-	  ).to.eql([0,1,2]);
+		ints.value
+	  ).to.eql(
+		0
+	  );
+	  next();
+	});
+	it("stream#take(n)", function(next) {
+	  var ints = __.stream.cons.bind(__)(0)(function (n){
+		return n + 1;
+	  });
+	  var listUpto3 = __.stream.take.bind(__)(ints)(3);
+	  expect(
+		listUpto3.head
+	  ).to.eql(
+		0
+	  );
+	  expect(
+		listUpto3.tail().head
+	  ).to.eql(
+		1
+	  );
+	  expect(
+		__.list.length.bind(__)(listUpto3)
+	  ).to.eql(
+		3
+	  );
 	  next();
 	});
   });

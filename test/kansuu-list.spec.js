@@ -109,6 +109,13 @@ describe("'list' module", function() {
 	).to.eql(
 	  4
 	);
+	// expect(function(){
+	//   __.list.map.bind(__)(__.list.nil)(function(item){
+	//   return item + 10;
+	// });
+	// }()).to.eql(
+	//   4
+	// );
 	next();
   });
   it("'list#filter'", function(next) {
@@ -219,16 +226,28 @@ describe("'list' module", function() {
 	next();
   });
   it("'list#and'", function(next) {
-	var trueList = __.list.mkList.bind(__)([true,true,true]);
-	expect(
-	  __.list.and.bind(__)(trueList)
-	).to.eql(
+	expect(function(){
+	  var list = __.list.mkList.bind(__)([true,true]);
+	  return __.list.and.bind(__)((list));
+	}()).to.eql(
 	  true
 	);
-	var falseList = __.list.mkList.bind(__)([true,true,false]);
-	expect(
-	  __.list.and.bind(__)(falseList)
-	).to.eql(
+	expect(function(){
+	  var list = __.list.mkList.bind(__)([false,false]);
+	  return __.list.and.bind(__)((list));
+	}()).to.eql(
+	  false
+	);
+	expect(function(){
+	  var list = __.list.mkList.bind(__)([true,false]);
+	  return __.list.and.bind(__)((list));
+	}()).to.eql(
+	  false
+	);
+	expect(function(){
+	  var list = __.list.mkList.bind(__)([false,true]);
+	  return __.list.and.bind(__)((list));
+	}()).to.eql(
 	  false
 	);
 	next();
