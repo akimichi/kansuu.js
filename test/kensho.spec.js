@@ -6,40 +6,40 @@ var qc = require('../lib/kensho.js');
 
 describe("Kensho module", function() {
   it("ints", function(next) {
-	var ints = qc.ints(1);
-	expect(
-	  ints.value
-	).to.eql(1);
-	expect(
-	  ints.next().value
-	).to.eql(2);
-	expect(
-	  ints.next().next().value
-	).to.eql(3);
-	next();
+    var ints = qc.ints(1);
+    expect(
+      ints.value
+    ).to.eql(1);
+    expect(
+      ints.next().value
+    ).to.eql(2);
+    expect(
+      ints.next().next().value
+    ).to.eql(3);
+    next();
   });
   it("randoms", function(next) {
-	var randStream = qc.randoms.call(qc,0);
-	//var upto10 = __.stream.take.bind(__)(randStream)(10);
-	expect(
-	  randStream.value
-	).to.be(
-	  0.038085370776470735
-	)
-	expect(
-	  randStream.next().value
-	).to.be(
-	  0.08624634995353292
-	)
-	next();
+    var randStream = qc.randoms.call(qc,0);
+    //var upto10 = __.stream.take.bind(__)(randStream)(10);
+    expect(
+      randStream.value
+    ).to.be(
+      0.038085370776470735
+    );
+    expect(
+      randStream.next().value
+    ).to.be(
+      0.08624634995353292
+    );
+    next();
   });
   it("forAll", function(next) {
-	var intStream = qc.ints(1);
-	var intUpto10 = __.stream.take.bind(__)(intStream)(10);
-	qc.forAll(intUpto10)(function(item){
-	  return (item > 0) && (item < 11);
-	});
-	next();
+    var intStream = qc.ints(1);
+    var intUpto10 = __.stream.take.bind(__)(intStream)(10);
+    qc.forAll(intUpto10)(function(item){
+      return (item > 0) && (item < 11);
+    });
+    next();
   });
   
   // ~~~haskell
@@ -47,14 +47,14 @@ describe("Kensho module", function() {
   //   reverse [x] == [x]
   // ~~~
   it("property", function(next) {
-  	var prop_RevUnit = function(x){
-  	  var list = __.list.mkList.bind(__)([x]);
-  	  return __.list.reverse.bind(__)(list).isEqual(list);
-  	};
-  	var intStream = qc.ints(1);
-  	var intUpto10 = __.stream.take.bind(__)(intStream)(10);
-  	qc.forAll(intUpto10)(prop_RevUnit);
-  	next();
+    var prop_RevUnit = function(x){
+      var list = __.list.mkList.bind(__)([x]);
+      return __.list.reverse.bind(__)(list).isEqual(list);
+    };
+    var intStream = qc.ints(1);
+    var intUpto10 = __.stream.take.bind(__)(intStream)(10);
+    qc.forAll(intUpto10)(prop_RevUnit);
+    next();
   });
   // ~~~haskell
   // prop_RevApp xs ys =
