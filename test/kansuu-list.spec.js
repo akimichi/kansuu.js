@@ -4,6 +4,8 @@ var expect = require('expect.js');
 var __ = require('../lib/kansuu.js');
 
 describe("'list' module", function() {
+  var toArray = __.list.toArray.bind(__);
+
   var fixtures = {
 	ints: __.list.mkList.bind(__)([0,1,2,3])
   };
@@ -86,6 +88,50 @@ describe("'list' module", function() {
   	  __.list.length.bind(__)(result)
   	).to.eql(
   	  4
+  	);
+  	next();
+  });
+  it("'list#concat'", function(next) {
+  	expect(function(){
+  	  var list1 = __.list.mkList.bind(__)([0,1]);
+	  var list2 = __.list.mkList.bind(__)([2,3]);
+	  return toArray(__.list.concat.bind(__)(list1)(list2));
+  	}()).to.eql(
+  	  [0,1,2,3]
+  	);
+	
+  	next();
+  });
+  // ~~~scala
+  //   for(val x <- m1                     
+  //     val y <- m2)
+  //   yield {x + y}
+  //
+  // becomes...
+  //
+  // m1.flatMap { x =>  m2.map { y =>
+  //                             unit (x+y) }}
+  // ~~~
+  it("'list#flatMap'", function(next) {
+	/*
+	scala> val nestedNumbers = List(List(1, 2), List(3, 4))
+	scala> nestedNumbers.flatMap(x => x.map(_ * 2))
+	res0: List[Int] = List(2, 4, 6, 8)
+	 */
+	var List = __.list.mkList.bind(__);
+	var flatMap = __.list.flatMap.bind(__);
+	var map = __.list.map.bind(__);
+	var nestedNumbers = List([List([1, 2]), List([3, 4])]);
+	var toArray = __.list.toArray.bind(__);
+	var flattened = flatMap(nestedNumbers)(function(x){
+	  return map(x)(function(n){
+		return n * 2;
+	  });
+	});
+  	expect(
+  	  toArray(flattened)
+  	).to.eql(
+  	  [2,4,6,8]
   	);
   	next();
   });
