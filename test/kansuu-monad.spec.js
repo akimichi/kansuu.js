@@ -10,46 +10,73 @@ describe("'monad' module", function() {
 	  return __.monad.maybe.unit.bind(__)(n);
 	};
 	var nothing = __.monad.maybe.nothing;
+	describe("monad laws", function() {
+	  var flatMap = __.monad.maybe.flatMap.bind(__);
+	  var unit = __.monad.maybe.unit.bind(__);
 
-	it("m flatMap unit == m", function(next){
-	  var some = __.monad.maybe.unit.bind(__)(1);
-	  var nothing = __.monad.maybe.nothing;
-	  expect(
-		__.monad.maybe.flatMap.bind(__)(some)(__.monad.maybe.unit.bind(__))
-	  ).to.eql(
-		some
-	  );
-	  expect(
-		__.monad.maybe.flatMap.bind(__)(nothing)(__.monad.maybe.unit.bind(__))
-	  ).to.eql(
-		nothing
-	  );
-	  next(); 
-	});
-    it("unit(v) flatMap f == f(v)", function(next){
-	  var some = function(n){
-		return __.monad.maybe.unit.bind(__)(n);
-	  };
-      var square = function(n){
-		return some(n * n);
-	  };
-	  var nothing = __.monad.maybe.nothing;
-	  /* Some(1) flatMap { x => func(x)} should equal(Some(1)) */
-	  expect(
-		__.monad.maybe.flatMap.bind(__)(some(2))(square)
-	  ).to.eql(
-		some(4)
-	  );
-      /* None flatMap { x => func(x)} should equal(None) */
-	  expect(
-		__.monad.maybe.flatMap.bind(__)(nothing)(square)
-	  ).to.eql(
-		nothing
-	  );
-	  next();
-    });
-    it("m flatMap g flatMap h == m flatMap { x => g(x) flatMap h}", function(next){
-	  next();
+	  it("flatMap(m)(unit) == m", function(next){
+		var justOne = some(1);
+		expect(
+		  flatMap(justOne)(unit)
+		).to.eql(
+		  justOne
+		);
+		expect(
+		  flatMap(nothing)(unit)
+		).to.eql(
+		  nothing
+		);
+		next(); 
+	  });
+      it("flatMap(unit(v))(f) == f(v)", function(next){
+		// var some = function(n){
+		//   return __.monad.maybe.unit.bind(__)(n);
+		// };
+		var square = function(n){
+		  return some(n * n);
+		};
+		var nothing = __.monad.maybe.nothing;
+		/* Some(1) flatMap { x => func(x)} should equal(Some(1)) */
+		expect(
+		  flatMap(some(2))(square)
+		).to.eql(
+		  some(4)
+		);
+		/* None flatMap { x => func(x)} should equal(None) */
+		expect(
+		  flatMap(nothing)(square)
+		).to.eql(
+		  nothing
+		);
+		next();
+      });
+	  // ~~~haskell
+	  // ((p >>= f) >>= g) = p >>= (¥x -> (f x >>= g))
+	  // ~~~
+	  // 
+      it("flatMap(flatMap(m)(g))(h) == flatMap(m)(¥x => flatMap(g(x))(h))", function(next){
+		var justTwo = some(2);
+		var square = function(n){
+		  return some(n * n);
+		};
+		var negate = function(n){
+		  return some(- n);
+		};
+		expect(
+		  flatMap(flatMap(justTwo)(square))(negate)
+		).to.eql(
+		  some(-4)
+		);
+		expect(
+		  flatMap(flatMap(justTwo)(square))(negate)
+		).to.eql(
+		  flatMap(justTwo)(function(x){
+			return flatMap(square(x))(negate)
+		  })
+		);
+
+		next();
+      });
     });
     it("maybe and id", function(next){
 	  var some = __.monad.maybe.unit.bind(__)(1);
