@@ -262,6 +262,8 @@ describe("Kansuu module", function() {
     it("'existy'", function(next) {
       expect(__.existy(1)).to.be(true);
       expect(__.existy(null)).to.be(false);
+      expect(__.existy(undefined)).to.be(false);
+      expect(__.existy(false)).to.be(true);
       next();
     });
     it("'truthy'", function(next) {

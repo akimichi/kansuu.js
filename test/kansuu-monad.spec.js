@@ -6,6 +6,11 @@ var __ = require('../lib/kansuu.js');
 
 describe("'monad' module", function() {
   describe("'maybe' monad", function() {
+	var some = function(n){
+	  return __.monad.maybe.unit.bind(__)(n);
+	};
+	var nothing = __.monad.maybe.nothing;
+
 	it("m flatMap unit == m", function(next){
 	  var some = __.monad.maybe.unit.bind(__)(1);
 	  var nothing = __.monad.maybe.nothing;
@@ -87,6 +92,19 @@ describe("'monad' module", function() {
     });
 	  
     it("practical example of maybe", function(next){
+	  var obj = {
+		key: "value"
+	  };
+	  expect(
+		__.get.bind(__)("key")(obj)
+	  ).to.eql(
+		some("value")
+	  );
+	  expect(
+		__.get.bind(__)("nokey")(obj)
+	  ).to.eql(
+		nothing
+	  );
 	  /*
 	   Seq(1,2,3,4) flatMap { x => 
 	     if(x % 2 == 0) Some(x) else None 
