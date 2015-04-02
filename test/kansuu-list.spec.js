@@ -298,6 +298,57 @@ describe("'list' module", function() {
     );
     next();
   });
+  it("'list#or'", function(next) {
+	var mkList = __.list.mkList.bind(__);
+	var or = __.list.or.bind(__);
+    expect(function(){
+      return or(mkList([true,true]));
+    }()).to.eql(
+      true
+    );
+    expect(function(){
+      return or(mkList([false,false]));
+    }()).to.eql(
+      false
+    );
+    expect(function(){
+      return or(mkList([true,false]));
+    }()).to.eql(
+      true
+    );
+    expect(function(){
+      return or(mkList([false,true]));
+    }()).to.eql(
+      true
+    );
+    next();
+  });
+  it("'list#all'", function(next) {
+	var mkList = __.list.mkList.bind(__);
+	var all = __.list.all.bind(__);
+    var even = function(n){
+      return (n % 2) === 0;
+    };
+    expect(function(){
+      return all(mkList([2,4,6]))(even);
+    }()).to.eql(
+      true
+    );
+    next();
+  });
+  it("'list#any'", function(next) {
+	var mkList = __.list.mkList.bind(__);
+	var any = __.list.any.bind(__);
+    var even = function(n){
+      return (n % 2) === 0;
+    };
+    expect(function(){
+      return any(mkList([1,3,6]))(even);
+    }()).to.eql(
+      true
+    );
+    next();
+  });
   it("'list#merge'", function(next) {
     var listX = __.list.mkList.bind(__)([0,2,4]);
     var listY = __.list.mkList.bind(__)([1,3,5]);
@@ -339,7 +390,7 @@ describe("'list' module", function() {
     );
     next();
   });
-  it("'isEqual'", function(next) {
+  it("'list#isEqual'", function(next) {
     expect(function(){
       var list1 = __.list.mkList.bind(__)([2,0,3,1]);
       var list2 = __.list.mkList.bind(__)([2,0,3,1]);
@@ -367,6 +418,14 @@ describe("'list' module", function() {
       return list1.isEqual(list2);
     }()).to.eql(
       false
+    );
+    next();
+  });
+  it("'list#replicate'", function(next) {
+    expect(
+	  toArray(__.list.replicate.bind(__)(3)("a"))
+	).to.eql(
+      ["a","a","a"]
     );
     next();
   });
