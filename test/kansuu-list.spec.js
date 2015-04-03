@@ -271,6 +271,32 @@ describe("'list' module", function() {
     );
     next();
   });
+  it("'list#foldl'", function(next) {
+    var list = __.list.mkList.bind(__)([0,1,2,3]);
+    expect(
+      __.list.foldl.bind(__)(list)(0)(function(item){
+        return function(accumulator){
+          return item + accumulator;
+        };
+      })
+    ).to.eql(
+      6
+    );
+    next();
+  });
+  it("'list#pairs'", function(next) {
+	// > pairs [1, 2, 3, 4]
+	// [(1, 2), (2, 3), (3, 4)]
+    var list = __.list.mkList.bind(__)([1,2,3,4]);
+    expect(
+      toArray(__.list.pairs.bind(__)(list))
+    ).to.eql(
+	  [ { type: 'pair', left: 1, right: 2 },
+		{ type: 'pair', left: 2, right: 3 },
+		{ type: 'pair', left: 3, right: 4 } ]
+    );
+    next();
+  });
   it("'list#and'", function(next) {
     expect(function(){
       var list = __.list.mkList.bind(__)([true,true]);
