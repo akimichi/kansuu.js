@@ -199,7 +199,7 @@ describe("'list' module", function() {
   it("'list.zipWith' should zip two lists",function(next){
     var keys = __.list.mkList.bind(__)(["a","b","c"]);
     var values = __.list.mkList.bind(__)([1,2,3]);
-    var zippedWithPair = __.list.zipWith.bind(__)(__.pair.mkPair)(keys)(values);
+    var zippedWithPair = __.list.zipWith.bind(__)(__.pair.mkPair.bind(__))(keys)(values);
     expect(
       __.list.length.bind(__)(zippedWithPair)
     ).to.eql(

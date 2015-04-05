@@ -5,15 +5,16 @@ var __ = require('../lib/kansuu.js');
 
 describe("'pair' module", function() {
   var pair = __.pair;
+  var mkPair = __.pair.mkPair.bind(__);
   it("pair object is frozen", function(next) {
-	var obj = pair.mkPair(1)(2);
+	var obj = mkPair(1)(2);
 	expect(function(){
 	  obj.left = 10; // TypeErrorが投げられる
 	}).to.throwError();
 	next();
   });
   it("'censor' should assert a pair object", function(next) {
-	var obj = pair.mkPair(1)(2);
+	var obj = mkPair(1)(2);
 	expect(
 	  pair.censor(obj)
 	).to.eql(
@@ -31,7 +32,7 @@ describe("'pair' module", function() {
 	next();
   });
   it("'left' should get the left part of the pair", function(next) {
-	var obj = pair.mkPair(1)(2);
+	var obj = mkPair(1)(2);
 	expect(
 	  pair.left.bind(__)(obj)
 	).to.eql(
@@ -40,7 +41,7 @@ describe("'pair' module", function() {
 	next();
   });
   it("'swap' should swap the content of a pair", function(next) {
-	var obj = __.pair.mkPair(1)(2);
+	var obj = mkPair(1)(2);
 	expect(
 	  __.pair.swap.bind(__)(obj)
 	).to.eql(

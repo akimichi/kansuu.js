@@ -127,6 +127,7 @@ describe("Kansuu module", function() {
       var isPositive = function(n){
         return n > 0;
       };
+	  var mkPair = __.pair.mkPair.bind(__);
       expect(
         __.span.bind(__)(isPositive)([])
       ).to.eql(
@@ -136,19 +137,19 @@ describe("Kansuu module", function() {
       expect(
         __.span.bind(__)(function(n){ return n < 3;})([1,2,3,4,1,2,3,4])
       ).to.eql(
-        __.pair.mkPair([1,2])([3,4,1,2,3,4])
+        mkPair([1,2])([3,4,1,2,3,4])
       );
       // span (< 9) [1,2,3] == ([1,2,3],[])
       expect(
         __.span.bind(__)(__.math.isLessThan(9))([1,2,3])
       ).to.eql(
-        __.pair.mkPair([1,2,3])([])
+        mkPair([1,2,3])([])
       );
       // span (< 0) [1,2,3] == ([],[1,2,3])
       expect(
         __.span.bind(__)(__.math.isLessThan(0))([1,2,3])
       ).to.eql(
-        __.pair.mkPair([])([1,2,3])
+        mkPair([])([1,2,3])
       );
       next();
     });

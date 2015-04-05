@@ -88,6 +88,21 @@ describe("'monad' module", function() {
       );
       next();
     });
+    it("maybe#lift", function(next){
+      var some = __.monad.maybe.unit.bind(__);
+      var nothing = __.monad.maybe.nothing;
+      expect(
+        __.monad.maybe.lift.bind(__)(parseInt)(some("123"))
+      ).to.eql(
+        some(123)
+      );
+      expect(
+        __.monad.maybe.lift.bind(__)(parseInt)(nothing)
+      ).to.eql(
+        nothing
+      );
+      next();
+    });
     it("primes", function(next){
       var some = function(n){
         return __.monad.maybe.unit.bind(__)(n);
