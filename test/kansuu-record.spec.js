@@ -10,30 +10,31 @@ describe("'record' module", function() {
   };
   var nothing = __.monad.maybe.nothing;
   it("'record'", function(next) {
+    /* #@range_begin(record_module_test) */
     expect(function(){
-	  return __.record.empty.bind(__)(1);
+      return __.record.empty.bind(__)(1);
     }()).to.eql(
-	  nothing
+      nothing
     );
     expect(function(){
-	  var array = __.record.extend.bind(__)(__.record.empty.bind(__))(0)('a');
-	  return array(0);
+      var array = __.record.extend.bind(__)(__.record.empty.bind(__))(0)('a');
+      return array(0);
     }()).to.eql(
-	  some('a')
+      some('a')
     );
     expect(function(){
-	  var array = __.record.extend.bind(__)(__.record.extend.bind(__)(__.record.empty.bind(__))(0)('a'))(1)('b');
-	  return array(1);
+      var array = __.record.extend.bind(__)(__.record.extend.bind(__)(__.record.empty.bind(__))(0)('a'))(1)('b');
+      return array(1);
     }()).to.eql(
-	  some('b')
+      some('b')
     );
     expect(function(){
-	  var object = __.record.extend.bind(__)(__.record.empty.bind(__))('key')('value');
-	  return object('key');
+      var object = __.record.extend.bind(__)(__.record.empty.bind(__))('key')('value');
+      return object('key');
     }()).to.eql(
-	  some('value')
+      some('value')
     );
+    /* #@range_end(record_module_test) */
     next();
   });
-
 });
