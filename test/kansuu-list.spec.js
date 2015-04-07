@@ -11,7 +11,7 @@ describe("'list' module", function() {
   };
 
   it("'cons' should construct a list object", function(next) {
-    var list = __.list.cons.bind(__)(0)(__.list.nil);
+    var list = __.list.cons.bind(__)(0)(__.list.empty);
     expect(
       list.head
     ).to.eql(
@@ -20,7 +20,7 @@ describe("'list' module", function() {
     expect(
       list.tail()
     ).to.eql(
-      __.list.nil
+      __.list.empty
     );
     next();
   });
@@ -156,7 +156,7 @@ describe("'list' module", function() {
       4
     );
     // expect(function(){
-    //   __.list.map.bind(__)(__.list.nil)(function(item){
+    //   __.list.map.bind(__)(__.list.empty)(function(item){
     //   return item + 10;
     // });
     // }()).to.eql(
@@ -222,7 +222,7 @@ describe("'list' module", function() {
       4
     );
     expect(
-      __.list.length.bind(__)(__.list.nil)
+      __.list.length.bind(__)(__.list.empty)
     ).to.eql(
       0
     );
@@ -409,7 +409,7 @@ describe("'list' module", function() {
       [0,1,2,3]
     );
     expect(function(){
-      var nil = __.list.nil;
+      var nil = __.list.empty;
       return __.list.toArray.bind(__)(__.list.sort.bind(__)(nil));
     }()).to.eql(
       []

@@ -184,7 +184,7 @@ describe("'monad' module", function() {
     };
     var answer = __.monad.writer.flatMap.bind(__)(
       __.monad.writer.flatMap.bind(__)(
-        __.monad.writer.unit.bind(__)(4)(__.list.nil)
+        __.monad.writer.unit.bind(__)(4)(__.list.empty)
       )(squared)
     )(halved);
     expect(

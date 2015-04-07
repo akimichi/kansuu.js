@@ -2,7 +2,6 @@
 
 var expect = require('expect.js');
 var __ = require('../lib/kansuu.js');
-
 describe("json test", function() {
   describe("object json test", function() {
 	var object = require('./json/object.json');
