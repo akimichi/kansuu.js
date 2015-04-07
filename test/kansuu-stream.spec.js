@@ -2,10 +2,14 @@
 
 var expect = require('expect.js');
 var __ = require('../lib/kansuu.js');
+var base = require('../lib/kansuu-base.js');
 
 describe("'stream' module", function() {
+  describe("exists", function() {
+	
+  });
   describe("mkStream", function() {
-    var stream = __.stream.mkStream.bind(__)(0)(function (n){
+    var intStream = __.stream.mkStream.bind(__)(0)(function (n){
       return n + 1;
     });
     it("can make a stream", function(next) {
@@ -13,23 +17,37 @@ describe("'stream' module", function() {
       //   return n + 1;
       // });
       expect(
-        stream.value
+        intStream.value
       ).to.eql(0);
       expect(
-        stream.next().value
+        intStream.next().value
       ).to.eql(1);
       expect(
-        stream.next().next().value
+        intStream.next().next().value
       ).to.eql(2);
       expect(
-        stream.next().next().next().value
+        intStream.next().next().next().value
       ).to.eql(3);
       next();
     });
     it("can be checked by 'censor'", function(next) {
       expect(
-        __.stream.censor(stream)
-      ).to.eql(stream);
+        __.stream.censor(intStream)
+      ).to.eql(intStream);
+      next();
+    });
+    it("'isEmpty'", function(next) {
+	  var empty = __.stream.empty;
+      expect(
+        __.stream.isEmpty(empty)
+      ).to.eql(
+		true
+	  );
+      expect(
+        __.stream.isEmpty(intStream)
+      ).to.eql(
+		false
+	  );
       next();
     });
     it("integer example", function(next) {
