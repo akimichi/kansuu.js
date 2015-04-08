@@ -425,36 +425,41 @@ describe("'list' module", function() {
     );
     next();
   });
-  it("'list#isEqual'", function(next) {
-    expect(function(){
-      var list1 = __.list.mkList.bind(__)([2,0,3,1]);
-      var list2 = __.list.mkList.bind(__)([2,0,3,1]);
-      return list1.isEqual(list2);
-    }()).to.eql(
-      true
-    );
-    expect(function(){
-      var list1 = __.list.mkList.bind(__)([2,0,3,1]);
-      var list2 = __.list.mkList.bind(__)([0,2,3,1]);
-      return list1.isEqual(list2);
-    }()).to.eql(
-      false
-    );
-    expect(function(){
-      var list1 = __.list.mkList.bind(__)([2,0,3,1,4]);
-      var list2 = __.list.mkList.bind(__)([2,0,3,1]);
-      return list1.isEqual(list2);
-    }()).to.eql(
-      false
-    );
-    expect(function(){
-      var list1 = __.list.mkList.bind(__)([2,0,3,1]);
-      var list2 = __.list.mkList.bind(__)([2,0,3,1,4]);
-      return list1.isEqual(list2);
-    }()).to.eql(
-      false
-    );
-    next();
+  describe("'list#isEqual'", function() {
+	it("'isEqual' to be true", function(next) {
+      expect(function(){
+		var list1 = __.list.mkList.bind(__)([2,0,3,1]);
+		var list2 = __.list.mkList.bind(__)([2,0,3,1]);
+		return list1.isEqual(list2);
+      }()).to.eql(
+		true
+      );
+      next();
+	});
+	it("'isEqual' to be false", function(next) {
+      expect(function(){
+		var list1 = __.list.mkList.bind(__)([2,0,3,1]);
+		var list2 = __.list.mkList.bind(__)([0,2,3,1]);
+		return list1.isEqual(list2);
+      }()).to.eql(
+		false
+      );
+      expect(function(){
+		var list1 = __.list.mkList.bind(__)([2,0,3,1,4]);
+		var list2 = __.list.mkList.bind(__)([2,0,3,1]);
+		return list1.isEqual(list2);
+      }()).to.eql(
+		false
+      );
+      expect(function(){
+		var list1 = __.list.mkList.bind(__)([2,0,3,1]);
+		var list2 = __.list.mkList.bind(__)([2,0,3,1,4]);
+		return list1.isEqual(list2);
+      }()).to.eql(
+		false
+      );
+      next();
+	});
   });
   it("'list#replicate'", function(next) {
     expect(
