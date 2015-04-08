@@ -17,16 +17,16 @@ describe("'stream' module", function() {
       //   return n + 1;
       // });
       expect(
-        intStream.value
+        intStream.value()
       ).to.eql(0);
       expect(
-        intStream.next().value
+        intStream.next().value()
       ).to.eql(1);
       expect(
-        intStream.next().next().value
+        intStream.next().next().value()
       ).to.eql(2);
       expect(
-        intStream.next().next().next().value
+        intStream.next().next().next().value()
       ).to.eql(3);
       next();
     });
@@ -56,14 +56,14 @@ describe("'stream' module", function() {
         return n + 1;
       });
       expect(
-        ints.next().next().value
+        ints.next().next().value()
       ).to.eql(2);
       // double = 1,2,4,8,...
       var doubles = __.stream.mkStream.bind(__)(1)(function (n){
         return 2*n;
       });
       expect(
-        doubles.next().next().value
+        doubles.next().next().value()
       ).to.eql(4);
       next();
     });
@@ -78,28 +78,28 @@ describe("'stream' module", function() {
       };
       var randoms = generate('init');
       expect(
-        randoms.value
+        randoms.value()
       ).to.eql(0.035281094681737984);
       expect(
-        randoms.next().value
+        randoms.next().value()
       ).to.eql(
         0.7063175514107337
       );
       next();
     });
     it("stream#cons", function(next) {
-      var ints = __.stream.cons.bind(__)(0)(function (n){
+      var ints = __.stream.cons.bind(__)(base.thunk(0))(function (n){
         return n + 1;
       });
       expect(
-        ints.value
+        ints.value()
       ).to.eql(
         0
       );
       next();
     });
     it("stream#take(n)", function(next) {
-      var ints = __.stream.cons.bind(__)(0)(function (n){
+      var ints = __.stream.cons.bind(__)(base.thunk(0))(function (n){
         return n + 1;
       });
       var listUpto3 = __.stream.take.bind(__)(ints)(3);

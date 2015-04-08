@@ -8,13 +8,13 @@ describe("Kensho module", function() {
   it("ints", function(next) {
     var ints = qc.ints(1);
     expect(
-      ints.value
+      ints.value()
     ).to.eql(1);
     expect(
-      ints.next().value
+      ints.next().value()
     ).to.eql(2);
     expect(
-      ints.next().next().value
+      ints.next().next().value()
     ).to.eql(3);
     next();
   });
@@ -22,12 +22,12 @@ describe("Kensho module", function() {
     var randStream = qc.randoms.call(qc,0);
     //var upto10 = __.stream.take.bind(__)(randStream)(10);
     expect(
-      randStream.value
+      randStream.value()
     ).to.be(
       0.038085370776470735
     );
     expect(
-      randStream.next().value
+      randStream.next().value()
     ).to.be(
       0.08624634995353292
     );
