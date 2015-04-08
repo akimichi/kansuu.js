@@ -18,7 +18,7 @@ describe("'list' module", function() {
       0
     );
     expect(
-      list.tail()
+      list.tail
     ).to.eql(
       __.list.empty
     );
@@ -33,21 +33,21 @@ describe("'list' module", function() {
     );
     next();
   });
-  it("'list.tail' should return the tail of a list", function(next) {
+  it("'list#tail' should return the tail of a list", function(next) {
     var list = __.list.mkList.bind(__)([0,1,2,3]);
     expect(
-      list.tail.bind(__)().head
+      __.list.tail.bind(__)(list).head
     ).to.eql(
       1
     );
     next();
   });
-  it("'list#last'", function(next) {
+  it("'list.tail' should return the tail of a list", function(next) {
     var list = __.list.mkList.bind(__)([0,1,2,3]);
     expect(
-      __.list.last.bind(__)(list)
+      list.tail.head
     ).to.eql(
-      3
+      1
     );
     next();
   });
@@ -57,6 +57,15 @@ describe("'list' module", function() {
       __.list.toArray.bind(__)(list)
     ).to.eql(
       [0,1,2,3]
+    );
+    next();
+  });
+  it("'list#last'", function(next) {
+    var list = __.list.mkList.bind(__)([0,1,2,3]);
+    expect(
+      __.list.last.bind(__)(list)
+    ).to.eql(
+      3
     );
     next();
   });
@@ -146,7 +155,7 @@ describe("'list' module", function() {
       10
     );
     expect(
-      result.tail().head
+      result.tail.head
     ).to.eql(
       11
     );

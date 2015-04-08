@@ -54,6 +54,7 @@ describe("Kensho module", function() {
     var intStream = qc.ints(1);
     var intUpto10 = __.stream.take.bind(__)(intStream)(10);
     qc.forAll(intUpto10)(prop_RevUnit);
+	this.timeout(4000);
     next();
   });
   // ~~~haskell

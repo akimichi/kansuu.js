@@ -109,7 +109,7 @@ describe("'stream' module", function() {
         0
       );
       expect(
-        listUpto3.tail().head
+        listUpto3.tail.head
       ).to.eql(
         1
       );
