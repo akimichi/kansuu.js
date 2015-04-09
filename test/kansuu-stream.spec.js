@@ -89,6 +89,25 @@ describe("'stream' module", function() {
 	  );
       next();
     });
+    it("stream#exists", function(next) {
+	  var ints = __.stream.mkStream.bind(__)([0,1,2,3,4,5]);
+      expect(
+        __.stream.exists.bind(__)(ints)(function(n){
+		  return n === 3;
+		})
+      ).to.eql(
+		true
+	  );
+	  var evens = __.stream.mkStream.bind(__)([0,2,4]);
+      expect(
+        __.stream.exists.bind(__)(evens)(function(n){
+		  return (n % 2) === 1;
+		})
+      ).to.eql(
+		false
+	  );
+      next();
+    });
 	/*
     it("stream#cons", function(next) {
       // var ones = function(){
