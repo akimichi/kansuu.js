@@ -436,14 +436,7 @@ describe("'list' module", function() {
       );
       next();
 	});
-	it("'isEqual' to be false", function(next) {
-      expect(function(){
-		var list1 = __.list.mkList.bind(__)([2,0,3,1]);
-		var list2 = __.list.mkList.bind(__)([0,2,3,1]);
-		return list1.isEqual(list2);
-      }()).to.eql(
-		false
-      );
+	it("'isEqual' to be false when two list have different length", function(next) {
       expect(function(){
 		var list1 = __.list.mkList.bind(__)([2,0,3,1,4]);
 		var list2 = __.list.mkList.bind(__)([2,0,3,1]);
@@ -454,6 +447,16 @@ describe("'list' module", function() {
       expect(function(){
 		var list1 = __.list.mkList.bind(__)([2,0,3,1]);
 		var list2 = __.list.mkList.bind(__)([2,0,3,1,4]);
+		return list1.isEqual(list2);
+      }()).to.eql(
+		false
+      );
+      next();
+	});
+	it("'isEqual' to be false", function(next) {
+      expect(function(){
+		var list1 = __.list.mkList.bind(__)([2,0,3,1]);
+		var list2 = __.list.mkList.bind(__)([0,2,3,1]);
 		return list1.isEqual(list2);
       }()).to.eql(
 		false

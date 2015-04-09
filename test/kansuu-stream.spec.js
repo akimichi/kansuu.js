@@ -9,9 +9,10 @@ describe("'stream' module", function() {
 	
   });
   describe("mkStream", function() {
-    var intStream = __.stream.mkStream.bind(__)(0)(function (n){
-      return n + 1;
-    });
+	var intStream = __.stream.mkStream.bind(__)([0,1,2,3,4,5]);
+    // var intStream = __.stream.mkStream.bind(__)(0)(function (n){
+    //   return n + 1;
+    // });
     it("can make a stream", function(next) {
       // var stream = __.stream.mkStream.bind(__)(0)(function (n){
       //   return n + 1;
@@ -52,28 +53,74 @@ describe("'stream' module", function() {
     });
     it("integer example", function(next) {
       // ints = 0,1,2,3,4,...
-      var ints = __.stream.mkStream.bind(__)(0)(function (n){
-        return n + 1;
-      });
+	  var ints = __.stream.mkStream.bind(__)([0,1,2,3,4,5]);
+      // var ints = __.stream.mkStream.bind(__)(0)(function (n){
+      //   return n + 1;
+      // });
       expect(
         ints.next().next().value()
       ).to.eql(2);
       // double = 1,2,4,8,...
-      var doubles = __.stream.mkStream.bind(__)(1)(function (n){
-        return 2*n;
-      });
+	  var doubles = __.stream.mkStream.bind(__)([1,2,4,8,16]);
+      // var doubles = __.stream.mkStream.bind(__)(1)(function (n){
+      //   return 2*n;
+      // });
       expect(
         doubles.next().next().value()
       ).to.eql(4);
+      next();
+    });
+    it("stream#repeat", function(next) {
+	  var ones = __.stream.repeat.bind(__)(1);
+      expect(
+        ones.value()
+      ).to.eql(
+		1
+	  );
+      expect(
+        ones.next().next().value()
+      ).to.eql(
+		1
+	  );
+      expect(
+        ones.next().next().next().value()
+      ).to.eql(
+		1
+	  );
+      next();
+    });
+	/*
+    it("stream#cons", function(next) {
+      // var ones = function(){
+	  // 	var self = this;
+	  // 	return __.stream.cons.bind(__)(base.thunk(0))(base.thunk.bind(__)(self.ones));
+	  // };
+	  var fromEnum = {
+		one: function(from){
+		  var self = this;
+		  return  __.stream.cons.bind(__)(base.thunk(from))(base.thunk.bind(__)(self.one(from)));
+		}
+	  };
+      expect(
+        ones().value()
+      ).to.eql(
+        0
+      );
+      expect(
+        ones().next().value()
+      ).to.eql(
+        0
+      );
       next();
     });
     it("random float example", function(next) {
       var generate = function(seed){
         var seedrandom = require('seedrandom');
         var rng = seedrandom(seed);
-        var stream = __.stream.mkStream.bind(__)(rng())(function (n){
-          return rng();
-        });
+		var stream = __.stream.cons.bind(__)(base.thunk(rng()))(base.thunk.bind(__)(stream));
+        // var stream = __.stream.mkStream.bind(__)(rng())(function (n){
+        //   return rng();
+        // });
         return stream;
       };
       var randoms = generate('init');
@@ -84,17 +131,6 @@ describe("'stream' module", function() {
         randoms.next().value()
       ).to.eql(
         0.7063175514107337
-      );
-      next();
-    });
-    it("stream#cons", function(next) {
-      var ints = __.stream.cons.bind(__)(base.thunk(0))(function (n){
-        return n + 1;
-      });
-      expect(
-        ints.value()
-      ).to.eql(
-        0
       );
       next();
     });
@@ -120,6 +156,7 @@ describe("'stream' module", function() {
       );
       next();
     });
+	 */
   });
   // it("integer example", function(next) {
   //   // ints = 0,1,2,3,4,...

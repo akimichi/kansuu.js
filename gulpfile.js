@@ -17,7 +17,7 @@ gulp.task('test', function() {
 
 
 gulp.task('doc', function() {
-  return gulp.src("./lib/kansuu.js")
+  return gulp.src("./lib/*.js")
 	.pipe(docco())
 	.pipe(gulp.dest('./docs'));
 });
