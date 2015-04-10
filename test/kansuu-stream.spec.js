@@ -92,7 +92,7 @@ describe("'stream' module", function() {
     it("stream#exists", function(next) {
 	  var ints = __.stream.mkStream.bind(__)([0,1,2,3,4,5]);
       expect(
-        __.stream.exists.bind(__)(ints)(function(n){
+        __.stream.exists.bind(__)(ints)(n => {
 		  return n === 3;
 		})
       ).to.eql(
@@ -100,7 +100,7 @@ describe("'stream' module", function() {
 	  );
 	  var evens = __.stream.mkStream.bind(__)([0,2,4]);
       expect(
-        __.stream.exists.bind(__)(evens)(function(n){
+        __.stream.exists.bind(__)(evens)(n => {
 		  return (n % 2) === 1;
 		})
       ).to.eql(
@@ -146,16 +146,12 @@ describe("'stream' module", function() {
 		var stream1 = __.stream.mkStream.bind(__)([1,2,3]);
 		var stream2 = __.stream.mkStream.bind(__)([1,2,3,4,5]);
 		return __.stream.isEqual.bind(__)(stream1)(stream2);
-      }()).to.eql(
-		true
-	  );
+      }()).to.ok();
       expect(function(){
 		var stream1 = __.stream.mkStream.bind(__)([1,2,3,4,5]);
 		var stream2 = __.stream.mkStream.bind(__)([1,2,3]);
 		return __.stream.isEqual.bind(__)(stream1)(stream2);
-      }()).to.eql(
-		true
-	  );
+      }()).to.ok();
       next();
     });
     it("stream#merge", function(next) {
@@ -164,9 +160,28 @@ describe("'stream' module", function() {
 	  var ints = __.stream.mkStream.bind(__)([0,1,2,3,4,5]);
       expect(
 		__.stream.isEqual.bind(__)(__.stream.merge.bind(__)(evens)(odds))(ints)
-      ).to.eql(
-		true
-	  );
+      ).to.ok();
+      next();
+    });
+    it("stream#filter", function(next) {
+	  var ints = __.stream.mkStream.bind(__)([0,1,2,3,4,5]);
+	  var evens = __.stream.mkStream.bind(__)([0,2,4]);
+	  var isEven = function(n){
+		  return n % 2 === 0;
+	  };
+      expect(
+		__.stream.isEqual.bind(__)(__.stream.filter.bind(__)(ints)(isEven))(evens)
+      ).to.ok();
+      next();
+    });
+    it("stream#map", function(next) {
+	  var ints = __.stream.mkStream.bind(__)([0,1,2,3]);
+	  var double = (n) => {
+		return n * 2;
+	  };
+      expect(
+		__.stream.isEqual.bind(__)(__.stream.map.bind(__)(ints)(double))(__.stream.mkStream.bind(__)([0,2,4,6]))
+      ).to.ok();
       next();
     });
 	/*

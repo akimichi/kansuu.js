@@ -19,8 +19,8 @@ describe("Kensho module", function() {
     next();
   });
   it("randoms", function(next) {
-    var randStream = qc.randoms.call(qc,0);
-    //var upto10 = __.stream.take.bind(__)(randStream)(10);
+	var randomGenerator = qc.randomGen.call(qc,0);
+    var randStream = qc.randoms.call(qc, randomGenerator);
     expect(
       randStream.value()
     ).to.be(
@@ -58,7 +58,7 @@ describe("Kensho module", function() {
 		var list = __.list.mkList.bind(__)([n]);
 		return __.list.reverse.bind(__)(list).isEqual(list);
       });
-	  this.timeout(4000);
+	  this.timeout(5000);
       next();
 	});
 	// ~~~haskell

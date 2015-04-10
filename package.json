@@ -29,6 +29,7 @@
     "gulp-docco": "0.0.4",
     "gulp-exit": "0.0.2",
     "gulp-mocha": "^2.0.0",
+    "gulp-run": "^1.6.7",
     "mocha": "^2.2.1",
     "quickcheck": "0.0.4",
     "seedrandom": "^2.3.11"
