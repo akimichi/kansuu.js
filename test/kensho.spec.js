@@ -42,26 +42,45 @@ describe("Kensho module", function() {
     next();
   });
   
-  // ~~~haskell
-  // prop_RevUnit x =
-  //   reverse [x] == [x]
-  // ~~~
-  it("property", function(next) {
-    var prop_RevUnit = function(x){
-      var list = __.list.mkList.bind(__)([x]);
-      return __.list.reverse.bind(__)(list).isEqual(list);
-    };
-    var intStream = qc.ints(1);
-    var intUpto10 = __.stream.take.bind(__)(intStream)(10);
-    qc.forAll(intUpto10)(prop_RevUnit);
-	this.timeout(4000);
-    next();
+  describe("Kensho module", function() {
+	// ~~~haskell
+	// prop_RevUnit x =
+	//   reverse [x] == [x]
+	// ~~~
+	it("reverse [x] == [x]", function(next) {
+      // var prop_RevUnit = function(x){
+	  // 	var list = __.list.mkList.bind(__)([x]);
+	  // 	return __.list.reverse.bind(__)(list).isEqual(list);
+      // };
+      var intStream = qc.ints(1);
+      var intUpto10 = __.stream.take.bind(__)(intStream)(10);
+      qc.forAll(intUpto10)(function(n){
+		var list = __.list.mkList.bind(__)([n]);
+		return __.list.reverse.bind(__)(list).isEqual(list);
+      });
+	  this.timeout(4000);
+      next();
+	});
+	// ~~~haskell
+	// prop_RevApp xs ys =
+	//   reverse (xs++ys) == reverse ys++reverse xs
+	// ~~~
+	/*
+	it("reverse (xs++ys) == reverse ys ++ reverse xs", function(next) {
+      var intStream = qc.ints(1);
+      var intUpto10 = __.stream.take.bind(__)(intStream)(10);
+      qc.forAll(intUpto10)(function(n){
+		var list = __.list.mkList.bind(__)([n]);
+		return __.list.reverse.bind(__)(list).isEqual(list);
+      });
+	  this.timeout(4000);
+      next();
+	});
+	*/
+	// ~~~haskell
+	// prop_RevRev xs =
+	//   reverse (reverse xs) == xs
+	// ~~~
   });
-  // ~~~haskell
-  // prop_RevApp xs ys =
-  //   reverse (xs++ys) == reverse ys++reverse xs
-  // prop_RevRev xs =
-  //   reverse (reverse xs) == xs
-  // ~~~
 });
 
