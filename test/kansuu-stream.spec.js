@@ -135,19 +135,40 @@ describe("'stream' module", function() {
       }()).to.eql(
 		true
 	  );
+      expect(function(){
+		var stream1 = __.stream.mkStream.bind(__)([3,1,2]);
+		var stream2 = __.stream.mkStream.bind(__)([1,2,3]);
+		return __.stream.isEqual.bind(__)(stream1)(stream2);
+      }()).to.eql(
+		false
+	  );
+      expect(function(){
+		var stream1 = __.stream.mkStream.bind(__)([1,2,3]);
+		var stream2 = __.stream.mkStream.bind(__)([1,2,3,4,5]);
+		return __.stream.isEqual.bind(__)(stream1)(stream2);
+      }()).to.eql(
+		true
+	  );
+      expect(function(){
+		var stream1 = __.stream.mkStream.bind(__)([1,2,3,4,5]);
+		var stream2 = __.stream.mkStream.bind(__)([1,2,3]);
+		return __.stream.isEqual.bind(__)(stream1)(stream2);
+      }()).to.eql(
+		true
+	  );
       next();
     });
-    // it("stream#merge", function(next) {
-	//   var evens = __.stream.mkStream.bind(__)([0,2,4]);
-	//   var odds = __.stream.mkStream.bind(__)([1,3,5]);
-	//   var ints = __.stream.mkStream.bind(__)([0,1,2,3,4,5]);
-    //   expect(
-    //     __.stream.merge.bind(__)(evens)(odds)
-    //   ).to.eql(
-	// 	ints
-	//   );
-    //   next();
-    // });
+    it("stream#merge", function(next) {
+	  var evens = __.stream.mkStream.bind(__)([0,2,4]);
+	  var odds = __.stream.mkStream.bind(__)([1,3,5]);
+	  var ints = __.stream.mkStream.bind(__)([0,1,2,3,4,5]);
+      expect(
+		__.stream.isEqual.bind(__)(__.stream.merge.bind(__)(evens)(odds))(ints)
+      ).to.eql(
+		true
+	  );
+      next();
+    });
 	/*
     it("stream#cons", function(next) {
       // var ones = function(){
