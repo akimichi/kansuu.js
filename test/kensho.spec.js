@@ -36,9 +36,10 @@ describe("Kensho module", function() {
   it("forAll", function(next) {
     var intStream = qc.ints(1);
     var intUpto10 = __.stream.take.bind(__)(intStream)(10);
-    qc.forAll(intUpto10)(function(item){
+    var prop = qc.forAll(intUpto10)(function(item){
       return (item > 0) && (item < 11);
     });
+	expect(prop).to.ok();
     next();
   });
   
@@ -48,17 +49,18 @@ describe("Kensho module", function() {
 	//   reverse [x] == [x]
 	// ~~~
 	it("reverse [x] == [x]", function(next) {
+	  this.timeout(5000);
       // var prop_RevUnit = function(x){
 	  // 	var list = __.list.mkList.bind(__)([x]);
 	  // 	return __.list.reverse.bind(__)(list).isEqual(list);
       // };
       var intStream = qc.ints(1);
       var intUpto10 = __.stream.take.bind(__)(intStream)(10);
-      qc.forAll(intUpto10)(function(n){
+      var prop = qc.forAll(intUpto10)(function(n){
 		var list = __.list.mkList.bind(__)([n]);
 		return __.list.reverse.bind(__)(list).isEqual(list);
       });
-	  this.timeout(5000);
+	  expect(prop).to.ok();
       next();
 	});
 	// ~~~haskell

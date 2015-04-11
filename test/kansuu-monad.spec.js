@@ -71,7 +71,7 @@ describe("'monad' module", function() {
           flatMap(flatMap(justTwo)(square))(negate)
         ).to.eql(
           flatMap(justTwo)(function(x){
-            return flatMap(square(x))(negate)
+            return flatMap(square(x))(negate);
           })
         );
 

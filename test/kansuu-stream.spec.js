@@ -10,9 +10,6 @@ describe("'stream' module", function() {
   });
   describe("mkStream", function() {
 	var intStream = __.stream.mkStream.bind(__)([0,1,2,3,4,5]);
-    // var intStream = __.stream.mkStream.bind(__)(0)(function (n){
-    //   return n + 1;
-    // });
     it("can make a stream", function(next) {
       // var stream = __.stream.mkStream.bind(__)(0)(function (n){
       //   return n + 1;
@@ -68,6 +65,38 @@ describe("'stream' module", function() {
       expect(
         doubles.next().next().value()
       ).to.eql(4);
+      next();
+    });
+    it("stream#take(n)", function(next) {
+	  var intStream = __.stream.mkStream.bind(__)([0,1,2,3,4,5]);
+      expect(((_)=> {
+		var taken = __.stream.take.bind(__)(intStream)(1);
+		return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([0]));
+      })()).to.ok();
+      expect(((_)=> {
+		var taken = __.stream.take.bind(__)(intStream)(2);
+		return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([0,1]));
+      })()).to.ok();
+	  next();
+    });
+    it("stream#unfold", function(next) {
+	  var stream = __.stream.unfold.bind(__)(5)((n) => {
+		if(n < 10) {
+		  return __.monad.maybe.unit.bind(__)(__.pair.cons.bind(__)(n*2)(n+1));
+		} else {
+		  return __.monad.maybe.nothing;
+		}
+	  });
+	  __.stream.censor(stream);
+      expect(
+		stream.value()
+      ).to.eql(
+		10
+	  );
+      expect(((_)=> {
+		var taken = __.stream.take.bind(__)(stream)(3);
+		return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([10,12,14]));
+      })()).to.ok();
       next();
     });
     it("stream#repeat", function(next) {
@@ -226,28 +255,6 @@ describe("'stream' module", function() {
         randoms.next().value()
       ).to.eql(
         0.7063175514107337
-      );
-      next();
-    });
-    it("stream#take(n)", function(next) {
-      var ints = __.stream.cons.bind(__)(base.thunk(0))(function (n){
-        return n + 1;
-      });
-      var listUpto3 = __.stream.take.bind(__)(ints)(3);
-      expect(
-        listUpto3.head
-      ).to.eql(
-        0
-      );
-      expect(
-        listUpto3.tail.head
-      ).to.eql(
-        1
-      );
-      expect(
-        __.list.length.bind(__)(listUpto3)
-      ).to.eql(
-        3
       );
       next();
     });
