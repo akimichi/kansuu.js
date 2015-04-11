@@ -118,6 +118,44 @@ describe("'stream' module", function() {
 	  );
       next();
     });
+    it("stream#constant", function(next) {
+	  var ones = __.stream.constant.bind(__)(1);
+      expect(
+        ones.value()
+      ).to.eql(
+		1
+	  );
+      expect(
+        ones.next().next().value()
+      ).to.eql(
+		1
+	  );
+      expect(
+        ones.next().next().next().value()
+      ).to.eql(
+		1
+	  );
+      next();
+    });
+    it("stream#from", function(next) {
+	  var ints = __.stream.from.bind(__)(0);
+      expect(
+        ints.value()
+      ).to.eql(
+		0
+	  );
+      expect(
+        ints.next().value()
+      ).to.eql(
+		1
+	  );
+      expect(
+        ints.next().next().value()
+      ).to.eql(
+		2
+	  );
+      next();
+    });
     it("stream#exists", function(next) {
 	  var ints = __.stream.mkStream.bind(__)([0,1,2,3,4,5]);
       expect(
