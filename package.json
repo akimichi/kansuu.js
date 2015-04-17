@@ -32,6 +32,7 @@
     "gulp-run": "^1.6.7",
     "mocha": "^2.2.1",
     "quickcheck": "0.0.4",
+    "random-js": "^1.0.4",
     "seedrandom": "^2.3.11"
   }
 }

@@ -4,9 +4,12 @@ var util = require('util');
 var expect = require('expect.js');
 var __ = require('../lib/kansuu.js');
 var seedrandom = require('seedrandom');
+var Random = require("random-js");
+var rng = Random.engines.mt19937();
 
 describe("'monad' module", function() {
   describe("'random' monad", function() {
+
     // var int = __.monad.random.unit.bind(__)(0);
   	// var ns = __.monad.random.flatMap.bind(__)(int)(x => {
   	//   return __.monad.random.flatMap.bind(__)(int)(y => {
@@ -14,20 +17,31 @@ describe("'monad' module", function() {
   	//   }
   	// })
     it("random.int", function(next){
-	  var rng = seedrandom("seed");
-	  var intRandom = __.monad.random.int.bind(__)(rng)
+	  //var rng = seedrandom("seed");
+	  rng.seed("seed");
+	  var intRandom = __.monad.random.int.bind(__)(rng);
+      expect(
+	  	intRandom.left
+      ).to.eql(
+		-1937831252
+      );
+	  //var intRandom2 = __.monad.random.int.bind(__)(intRandom.right);
       expect(
 	  	 __.monad.random.int.bind(__)(intRandom.right).left
       ).to.eql(
-		8
-	  	//4.612568818010603e+306
+		-884076225
       );
       expect(
 	  	 __.monad.random.int.bind(__)(intRandom.right).left
       ).to.eql(
-		0
-	  	//4.612568818010603e+306
+		-505527131
       );
+      // expect(
+	  // 	 __.monad.random.int.bind(__)(intRandom.right()).left
+      // ).to.eql(
+	  // 	2
+	  // 	//4.612568818010603e+306
+      // );
       next(); 
     });
   });
