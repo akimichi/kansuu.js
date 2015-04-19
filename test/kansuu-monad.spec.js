@@ -32,7 +32,7 @@ describe("'monad' module", function() {
 		-884076225
       );
       expect(
-	  	 __.monad.random.int.bind(__)(intRandom.right).left
+	  	__.monad.random.int.bind(__)(intRandom.right).left
       ).to.eql(
 		-505527131
       );
@@ -42,6 +42,22 @@ describe("'monad' module", function() {
 	  // 	2
 	  // 	//4.612568818010603e+306
       // );
+      next(); 
+    });
+    it("random.ints", function(next){
+	  var rng = Random.engines.mt19937();
+	  rng.seed("seed");
+	  var ints = __.monad.random.ints.bind(__)(3)(rng);
+      expect(
+	  	__.list.length.bind(__)(ints.left)
+      ).to.eql(
+		3
+      );
+      expect(
+	  	__.list.toArray.bind(__)(ints.left)
+      ).to.eql(
+		[ -1937831252, -884076225, -725654408 ]
+      );
       next(); 
     });
   });
