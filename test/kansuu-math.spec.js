@@ -26,6 +26,14 @@ describe("math module", function() {
     ).to.be(true);
     next();
   });
+  it("'innerProduct'", function(next) {
+    expect(
+      __.math.innerProduct.bind(__)(__.list.mkList.bind(__)([0,1]))(__.list.mkList.bind(__)([1,0]))
+    ).to.be(
+	  0
+	);
+    next();
+  });
   describe("approximate", function() {
     it("'sqrt'", function(next) {
       var sqrt = __.math.approximate.bind(__)(__.math.improve_sqrt.bind(__))(0.001);

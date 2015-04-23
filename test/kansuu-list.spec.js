@@ -280,6 +280,15 @@ describe("'list' module", function() {
     );
     next();
   });
+  it("'list#sum'", function(next) {
+    var list = __.list.mkList.bind(__)([0,1,2,3]);
+    expect(
+      __.list.sum.bind(__)(list)
+    ).to.eql(
+      6
+    );
+    next();
+  });
   it("'list#foldl'", function(next) {
     var list = __.list.mkList.bind(__)([0,1,2,3]);
     expect(
