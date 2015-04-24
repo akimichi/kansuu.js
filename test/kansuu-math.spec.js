@@ -32,6 +32,11 @@ describe("math module", function() {
     ).to.be(
 	  0
 	);
+    expect(
+      __.math.innerProduct.bind(__)(__.list.mkList.bind(__)([1,2,3]))(__.list.mkList.bind(__)([6,5,4]))
+    ).to.be(
+	  28
+	);
     next();
   });
   describe("approximate", function() {
