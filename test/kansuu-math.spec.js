@@ -16,6 +16,11 @@ describe("math module", function() {
 	).to.be(
 	  true
 	);
+    expect(
+	  __.math.isPrime.bind(__)(2)
+    ).to.eql(
+	  true
+	);
     next();
   });
   it("'isMoreThan'", function(next) {
@@ -44,6 +49,20 @@ describe("math module", function() {
 	);
     next();
   });
+  it("'primes'", function(next) {
+	var primes = __.math.primes.bind(__)();
+    expect(
+	  toArray(__.stream.take.bind(__)(primes)(3))
+    ).to.eql(
+	  [ 2, 3, 5]
+	);
+    expect(
+	  toArray(__.stream.take.bind(__)(primes)(10))
+    ).to.eql(
+	  [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 ] 
+	);
+    next();
+  });
   it("'factors'", function(next) {
     expect(
 	  toArray(__.math.factors.bind(__)(84))
@@ -52,7 +71,6 @@ describe("math module", function() {
 	);
     expect(
 	  toArray(__.math.factors.bind(__)(123))
-	  //toArray(__.math.factors.bind(__)(557940830126698960967415390))
     ).to.eql(
 	  [3,41]
 	);
