@@ -5,12 +5,17 @@ var __ = require('../lib/kansuu.js');
 
 describe("math module", function() {
   var math = require('../lib/kansuu.js').math;
+  var toArray = __.list.toArray.bind(__);
   // it("'lower'", function(next) {
   //   expect(math.lower.bind(__)(17.3)).to.be(-1);
   //   next();
   // });
   it("'isPrime'", function(next) {
-    expect(math.isPrime(3)).to.be(true);
+    expect(
+	  math.isPrime(3)
+	).to.be(
+	  true
+	);
     next();
   });
   it("'isMoreThan'", function(next) {
@@ -37,6 +42,21 @@ describe("math module", function() {
     ).to.be(
 	  28
 	);
+    next();
+  });
+  it("'factors'", function(next) {
+    expect(
+	  toArray(__.math.factors.bind(__)(84))
+    ).to.eql(
+	  [ 2, 2, 3, 7 ]
+	);
+    expect(
+	  toArray(__.math.factors.bind(__)(123))
+	  //toArray(__.math.factors.bind(__)(557940830126698960967415390))
+    ).to.eql(
+	  [3,41]
+	);
+ 	
     next();
   });
   describe("approximate", function() {

@@ -79,25 +79,44 @@ describe("'stream' module", function() {
       })()).to.ok();
 	  next();
     });
-    it("stream#unfold", function(next) {
-	  var stream = __.stream.unfold.bind(__)(5)((n) => {
-		if(n < 10) {
-		  return __.monad.maybe.unit.bind(__)(__.pair.cons.bind(__)(n*2)(n+1));
-		} else {
-		  return __.monad.maybe.nothing;
-		}
-	  });
-	  __.stream.censor(stream);
-      expect(
-		stream.value()
-      ).to.eql(
-		10
-	  );
-      expect(((_)=> {
-		var taken = __.stream.take.bind(__)(stream)(3);
-		return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([10,12,14]));
-      })()).to.ok();
-      next();
+    describe("stream#unfold", function() {
+      it("stream 10, 12, 14, 16...", function(next) {
+		var stream = __.stream.unfold.bind(__)(5)((n) => {
+		  if(n < 10) {
+			return __.monad.maybe.unit.bind(__)(__.pair.cons.bind(__)(n*2)(n+1));
+		  } else {
+			return __.monad.maybe.nothing;
+		  }
+		});
+		__.stream.censor(stream);
+		expect(
+		  stream.value()
+		).to.eql(
+		  10
+		);
+		expect(((_)=> {
+		  var taken = __.stream.take.bind(__)(stream)(3);
+		  return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([10,12,14]));
+		})()).to.ok();
+		next();
+      });
+      // it("prime stream", function(next) {
+	  // 	var stream = __.stream.unfold.bind(__)(2)((n) => {
+	  // 	  if(__.math.isPrime(n)) {
+	  // 		return __.monad.maybe.unit.bind(__)(__.pair.cons.bind(__)(n)(n+1));
+	  // 	  } else {
+	  // 		return __.monad.maybe.nothing;
+	  // 	  }
+	  // 	});
+	  // 	__.stream.censor(stream);
+	  // 	expect(((_)=> {
+	  // 	  var list = __.stream.take.bind(__)(stream)(10);
+	  // 	  return __.list.toArray.bind(__)(list);
+	  // 	})()).to.eql(
+	  // 	  [2,3]
+	  // 	);
+	  // 	next();
+      // });
     });
     it("stream#repeat", function(next) {
 	  var ones = __.stream.repeat.bind(__)(1);

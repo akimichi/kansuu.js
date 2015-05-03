@@ -6,6 +6,7 @@
 --ignore-dir=tmp
 --ignore-dir=.grunt
 --ignore-dir=public
+--ignore-dir=docs
 --ignore-file=ext:log
 --ignore-file=ext:.desktop
 

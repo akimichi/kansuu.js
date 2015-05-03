@@ -481,4 +481,22 @@ describe("'list' module", function() {
     );
     next();
   });
+  // it("'list#unfold'", function(next) {
+  //   expect((_) => {
+  // 	  return __.list.unfold.bind(__)(0)((n) => {
+  // 		if(n < 10) {
+  // 		  return __.monad.maybe.unit.bind(__)(__.pair.cons.bind(__)(n*2)(n+1));
+  // 		} else {
+  // 		  return __.monad.maybe.nothing;
+  // 		}
+  // 	  });
+  //   }).to.eql(
+  // 	  10
+  // 	);
+  //   expect(((_)=> {
+  // 	  var taken = __.stream.take.bind(__)(stream)(3);
+  // 	  return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([10,12,14]));
+  //   })()).to.ok();
+  //   next();
+  // });
 });
