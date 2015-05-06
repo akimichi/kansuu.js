@@ -74,7 +74,6 @@ describe("math module", function() {
     ).to.eql(
 	  [3,41]
 	);
- 	
     next();
   });
   describe("approximate", function() {
