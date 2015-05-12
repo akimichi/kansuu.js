@@ -36,6 +36,15 @@ describe("math module", function() {
     ).to.be(true);
     next();
   });
+  it("'geq'", function(next) {
+    expect(
+      math.geq.bind(__)(0)(0)
+    ).to.be(true);
+    expect(
+      math.geq.bind(__)(2)(1)
+    ).to.be(true);
+    next();
+  });
   it("'innerProduct'", function(next) {
     expect(
       __.math.innerProduct.bind(__)(__.list.mkList.bind(__)([0,1]))(__.list.mkList.bind(__)([1,0]))
