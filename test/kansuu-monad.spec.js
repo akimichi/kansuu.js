@@ -11,54 +11,80 @@ describe("'monad' module", function() {
   describe("'random' monad", function() {
 
     // var int = __.monad.random.unit.bind(__)(0);
-  	// var ns = __.monad.random.flatMap.bind(__)(int)(x => {
-  	//   return __.monad.random.flatMap.bind(__)(int)(y => {
-  	// 	return 
-  	//   }
-  	// })
+    // var ns = __.monad.random.flatMap.bind(__)(int)(x => {
+    //   return __.monad.random.flatMap.bind(__)(int)(y => {
+    //  return
+    //   }
+    // })
     it("random.int", function(next){
-	  //var rng = seedrandom("seed");
-	  rng.seed("seed");
-	  var intRandom = __.monad.random.int.bind(__)(rng);
+      //var rng = seedrandom("seed");
+      rng.seed("seed");
+      var intRandom = __.monad.random.int.bind(__)(rng);
       expect(
-	  	intRandom.left
+        intRandom.left
       ).to.eql(
-		-1937831252
+        -1937831252
       );
-	  //var intRandom2 = __.monad.random.int.bind(__)(intRandom.right);
+      //var intRandom2 = __.monad.random.int.bind(__)(intRandom.right);
       expect(
-	  	 __.monad.random.int.bind(__)(intRandom.right).left
+         __.monad.random.int.bind(__)(intRandom.right).left
       ).to.eql(
-		-884076225
+        -884076225
       );
       expect(
-	  	__.monad.random.int.bind(__)(intRandom.right).left
+        __.monad.random.int.bind(__)(intRandom.right).left
       ).to.eql(
-		-505527131
+        -505527131
       );
       // expect(
-	  // 	 __.monad.random.int.bind(__)(intRandom.right()).left
+      //     __.monad.random.int.bind(__)(intRandom.right()).left
       // ).to.eql(
-	  // 	2
-	  // 	//4.612568818010603e+306
+      //    2
+      //    //4.612568818010603e+306
       // );
-      next(); 
+      next();
     });
     it("random.ints", function(next){
-	  var rng = Random.engines.mt19937();
-	  rng.seed("seed");
-	  var ints = __.monad.random.ints.bind(__)(3)(rng);
+      var rng = Random.engines.mt19937();
+      rng.seed("seed");
+      var ints = __.monad.random.ints.bind(__)(3)(rng);
       expect(
-	  	__.list.length.bind(__)(ints.left)
+        __.list.length.bind(__)(ints.left)
       ).to.eql(
-		3
+        3
       );
       expect(
-	  	__.list.toArray.bind(__)(ints.left)
+        __.list.toArray.bind(__)(ints.left)
       ).to.eql(
-		[ -1937831252, -884076225, -725654408 ]
+        [ -1937831252, -884076225, -725654408 ]
       );
-      next(); 
+      next();
+    });
+  });
+  describe("'IO' monad", function() {
+    it("'writer'", function(next) {
+      var squared = function(x) {
+        return __.monad.writer.unit.bind(__)(x * x)(__.list.mkList.bind(__)([util.format("%s was squared.",x)]));
+      };
+      var halved = function(x) {
+        return __.monad.writer.unit.bind(__)(x / 2)(__.list.mkList.bind(__)([util.format("%s was halved.",x)]));
+      };
+      var answer = __.monad.writer.flatMap.bind(__)(
+        __.monad.writer.flatMap.bind(__)(
+          __.monad.writer.unit.bind(__)(4)(__.list.empty)
+        )(squared)
+      )(halved);
+      expect(
+        answer.value
+      ).to.eql(
+        8
+      );
+      expect(
+        __.list.toArray.bind(__)(answer.buffer)
+      ).to.eql(
+        [ '4 was squared.', '16 was halved.' ]
+      );
+      next();
     });
   });
   describe("'maybe' monad", function() {
@@ -82,7 +108,7 @@ describe("'monad' module", function() {
         ).to.eql(
           nothing
         );
-        next(); 
+        next();
       });
       it("flatMap(unit(v))(f) == f(v)", function(next){
         // var some = function(n){
@@ -109,7 +135,7 @@ describe("'monad' module", function() {
       // ~~~haskell
       // ((p >>= f) >>= g) = p >>= (¥x -> (f x >>= g))
       // ~~~
-      // 
+      //
       it("flatMap(flatMap(m)(g))(h) == flatMap(m)(¥x => flatMap(g(x))(h))", function(next){
         var justTwo = some(2);
         var square = function(n){
@@ -188,7 +214,7 @@ describe("'monad' module", function() {
        */
       next();
     });
-      
+
     it("practical example of maybe", function(next){
       var obj = {
         key: "value"
@@ -204,12 +230,12 @@ describe("'monad' module", function() {
         nothing
       );
       /*
-       Seq(1,2,3,4) flatMap { x => 
-         if(x % 2 == 0) Some(x) else None 
+       Seq(1,2,3,4) flatMap { x =>
+         if(x % 2 == 0) Some(x) else None
        } map { x =>
          x * 2
-       } foreach { 
-         println 
+       } foreach {
+         println
        }
        */
       // var some = function(n){
@@ -230,29 +256,5 @@ describe("'monad' module", function() {
       // );
       next();
     });
-  });
-  it("'writer'", function(next) {
-    var squared = function(x) {
-      return __.monad.writer.unit.bind(__)(x * x)(__.list.mkList.bind(__)([util.format("%s was squared.",x)]));
-    };
-    var halved = function(x) {
-      return __.monad.writer.unit.bind(__)(x / 2)(__.list.mkList.bind(__)([util.format("%s was halved.",x)]));
-    };
-    var answer = __.monad.writer.flatMap.bind(__)(
-      __.monad.writer.flatMap.bind(__)(
-        __.monad.writer.unit.bind(__)(4)(__.list.empty)
-      )(squared)
-    )(halved);
-    expect(
-      answer.value
-    ).to.eql(
-      8
-    );
-    expect(
-      __.list.toArray.bind(__)(answer.buffer)
-    ).to.eql(
-      [ '4 was squared.', '16 was halved.' ] 
-    );
-    next();
   });
 });

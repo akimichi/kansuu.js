@@ -123,11 +123,27 @@ describe("Kansuu module", function() {
       })).to.eql([2,4]);
       next();
     });
+    it("'before'", function(next) {
+      expect(
+        __.before.bind(__)(0)([1,2,3,0,4,5,6])
+      ).to.eql(
+        [1,2,3]
+      );
+      next();
+    });
+    it("'after'", function(next) {
+      expect(
+        __.after.bind(__)(0)([1,2,3,0,4,5,6])
+      ).to.eql(
+        [4,5,6]
+      );
+      next();
+    });
     it("'span'", function(next) {
       var isPositive = function(n){
         return n > 0;
       };
-	  var mkPair = __.pair.mkPair.bind(__);
+      var mkPair = __.pair.mkPair.bind(__);
       expect(
         __.span.bind(__)(isPositive)([])
       ).to.eql(
@@ -166,8 +182,8 @@ describe("Kansuu module", function() {
       ).to.eql(
         { type: 'pair',
           left: [ 1, 2, 3 ],
-          right: [ 4, 1, 2, 3, 4 ] 
-        } 
+          right: [ 4, 1, 2, 3, 4 ]
+        }
       );
       // break (< 9) [1,2,3] == ([],[1,2,3])
       expect(
@@ -175,8 +191,8 @@ describe("Kansuu module", function() {
       ).to.eql(
         { type: 'pair',
           left: [ ],
-          right: [ 1, 2, 3 ] 
-        } 
+          right: [ 1, 2, 3 ]
+        }
       );
       // break (> 9) [1,2,3] == ([1,2,3],[])
       expect(
@@ -185,7 +201,7 @@ describe("Kansuu module", function() {
         { type: 'pair',
           left: [ 1, 2, 3 ],
           right: [ ]
-        } 
+        }
       );
       next();
     });
@@ -257,7 +273,7 @@ describe("Kansuu module", function() {
         next();
       });
     });
-    
+
   });
   describe("judgment predicates", function() {
     it("'existy'", function(next) {
@@ -587,5 +603,5 @@ describe("Kansuu module", function() {
   //     next();
   //    });
   // });
-  
+
 });
