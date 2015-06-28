@@ -170,6 +170,25 @@ describe("'monad' module", function() {
       );
       next();
     });
+    it("maybe#map", function(next){
+      var some = __.monad.maybe.unit.bind(__);
+      var nothing = __.monad.maybe.nothing;
+      expect(
+        __.monad.maybe.map.bind(__)(some(200))((n) => {
+          return n * 2;
+        })
+      ).to.eql(
+        some(400)
+      );
+      expect(
+        __.monad.maybe.map.bind(__)(nothing)((n) => {
+          return n * 2;
+        })
+      ).to.eql(
+        nothing
+      );
+      next();
+    });
     it("maybe#lift", function(next){
       var some = __.monad.maybe.unit.bind(__);
       var nothing = __.monad.maybe.nothing;
