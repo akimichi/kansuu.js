@@ -5,6 +5,10 @@ var __ = require('../lib/kansuu.js');
 
 describe("'list' module", function() {
   var toArray = __.list.toArray.bind(__);
+  var mkList = __.list.mkList.bind(__);
+  var map = __.list.map.bind(__);
+  var append = __.list.append.bind(__);
+  var empty = __.list.empty;
 
   var fixtures = {
     ints: __.list.mkList.bind(__)([0,1,2,3])
@@ -108,11 +112,11 @@ describe("'list' module", function() {
     }()).to.eql(
       [0,1,2,3]
     );
-    
+
     next();
   });
   // ~~~scala
-  //   for(val x <- m1                     
+  //   for(val x <- m1
   //     val y <- m2)
   //   yield {x + y}
   //
@@ -144,6 +148,7 @@ describe("'list' module", function() {
     );
     next();
   });
+
   it("'list#map'", function(next) {
     var list = __.list.mkList.bind(__)([0,1,2,3]);
     var result = __.list.map.bind(__)(list)(function(item){
@@ -201,7 +206,7 @@ describe("'list' module", function() {
     ).to.eql(
       [ { type: 'pair', left: 'a', right: 1 },
         { type: 'pair', left: 'b', right: 2 },
-        { type: 'pair', left: 'c', right: 3 } ] 
+        { type: 'pair', left: 'c', right: 3 } ]
     );
     next();
   });
@@ -219,7 +224,7 @@ describe("'list' module", function() {
     ).to.eql(
       [ { type: 'pair', left: 'a', right: 1 },
         { type: 'pair', left: 'b', right: 2 },
-        { type: 'pair', left: 'c', right: 3 } ] 
+        { type: 'pair', left: 'c', right: 3 } ]
     );
     next();
   });
@@ -303,15 +308,15 @@ describe("'list' module", function() {
     next();
   });
   it("'list#pairs'", function(next) {
-	// > pairs [1, 2, 3, 4]
-	// [(1, 2), (2, 3), (3, 4)]
+    // > pairs [1, 2, 3, 4]
+    // [(1, 2), (2, 3), (3, 4)]
     var list = __.list.mkList.bind(__)([1,2,3,4]);
     expect(
       toArray(__.list.pairs.bind(__)(list))
     ).to.eql(
-	  [ { type: 'pair', left: 1, right: 2 },
-		{ type: 'pair', left: 2, right: 3 },
-		{ type: 'pair', left: 3, right: 4 } ]
+      [ { type: 'pair', left: 1, right: 2 },
+        { type: 'pair', left: 2, right: 3 },
+        { type: 'pair', left: 3, right: 4 } ]
     );
     next();
   });
@@ -343,8 +348,8 @@ describe("'list' module", function() {
     next();
   });
   it("'list#or'", function(next) {
-	var mkList = __.list.mkList.bind(__);
-	var or = __.list.or.bind(__);
+    var mkList = __.list.mkList.bind(__);
+    var or = __.list.or.bind(__);
     expect(function(){
       return or(mkList([true,true]));
     }()).to.eql(
@@ -368,8 +373,8 @@ describe("'list' module", function() {
     next();
   });
   it("'list#all'", function(next) {
-	var mkList = __.list.mkList.bind(__);
-	var all = __.list.all.bind(__);
+    var mkList = __.list.mkList.bind(__);
+    var all = __.list.all.bind(__);
     var even = function(n){
       return (n % 2) === 0;
     };
@@ -381,8 +386,8 @@ describe("'list' module", function() {
     next();
   });
   it("'list#any'", function(next) {
-	var mkList = __.list.mkList.bind(__);
-	var any = __.list.any.bind(__);
+    var mkList = __.list.mkList.bind(__);
+    var any = __.list.any.bind(__);
     var even = function(n){
       return (n % 2) === 0;
     };
@@ -393,9 +398,20 @@ describe("'list' module", function() {
     );
     next();
   });
+  it("'list#append'", function(next) {
+    var listX = mkList([0,2,4]);
+    var listY = mkList([1,3,5]);
+    var appended = __.list.merge.bind(__)(listX)(listY);
+    expect(
+      __.list.toArray.bind(__)(appended)
+    ).to.eql(
+      [ 0, 1, 2, 3, 4, 5 ]
+    );
+    next();
+  });
   it("'list#merge'", function(next) {
-    var listX = __.list.mkList.bind(__)([0,2,4]);
-    var listY = __.list.mkList.bind(__)([1,3,5]);
+    var listX = mkList([0,2,4]);
+    var listY = mkList([1,3,5]);
     var merged = __.list.merge.bind(__)(listX)(listY);
     expect(
       __.list.toArray.bind(__)(merged)
@@ -435,68 +451,124 @@ describe("'list' module", function() {
     next();
   });
   describe("'list#isEqual'", function() {
-	it("'isEqual' to be true", function(next) {
+    it("'isEqual' to be true", function(next) {
       expect(function(){
-		var list1 = __.list.mkList.bind(__)([2,0,3,1]);
-		var list2 = __.list.mkList.bind(__)([2,0,3,1]);
-		return list1.isEqual(list2);
+        var list1 = __.list.mkList.bind(__)([2,0,3,1]);
+        var list2 = __.list.mkList.bind(__)([2,0,3,1]);
+        return list1.isEqual(list2);
       }()).to.eql(
-		true
+        true
       );
       next();
-	});
-	it("'isEqual' to be false when two list have different length", function(next) {
+    });
+    it("'isEqual' to be false when two list have different length", function(next) {
       expect(function(){
-		var list1 = __.list.mkList.bind(__)([2,0,3,1,4]);
-		var list2 = __.list.mkList.bind(__)([2,0,3,1]);
-		return list1.isEqual(list2);
+        var list1 = __.list.mkList.bind(__)([2,0,3,1,4]);
+        var list2 = __.list.mkList.bind(__)([2,0,3,1]);
+        return list1.isEqual(list2);
       }()).to.eql(
-		false
+        false
       );
       expect(function(){
-		var list1 = __.list.mkList.bind(__)([2,0,3,1]);
-		var list2 = __.list.mkList.bind(__)([2,0,3,1,4]);
-		return list1.isEqual(list2);
+        var list1 = __.list.mkList.bind(__)([2,0,3,1]);
+        var list2 = __.list.mkList.bind(__)([2,0,3,1,4]);
+        return list1.isEqual(list2);
       }()).to.eql(
-		false
-      );
-      next();
-	});
-	it("'isEqual' to be false", function(next) {
-      expect(function(){
-		var list1 = __.list.mkList.bind(__)([2,0,3,1]);
-		var list2 = __.list.mkList.bind(__)([0,2,3,1]);
-		return list1.isEqual(list2);
-      }()).to.eql(
-		false
+        false
       );
       next();
-	});
+    });
+    it("'isEqual' to be false", function(next) {
+      expect(function(){
+        var list1 = __.list.mkList.bind(__)([2,0,3,1]);
+        var list2 = __.list.mkList.bind(__)([0,2,3,1]);
+        return list1.isEqual(list2);
+      }()).to.eql(
+        false
+      );
+      next();
+    });
   });
   it("'list#replicate'", function(next) {
     expect(
-	  toArray(__.list.replicate.bind(__)(3)("a"))
-	).to.eql(
+      toArray(__.list.replicate.bind(__)(3)("a"))
+    ).to.eql(
       ["a","a","a"]
     );
     next();
   });
   // it("'list#unfold'", function(next) {
   //   expect((_) => {
-  // 	  return __.list.unfold.bind(__)(0)((n) => {
-  // 		if(n < 10) {
-  // 		  return __.monad.maybe.unit.bind(__)(__.pair.cons.bind(__)(n*2)(n+1));
-  // 		} else {
-  // 		  return __.monad.maybe.nothing;
-  // 		}
-  // 	  });
+  //      return __.list.unfold.bind(__)(0)((n) => {
+  //        if(n < 10) {
+  //          return __.monad.maybe.unit.bind(__)(__.pair.cons.bind(__)(n*2)(n+1));
+  //        } else {
+  //          return __.monad.maybe.nothing;
+  //        }
+  //      });
   //   }).to.eql(
-  // 	  10
-  // 	);
+  //      10
+  //    );
   //   expect(((_)=> {
-  // 	  var taken = __.stream.take.bind(__)(stream)(3);
-  // 	  return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([10,12,14]));
+  //      var taken = __.stream.take.bind(__)(stream)(3);
+  //      return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([10,12,14]));
   //   })()).to.ok();
   //   next();
   // });
+  describe("functor laws on list", function() {
+    var list = __.list.mkList.bind(__)([0,1,2,3]);
+    it("map id == id", function(next){
+      expect(
+        toArray(map(list)(__.id))
+      ).to.eql(
+        toArray(__.id(list))
+      );
+      next();
+    });
+    it("map (f . g)  == map f . map g", function(next){
+      var f = (n) => {
+        return n + 1;
+      };
+      var g = (n) => {
+        return - n;
+      };
+      expect(
+        toArray(map(list)(__.compose.bind(__)(f)(g)))
+      ).to.eql(
+        toArray(__.compose.bind(__)(__.flip.bind(__)(map)(f))
+                                   (__.flip.bind(__)(map)(g))(list))
+      );
+      next();
+    });
+  });
+  describe("monoid laws on list", function() {
+    var list = __.list.mkList.bind(__)([0,1,2,3]);
+    it("empty `append` xs == xs", function(next){
+      expect(
+        toArray(append(empty)(list))
+      ).to.eql(
+        toArray(list)
+      );
+      next();
+    });
+    it("xs `append` empty == xs", function(next){
+      expect(
+        toArray(append(list)(empty))
+      ).to.eql(
+        toArray(list)
+      );
+      next();
+    });
+    it("(xs `append` ys) `append` zs == xs `append` (ys `append` zs)", function(next){
+      var xs = __.list.mkList.bind(__)([0,1]);
+      var ys = __.list.mkList.bind(__)([1,2]);
+      var zs = __.list.mkList.bind(__)([2,3]);
+      expect(
+        toArray(append(append(xs)(ys))(zs))
+      ).to.eql(
+        toArray(append(xs)(append(ys)(zs)))
+      );
+      next();
+    });
+  });
 });

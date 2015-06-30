@@ -8,6 +8,40 @@ var Random = require("random-js");
 var rng = Random.engines.mt19937();
 
 describe("'monad' module", function() {
+  describe("'list' monad", function() {
+    var toArray = __.list.toArray.bind(__);
+    var mkList = __.list.mkList.bind(__);
+    var empty = __.list.empty;
+    it("'list#flatMap'", function(next) {
+      var list = __.list.mkList.bind(__)([3,4,5]);
+      expect(
+        toArray(__.monad.list.flatMap.bind(__)(list)(function (x){
+          return __.list.mkList.bind(__)([x, -x]);
+        }))
+      ).to.eql(
+          [3,-3,4,-4,5,-5]
+      );
+
+      next();
+    });
+    describe("monad laws on list", function() {
+      var flatMap = __.monad.list.flatMap.bind(__);
+      var unit = __.monad.list.unit.bind(__);
+
+      // it("flatMap(unit(v))(f) == f(v)", function(next){
+      //   var list = unit(2);
+      //   var square = (n) => {
+      //     return n * n;
+      //   };
+      //   expect(
+      //     flatMap(list)(square)
+      //   ).to.eql(
+      //     square(2)
+      //   );
+      //   next();
+      // });
+    });
+  });
   describe("'random' monad", function() {
 
     // var int = __.monad.random.unit.bind(__)(0);
@@ -91,8 +125,46 @@ describe("'monad' module", function() {
     var some = function(n){
       return __.monad.maybe.unit.bind(__)(n);
     };
+    //var some = __.monad.maybe.unit.bind(__);
     var nothing = __.monad.maybe.nothing;
-    describe("monad laws", function() {
+    var flatMap = __.monad.maybe.flatMap.bind(__);
+    var unit = __.monad.maybe.unit.bind(__);
+
+    describe("functor laws on maybe", function() {
+      var map = __.monad.maybe.map.bind(__);
+      var unit = __.monad.maybe.unit.bind(__);
+      it("map id == id", function(next){
+        var justOne = some(1);
+        expect(
+          map(justOne)(__.id)
+        ).to.eql(
+          __.id(justOne)
+        );
+        expect(
+          map(nothing)(__.id)
+        ).to.eql(
+          __.id(nothing)
+        );
+        next();
+      });
+      it("map (f . g)  == map f . map g", function(next){
+        var justOne = some(1);
+        var f = (n) => {
+          return n + 1;
+        };
+        var g = (n) => {
+          return - n;
+        };
+        expect(
+          map(justOne)(__.compose.bind(__)(f)(g))
+        ).to.eql(
+          __.compose.bind(__)(__.flip.bind(__)(map)(f))
+                             (__.flip.bind(__)(map)(g))(justOne)
+        );
+        next();
+      });
+    });
+    describe("monad laws on maybe", function() {
       var flatMap = __.monad.maybe.flatMap.bind(__);
       var unit = __.monad.maybe.unit.bind(__);
 
@@ -161,18 +233,16 @@ describe("'monad' module", function() {
       });
     });
     it("maybe and id", function(next){
-      var some = __.monad.maybe.unit.bind(__)(1);
-      var nothing = __.monad.maybe.nothing;
+      var justOne = __.monad.maybe.unit.bind(__)(1);
       expect(
-        __.monad.maybe.flatMap.bind(__)(some)(__.monad.id.unit)
+        __.monad.maybe.flatMap.bind(__)(justOne)(__.monad.id.unit)
       ).to.eql(
         1
       );
       next();
     });
     it("maybe#map", function(next){
-      var some = __.monad.maybe.unit.bind(__);
-      var nothing = __.monad.maybe.nothing;
+      //var some = __.monad.maybe.unit.bind(__);
       expect(
         __.monad.maybe.map.bind(__)(some(200))((n) => {
           return n * 2;
@@ -183,6 +253,23 @@ describe("'monad' module", function() {
       expect(
         __.monad.maybe.map.bind(__)(nothing)((n) => {
           return n * 2;
+        })
+      ).to.eql(
+        nothing
+      );
+      next();
+    });
+    it("maybe#flatMap", function(next){
+      expect(
+        flatMap(some(200))((n) => {
+          return some(n * 2);
+        })
+      ).to.eql(
+        some(400)
+      );
+      expect(
+        flatMap(nothing)((n) => {
+          return some(n * 2);
         })
       ).to.eql(
         nothing
