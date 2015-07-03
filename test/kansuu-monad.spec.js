@@ -61,6 +61,7 @@ describe("'monad' module", function() {
   });
   describe("'list' monad", function() {
     var toArray = __.list.toArray.bind(__);
+    var unit = __.monad.list.unit.bind(__);
     var mkList = __.list.mkList.bind(__);
     var empty = __.list.empty;
     it("'list#flatMap'", function(next) {
@@ -72,7 +73,14 @@ describe("'monad' module", function() {
       ).to.eql(
           [3,-3,4,-4,5,-5]
       );
-
+      next();
+    });
+    it("'list#flatten'", function(next) {
+      expect(
+        toArray(__.monad.list.flatten.call(__, unit(unit(2))))
+      ).to.eql(
+        [2]
+      );
       next();
     });
     describe("monad laws on list", function() {
@@ -342,12 +350,33 @@ describe("'monad' module", function() {
       );
       next();
     });
-    it("primes", function(next){
-      var some = function(n){
+    it("maybe#flatten", (next) => {
+      var instanceMM = some(some(2));
+      expect(
+        __.monad.maybe.flatten.call(__, instanceMM)
+      ).to.eql(
+        some(2)
+      );
+      next();
+    });
+    it("maybe#ap", (next) => {
+      var justFunction = some(function(n){
+        return n + 3;
+      });
+      var just4 = some(4);
+      expect(
+        __.monad.maybe.ap.call(__, justFunction)(just4)
+      ).to.eql(
+        some(7)
+      );
+      next();
+    });
+    it("primes", (next) => {
+      var some = (n) => {
         return __.monad.maybe.unit.bind(__)(n);
       };
       var nothing = __.monad.maybe.nothing;
-      var primeOrNot = function(n){
+      var primeOrNot = (n) => {
         if(__.math.isPrime(n)){
           return some(n);
         } else {
