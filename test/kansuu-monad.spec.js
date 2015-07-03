@@ -87,18 +87,44 @@ describe("'monad' module", function() {
       var flatMap = __.monad.list.flatMap.bind(__);
       var unit = __.monad.list.unit.bind(__);
 
-      // it("flatMap(unit(v))(f) == f(v)", function(next){
-      //   var list = unit(2);
-      //   var square = (n) => {
-      //     return n * n;
-      //   };
-      //   expect(
-      //     flatMap(list)(square)
-      //   ).to.eql(
-      //     square(2)
-      //   );
-      //   next();
-      // });
+      it("flatMap(m)(unit) == m", function(next){
+        var list = unit(2);
+        expect(
+          toArray(flatMap(list)(unit))
+        ).to.eql(
+          toArray(list)
+        );
+        next();
+      });
+      it("flatMap(unit(v))(f) == f(v)", function(next){
+        var list = unit(2);
+        var square = (n) => {
+          return unit(n * n);
+        };
+        expect(
+          toArray(flatMap(list)(square))
+        ).to.eql(
+          toArray(square(2))
+        );
+        next();
+      });
+      it("flatMap(flatMap(m)(g))(h) == flatMap(m)(\\x => flatMap(g(x))(h))", function(next){
+        var list = unit(2);
+        var square = function(n){
+          return unit(n * n);
+        };
+        var negate = function(n){
+          return unit(- n);
+        };
+        expect(
+          toArray(flatMap(flatMap(list)(square))(negate))
+        ).to.eql(
+          toArray(flatMap(list)(function(x){
+            return flatMap(square(x))(negate);
+          }))
+        );
+        next();
+      });
     });
   });
   describe("'random' monad", function() {
