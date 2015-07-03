@@ -283,15 +283,15 @@ describe("'monad' module", function() {
         next();
       });
     });
-    it("maybe and id", function(next){
-      var justOne = __.monad.maybe.unit.bind(__)(1);
-      expect(
-        __.monad.maybe.flatMap.bind(__)(justOne)(__.monad.id.unit)
-      ).to.eql(
-        1
-      );
-      next();
-    });
+    // it("maybe and id", function(next){
+    //   var justOne = __.monad.maybe.unit.bind(__)(1);
+    //   expect(
+    //     __.monad.maybe.flatMap.bind(__)(justOne)(__.monad.id.unit)
+    //   ).to.eql(
+    //     1
+    //   );
+    //   next();
+    // });
     it("maybe#map", function(next){
       //var some = __.monad.maybe.unit.bind(__);
       expect(
