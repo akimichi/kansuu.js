@@ -8,6 +8,17 @@ var Random = require("random-js");
 var rng = Random.engines.mt19937();
 
 describe("'monad' module", function() {
+  describe("'either' monad", function() {
+    it("'either#unit'", function(next) {
+      var unit = __.monad.either.unit.bind(__);
+      expect(
+        unit(1)
+      ).to.eql(
+        __.pair.mkPair.call(__,null)(1)
+      );
+      next();
+    });
+  });
   describe("'list' monad", function() {
     var toArray = __.list.toArray.bind(__);
     var mkList = __.list.mkList.bind(__);
