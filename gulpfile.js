@@ -13,14 +13,15 @@ gulp.task('test', function() {
         should: require('expect.js')
       }
     }))
-  	.pipe(exit());
+    .pipe(exit());
 });
 
 
 gulp.task('doc', function() {
-  return gulp.src("./lib/*.js")
-	.pipe(docco())
-	.pipe(gulp.dest('./docs'));
+  //return gulp.src("./lib/*.js")
+  return gulp.src(["./lib/*.js","./test/*.js"])
+    .pipe(docco())
+    .pipe(gulp.dest('./docs'));
 });
 
 
