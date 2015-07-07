@@ -502,7 +502,7 @@ describe("Kansuu module", function() {
   describe("misc", function() {
     it("'until'", function(next) {
       expect(
-        __.until(__.math.isMoreThan(100))(__.math.times(7))(1)
+        __.until(__.math.isMoreThan(100))(__.math.multiply(7))(1)
       ).to.eql(
         343
       );
