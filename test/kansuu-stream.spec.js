@@ -3,6 +3,8 @@
 var expect = require('expect.js');
 var __ = require('../lib/kansuu.js');
 var base = require('../lib/kansuu-base.js');
+var math = require('../lib/kansuu-math.js');
+
 
 describe("'stream' module", function() {
   describe("exists", function() {
@@ -102,7 +104,7 @@ describe("'stream' module", function() {
       });
       // it("prime stream", function(next) {
       //    var stream = __.stream.unfold.bind(__)(2)((n) => {
-      //      if(__.math.isPrime(n)) {
+      //      if(math.isPrime(n)) {
       //        return __.monad.maybe.unit.bind(__)(__.pair.cons.bind(__)(n)(n+1));
       //      } else {
       //        return __.monad.maybe.nothing;
@@ -274,7 +276,7 @@ describe("'stream' module", function() {
       expect(
         __.stream.at.call(__,
                           __.stream.iterate.call(__,
-                                                 __.math.multiply(2))(1))(9)
+                                                 math.multiply(2))(1))(9)
       ).to.eql(
         512
       );
@@ -286,14 +288,14 @@ describe("'stream' module", function() {
       // expect(
       //   __.take.call(__,
       //                __.iterate.call(__,
-      //                                __.math.multiply(2))(1))(10)
+      //                                math.multiply(2))(1))(10)
       // ).to.eql(
       //   [ [ 0, 1 ], [ 2, 3 ] ]
       // );
       expect(((_)=> {
         var answer = __.stream.take.call(__,
                                          __.stream.iterate.call(__,
-                                                                __.math.multiply(2))(1))(10);
+                                                                math.multiply(2))(1))(10);
         return __.list.isEqual.call(__,
                                     answer)(__.list.mkList.call(__,
                                                                 [1,2,4,8,16,32,64,128,256,512]));

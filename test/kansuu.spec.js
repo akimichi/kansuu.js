@@ -2,6 +2,7 @@
 
 var expect = require('expect.js');
 var __ = require('../lib/kansuu.js');
+var math = require('../lib/kansuu-math.js');
 
 describe("Kansuu module", function() {
   it("'id''", function(next) {
@@ -157,13 +158,13 @@ describe("Kansuu module", function() {
       );
       // span (< 9) [1,2,3] == ([1,2,3],[])
       expect(
-        __.span.bind(__)(__.math.isLessThan(9))([1,2,3])
+        __.span.bind(__)(math.isLessThan(9))([1,2,3])
       ).to.eql(
         mkPair([1,2,3])([])
       );
       // span (< 0) [1,2,3] == ([],[1,2,3])
       expect(
-        __.span.bind(__)(__.math.isLessThan(0))([1,2,3])
+        __.span.bind(__)(math.isLessThan(0))([1,2,3])
       ).to.eql(
         mkPair([])([1,2,3])
       );
@@ -172,13 +173,13 @@ describe("Kansuu module", function() {
     it("'break'", function(next) {
       // break (3==) [1,2,3,4,5] == ([1,2],[3,4,5])
       expect(
-        __.break.bind(__)(__.math.isEqual(3))([1,2,3,4,5])
+        __.break.bind(__)(math.isEqual(3))([1,2,3,4,5])
       ).to.eql(
         { type: 'pair', left: [ 1, 2 ], right: [ 3, 4, 5 ] }
       );
       // break (> 3) [1,2,3,4,1,2,3,4] == ([1,2,3],[4,1,2,3,4])
       expect(
-        __.break.bind(__)(__.math.isMoreThan(3))([1,2,3,4,1,2,3,4])
+        __.break.bind(__)(math.isMoreThan(3))([1,2,3,4,1,2,3,4])
       ).to.eql(
         { type: 'pair',
           left: [ 1, 2, 3 ],
@@ -187,7 +188,7 @@ describe("Kansuu module", function() {
       );
       // break (< 9) [1,2,3] == ([],[1,2,3])
       expect(
-        __.break.bind(__)(__.math.isLessThan(9))([1,2,3])
+        __.break.bind(__)(math.isLessThan(9))([1,2,3])
       ).to.eql(
         { type: 'pair',
           left: [ ],
@@ -196,7 +197,7 @@ describe("Kansuu module", function() {
       );
       // break (> 9) [1,2,3] == ([1,2,3],[])
       expect(
-        __.break.bind(__)(__.math.isMoreThan(9))([1,2,3])
+        __.break.bind(__)(math.isMoreThan(9))([1,2,3])
       ).to.eql(
         { type: 'pair',
           left: [ 1, 2, 3 ],
@@ -502,7 +503,7 @@ describe("Kansuu module", function() {
   describe("misc", function() {
     it("'until'", function(next) {
       expect(
-        __.until(__.math.isMoreThan(100))(__.math.multiply(7))(1)
+        __.until(math.isMoreThan(100))(math.multiply(7))(1)
       ).to.eql(
         343
       );
@@ -545,12 +546,12 @@ describe("Kansuu module", function() {
           return ! x;
         };
         expect(
-          __.compose.bind(__)(not)(__.math.isEqual(3))(3)
+          __.compose.bind(__)(not)(math.isEqual(3))(3)
         ).to.eql(
             false
         );
         // expect(
-        //   __.compose.bind(__)(__.not)(__.math.isEqual(3))(3)
+        //   __.compose.bind(__)(__.not)(math.isEqual(3))(3)
         // ).to.eql(
         //  false
         // );

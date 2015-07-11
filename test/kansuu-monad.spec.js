@@ -3,6 +3,7 @@
 var util = require('util');
 var expect = require('expect.js');
 var __ = require('../lib/kansuu.js');
+var math = require('../lib/kansuu-math.js');
 var seedrandom = require('seedrandom');
 var Random = require("random-js");
 var rng = Random.engines.mt19937();
@@ -179,7 +180,7 @@ describe("'monad' module", function() {
     });
     it("primes", (next) => {
       var primeOrNot = (n) => {
-        if(__.math.isPrime(n)){
+        if(math.isPrime(n)){
           return some(n);
         } else {
           return nothing;
