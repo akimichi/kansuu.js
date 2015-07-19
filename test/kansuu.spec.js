@@ -2,6 +2,7 @@
 
 var expect = require('expect.js');
 var __ = require('../lib/kansuu.js');
+var base = require('../lib/kansuu-base.js');
 var math = require('../lib/kansuu-math.js');
 
 describe("Kansuu module", function() {
@@ -10,8 +11,33 @@ describe("Kansuu module", function() {
     expect(__.id(null)).to.be(null);
     next();
   });
+  describe("arithmetic", function() {
+    it("div", (next) => {
+      expect(
+        __.div(6)(2)
+      ).to.be(
+        3
+      );
+      expect(
+        __.div(8)(3)
+      ).to.be(
+        2
+      );
+      expect(
+        __.div(1)(2)
+      ).to.be(
+        0
+      );
+      expect(
+        __.div(0)(2)
+      ).to.be(
+        0
+      );
+      next();
+    });
+  });
   describe("array", function() {
-    it("'cons' should construct a list", function(next) {
+    it("'cons' should construct a list", (next) => {
       expect(
         __.cons.bind(__)(1)([])
       ).to.eql(
@@ -277,23 +303,24 @@ describe("Kansuu module", function() {
 
   });
   describe("judgment predicates", function() {
-    it("'existy'", function(next) {
+    it("'existy'", (next) => {
       expect(__.existy(1)).to.be(true);
       expect(__.existy(null)).to.be(false);
       expect(__.existy(undefined)).to.be(false);
       expect(__.existy(false)).to.be(true);
+      expect(__.existy(base.nothing)).to.be(false);
       next();
     });
-    it("'truthy'", function(next) {
+    it("'truthy'", (next) => {
       expect(__.truthy(1)).to.be(true);
       next();
     });
-    it("'falsy'", function(next) {
+    it("'falsy'", (next) => {
       expect(__.falsy.bind(__)(1)).to.be(false);
       next();
     });
-    describe("'isEmpty'", function() {
-      it("isEmpty(list) ", function(next) {
+    describe("'isEmpty'", () => {
+      it("isEmpty(list) ", (next) => {
         expect(
           __.isEmpty.bind(__)([])
         ).to.be(
@@ -389,7 +416,8 @@ describe("Kansuu module", function() {
       //    };
       // };
       var averageX = function(x){
-        return C(B(__.divide)(__.add(x)))(2);
+        return C(B(__.div)(__.add(x)))(2);
+        //return C(B(__.divide)(__.add(x)))(2);
         //return C(B(divide)(plus(x)))(2);
       };
       expect(averageX(1)(3)).to.eql(2);

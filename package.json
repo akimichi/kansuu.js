@@ -1,6 +1,6 @@
 {
   "name": "kansuu.js",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Yet another functional programming library for node.js",
   "main": "lib/kansuu.js",
   "scripts": {

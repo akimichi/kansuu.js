@@ -282,16 +282,10 @@ describe("'stream' module", function() {
       );
       next();
     });
+
+    // Input: take 10 (iterate (2*) 1)
+    // Output: [1,2,4,8,16,32,64,128,256,512]
     it("'stream#iterate'", (next) => {
-      // Input: take 10 (iterate (2*) 1)
-      // Output: [1,2,4,8,16,32,64,128,256,512]
-      // expect(
-      //   __.take.call(__,
-      //                __.iterate.call(__,
-      //                                math.multiply(2))(1))(10)
-      // ).to.eql(
-      //   [ [ 0, 1 ], [ 2, 3 ] ]
-      // );
       this.timeout(5000);
       expect(((_)=> {
         var answer = __.stream.take.call(__,

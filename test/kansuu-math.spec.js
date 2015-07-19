@@ -60,6 +60,7 @@ describe("math module", function() {
     next();
   });
   it("'primes'", function(next) {
+    this.timeout(5000);
     var primes = math.primes.bind(math)();
     expect(
       toArray(__.stream.take.bind(__)(primes)(3))
