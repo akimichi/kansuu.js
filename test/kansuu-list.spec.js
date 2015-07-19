@@ -429,15 +429,24 @@ describe("'list' module", function() {
       );
       next();
     });
-    // it("append(xs)(empty) == xs", (next) => {
-    //   var appended = __.list.append.call(__,listX)(empty);
-    //   expect(
-    //     __.list.toArray.call(__,appended)
-    //   ).to.eql(
-    //     [ 0, 1, 2, 3, 4, 5 ]
-    //   );
-    //   next();
-    // });
+    it("append(xs)(empty) == xs", (next) => {
+      var appended = __.list.append.call(__,listX)(empty);
+      expect(
+        __.list.toArray.call(__,appended)
+      ).to.eql(
+        [ 0, 2, 4 ]
+      );
+      next();
+    });
+    it("append(empty)(xs) == xs", (next) => {
+      var appended = __.list.append.call(__,empty)(listX);
+      expect(
+        __.list.toArray.call(__,appended)
+      ).to.eql(
+        [ 0, 2, 4 ]
+      );
+      next();
+    });
   });
   it("'list#merge'", function(next) {
     var listX = mkList([0,2,4]);
