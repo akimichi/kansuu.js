@@ -292,6 +292,7 @@ describe("'stream' module", function() {
       // ).to.eql(
       //   [ [ 0, 1 ], [ 2, 3 ] ]
       // );
+      this.timeout(5000);
       expect(((_)=> {
         var answer = __.stream.take.call(__,
                                          __.stream.iterate.call(__,

@@ -272,19 +272,6 @@ describe("'list' module", function() {
     );
     next();
   });
-  it("'list#reduce'", function(next) {
-    var list = __.list.mkList.bind(__)([0,1,2,3]);
-    expect(
-      __.list.reduce.bind(__)(list)(0)(function(item){
-        return function(accumulator){
-          return item + accumulator;
-        };
-      })
-    ).to.eql(
-      6
-    );
-    next();
-  });
   it("'list#sum'", function(next) {
     var list = __.list.mkList.bind(__)([0,1,2,3]);
     expect(
@@ -294,18 +281,49 @@ describe("'list' module", function() {
     );
     next();
   });
-  it("'list#foldl'", function(next) {
-    var list = __.list.mkList.bind(__)([0,1,2,3]);
-    expect(
-      __.list.foldl.bind(__)(list)(0)(function(item){
-        return function(accumulator){
-          return item + accumulator;
-        };
-      })
-    ).to.eql(
-      6
-    );
-    next();
+  describe("folding higher-functions", () => {
+    var foldr = __.list.foldr.bind(__);
+    var foldl = __.list.foldl.bind(__);
+    var reduce = __.list.reduce.bind(__);
+    it("'list#foldr'", function(next) {
+      var list = __.list.mkList.bind(__)([0,1,2,3]);
+      expect(
+        foldr(list)(0)(function(item){
+          return function(accumulator){
+            return item + accumulator;
+          };
+        })
+      ).to.eql(
+        6
+      );
+      next();
+    });
+    it("'list#foldl'", function(next) {
+      var list = __.list.mkList.bind(__)([0,1,2,3]);
+      expect(
+        foldl(list)(0)(function(item){
+          return function(accumulator){
+            return item + accumulator;
+          };
+        })
+      ).to.eql(
+        6
+      );
+      next();
+    });
+    it("'list#reduce'", function(next) {
+      var list = __.list.mkList.bind(__)([0,1,2,3]);
+      expect(
+        reduce(list)(0)(function(item){
+          return function(accumulator){
+            return item + accumulator;
+          };
+        })
+      ).to.eql(
+        6
+      );
+      next();
+    });
   });
   it("'list#pairs'", function(next) {
     // > pairs [1, 2, 3, 4]
@@ -398,16 +416,28 @@ describe("'list' module", function() {
     );
     next();
   });
-  it("'list#append'", function(next) {
+  describe("'list#append'", () => {
     var listX = mkList([0,2,4]);
     var listY = mkList([1,3,5]);
-    var appended = __.list.merge.bind(__)(listX)(listY);
-    expect(
-      __.list.toArray.bind(__)(appended)
-    ).to.eql(
-      [ 0, 1, 2, 3, 4, 5 ]
-    );
-    next();
+    it("append(xs)(ys)", (next) => {
+      var appended = __.list.append.call(__,
+                                         listX)(listY);
+      expect(
+        __.list.toArray.call(__,appended)
+      ).to.eql(
+        [ 0,2,4,1,3,5]
+      );
+      next();
+    });
+    // it("append(xs)(empty) == xs", (next) => {
+    //   var appended = __.list.append.call(__,listX)(empty);
+    //   expect(
+    //     __.list.toArray.call(__,appended)
+    //   ).to.eql(
+    //     [ 0, 1, 2, 3, 4, 5 ]
+    //   );
+    //   next();
+    // });
   });
   it("'list#merge'", function(next) {
     var listX = mkList([0,2,4]);
