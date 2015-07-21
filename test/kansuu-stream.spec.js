@@ -233,18 +233,18 @@ describe("'stream' module", function() {
         var stream1 = __.stream.mkStream.bind(__)([1,2,3]);
         var stream2 = __.stream.mkStream.bind(__)([1,2,3,4,5]);
         return isEqual(stream1)(stream2);
-      }()).to.ok();
+      }()).to.not.ok();
       expect(function(){
         var stream1 = __.stream.mkStream.bind(__)([1,2,3,4,5]);
         var stream2 = __.stream.mkStream.bind(__)([1,2,3]);
         return isEqual(stream1)(stream2);
-      }()).to.ok();
+      }()).to.not.ok();
       next();
     });
     it("stream#append", function(next) {
-      var evens = __.stream.mkStream.bind(__)([0,2,4]);
-      var odds = __.stream.mkStream.bind(__)([1,3,5]);
-      var ints = __.stream.mkStream.bind(__)([0,2,4,1,3,5]);
+      var evens = mkStream([0,2,4]);
+      var odds = mkStream([1,3,5]);
+      var ints = mkStream([0,2,4,1,3,5]);
       expect(
         isEqual(__.stream.append.bind(__)(evens)(odds))(ints)
       ).to.ok();
@@ -280,22 +280,32 @@ describe("'stream' module", function() {
       ).to.ok();
       next();
     });
-    // it("stream#flatten", (next) => {
-    //   var head = mkStream.bind(__)([0,1]);
-    //   var stream = __.stream.cons.bind(__)(base.thunk(head))(empty);
-    //   expect(
-    //     isEqual(__.stream.flatten.call(__,stream))(empty)
-    //   ).to.ok();
-    //   next();
-    // });
-    // it("stream#flatMap", (next) => {
-    //   var stream1 = __.stream.mkStream.bind(__)([0,1]);
-    //   var stream2 = __.stream.mkStream.bind(__)([10,11]);
-    //   expect(
-    //     __.stream.isEqual.bind(__)(__.stream.flatMap.call(__,stream1)(double))(__.stream.mkStream.bind(__)([0,2,4,6]))
-    //   ).to.ok();
-    //   next();
-    // });
+    it("stream#flatten", (next) => {
+      var innerStream = mkStream.bind(__)([0,1]);
+      var head = () => {
+        return innerStream;
+      };
+      var tail = () => {
+        return empty;
+      };
+      var stream = __.stream.cons.bind(__)(head)(tail);
+      expect(
+        isEqual(__.stream.flatten.call(__,stream))(innerStream)
+      ).to.ok();
+      next();
+    });
+    it("stream#flatMap", (next) => {
+      var stream1 = mkStream([0,1]);
+      var stream2 = mkStream([0,2]);
+      var double = (n) => {
+        return n * 2;
+      };
+      expect(
+        isEqual(__.stream.flatMap.call(__,stream1)(function(n) {
+          return mkStream([n * 2]);
+        }))(stream2)).to.ok();
+      next();
+    });
     it("stream#at", (next) => {
       expect(
         __.stream.at.call(__,
