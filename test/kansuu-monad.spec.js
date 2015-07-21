@@ -9,7 +9,31 @@ var Random = require("random-js");
 var rng = Random.engines.mt19937();
 
 describe("'monad' module", function() {
-  describe("'maybe' monad", function() {
+  describe("'identity' monad", () => {
+    var unit = __.monad.identity.unit.bind(__);
+    var flatMap = __.monad.identity.flatMap.bind(__);
+    it("identity#flatMap", (next) => {
+      var instance = unit(1);
+      expect(
+        flatMap(instance)((n) => {
+          return unit(n * 2);
+        })
+      ).to.eql(
+        unit(2)
+      );
+      expect(
+        flatMap(instance)((n) => {
+          return flatMap(unit(n * 2))((m) => {
+            return unit(m * 3);
+          });
+        })
+      ).to.eql(
+        unit(6)
+      );
+      next();
+    });
+  });
+  describe("'maybe' monad", () => {
     var some = __.monad.maybe.unit.bind(__);
     var nothing = __.monad.maybe.nothing;
     var flatMap = __.monad.maybe.flatMap.bind(__);
