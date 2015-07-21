@@ -7,9 +7,9 @@ var math = require('../lib/kansuu-math.js');
 
 
 describe("'stream' module", function() {
-  describe("exists", function() {
-
-  });
+  var isEqual = __.stream.isEqual.bind(__);
+  var empty = __.stream.empty;
+  var mkStream = __.stream.mkStream.bind(__);
   describe("mkStream", function() {
     var intStream = __.stream.mkStream.bind(__)([0,1,2,3,4,5]);
     it("can make a stream", function(next) {
@@ -37,7 +37,6 @@ describe("'stream' module", function() {
       next();
     });
     it("'isEmpty'", function(next) {
-      var empty = __.stream.empty;
       expect(
         __.stream.isEmpty(empty)
       ).to.eql(
@@ -219,27 +218,36 @@ describe("'stream' module", function() {
       expect(function(){
         var stream1 = __.stream.mkStream.bind(__)([1,2,3]);
         var stream2 = __.stream.mkStream.bind(__)([1,2,3]);
-        return __.stream.isEqual.bind(__)(stream1)(stream2);
+        return isEqual(stream1)(stream2);
       }()).to.eql(
         true
       );
       expect(function(){
         var stream1 = __.stream.mkStream.bind(__)([3,1,2]);
         var stream2 = __.stream.mkStream.bind(__)([1,2,3]);
-        return __.stream.isEqual.bind(__)(stream1)(stream2);
+        return isEqual(stream1)(stream2);
       }()).to.eql(
         false
       );
       expect(function(){
         var stream1 = __.stream.mkStream.bind(__)([1,2,3]);
         var stream2 = __.stream.mkStream.bind(__)([1,2,3,4,5]);
-        return __.stream.isEqual.bind(__)(stream1)(stream2);
+        return isEqual(stream1)(stream2);
       }()).to.ok();
       expect(function(){
         var stream1 = __.stream.mkStream.bind(__)([1,2,3,4,5]);
         var stream2 = __.stream.mkStream.bind(__)([1,2,3]);
-        return __.stream.isEqual.bind(__)(stream1)(stream2);
+        return isEqual(stream1)(stream2);
       }()).to.ok();
+      next();
+    });
+    it("stream#append", function(next) {
+      var evens = __.stream.mkStream.bind(__)([0,2,4]);
+      var odds = __.stream.mkStream.bind(__)([1,3,5]);
+      var ints = __.stream.mkStream.bind(__)([0,2,4,1,3,5]);
+      expect(
+        isEqual(__.stream.append.bind(__)(evens)(odds))(ints)
+      ).to.ok();
       next();
     });
     it("stream#merge", function(next) {
@@ -247,7 +255,7 @@ describe("'stream' module", function() {
       var odds = __.stream.mkStream.bind(__)([1,3,5]);
       var ints = __.stream.mkStream.bind(__)([0,1,2,3,4,5]);
       expect(
-        __.stream.isEqual.bind(__)(__.stream.merge.bind(__)(evens)(odds))(ints)
+        isEqual(__.stream.merge.bind(__)(evens)(odds))(ints)
       ).to.ok();
       next();
     });
@@ -258,7 +266,7 @@ describe("'stream' module", function() {
           return n % 2 === 0;
       };
       expect(
-        __.stream.isEqual.bind(__)(__.stream.filter.bind(__)(ints)(isEven))(evens)
+        isEqual(__.stream.filter.bind(__)(ints)(isEven))(evens)
       ).to.ok();
       next();
     });
@@ -268,10 +276,26 @@ describe("'stream' module", function() {
         return n * 2;
       };
       expect(
-        __.stream.isEqual.bind(__)(__.stream.map.bind(__)(ints)(double))(__.stream.mkStream.bind(__)([0,2,4,6]))
+        isEqual(__.stream.map.bind(__)(ints)(double))(__.stream.mkStream.bind(__)([0,2,4,6]))
       ).to.ok();
       next();
     });
+    // it("stream#flatten", (next) => {
+    //   var head = mkStream.bind(__)([0,1]);
+    //   var stream = __.stream.cons.bind(__)(base.thunk(head))(empty);
+    //   expect(
+    //     isEqual(__.stream.flatten.call(__,stream))(empty)
+    //   ).to.ok();
+    //   next();
+    // });
+    // it("stream#flatMap", (next) => {
+    //   var stream1 = __.stream.mkStream.bind(__)([0,1]);
+    //   var stream2 = __.stream.mkStream.bind(__)([10,11]);
+    //   expect(
+    //     __.stream.isEqual.bind(__)(__.stream.flatMap.call(__,stream1)(double))(__.stream.mkStream.bind(__)([0,2,4,6]))
+    //   ).to.ok();
+    //   next();
+    // });
     it("stream#at", (next) => {
       expect(
         __.stream.at.call(__,

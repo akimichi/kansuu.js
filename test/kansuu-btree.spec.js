@@ -18,6 +18,7 @@ describe("'btree' module", () => {
   //   next();
   // });
   it("'btree#size'", (next) => {
+    this.timeout(3000);
     var btree = __.btree.mkBtree.call(__, __.list.mkList.call(__, [0,1,2,3]));
     expect(
       __.btree.size.call(__,btree)
@@ -27,6 +28,7 @@ describe("'btree' module", () => {
     next();
   });
   it("'btree#flatten'", (next) => {
+    this.timeout(3000);
     var btree = __.btree.mkBtree.call(__, __.list.mkList.call(__, [0,1,2,3]));
     expect(
       __.list.toArray.call(__, __.btree.flatten.call(__,btree))
@@ -36,6 +38,7 @@ describe("'btree' module", () => {
     next();
   });
   it("'btree#map'", (next) => {
+    this.timeout(3000);
     var map = __.btree.map.bind(__);
     var btree = __.btree.mkBtree.call(__, __.list.mkList.call(__, [0,1,2]));
     expect(
