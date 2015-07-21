@@ -27,6 +27,7 @@ describe("'btree' module", () => {
     );
     next();
   });
+  it("'btree#flatMap'");
   it("'btree#flatten'", (next) => {
     this.timeout(3000);
     var btree = __.btree.mkBtree.call(__, __.list.mkList.call(__, [0,1,2,3]));

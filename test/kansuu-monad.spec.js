@@ -30,6 +30,15 @@ describe("'monad' module", function() {
       ).to.eql(
         unit(6)
       );
+      expect(
+        flatMap(instance)((n) => {
+          return flatMap(unit(n))((m) => {
+            return unit(m * n);
+          });
+        })
+      ).to.eql(
+        unit(1)
+      );
       next();
     });
   });
@@ -162,6 +171,13 @@ describe("'monad' module", function() {
       expect(
         flatMap(nothing)((n) => {
           return some(n * 2);
+        })
+      ).to.eql(
+        nothing
+      );
+      expect(
+        flatMap(some(200))((n) => {
+          return nothing;
         })
       ).to.eql(
         nothing
