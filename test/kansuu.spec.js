@@ -11,6 +11,29 @@ describe("Kansuu module", function() {
     expect(__.id(null)).to.be(null);
     next();
   });
+  it("'typeOf''", function(next) {
+    expect(
+      __.typeOf(1)
+    ).to.equal(
+      'number'
+    );
+    expect(
+      __.typeOf(null)
+    ).to.equal(
+      'null'
+    );
+    expect(
+      __.typeOf(void(0))
+    ).to.equal(
+      'undefined'
+    );
+    expect(
+      __.typeOf(undefined)
+    ).to.equal(
+      'undefined'
+    );
+    next();
+  });
   describe("arithmetic", function() {
     it("div", (next) => {
       expect(

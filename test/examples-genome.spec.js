@@ -5,67 +5,67 @@ var __ = require('../lib/kansuu.js');
 var base = require('../lib/kansuu-base.js');
 var gn = require('../examples/genome.js');
 
-describe("genome example", () => {
+describe("'genome' example", () => {
   var gnBound = base.binds(gn);
   describe('complements', function() {
     it('can return its complements', (next) => {
       expect(
-		gn.complements(['G', 'C', 'G'])
-	  ).to.eql(
-		['C', 'G', 'C']
-	  );
+        gn.complements(['G', 'C', 'G'])
+      ).to.eql(
+        ['C', 'G', 'C']
+      );
       expect(
-		__.map([["T", "A", "C"], ["C", "G", "C"]])(gnBound(gn.complements))
-	  ).to.eql(
-		[['A', 'T', 'G'], ['G', 'C', 'G']]
-	  );
+        __.map([["T", "A", "C"], ["C", "G", "C"]])(gnBound(gn.complements))
+      ).to.eql(
+        [['A', 'T', 'G'], ['G', 'C', 'G']]
+      );
       expect(
-		__.map([["T", "A", "C"], ["C", "G", "C"]])(gn.complements.bind(gn))
-	  ).to.eql(
-		[['A', 'T', 'G'], ['G', 'C', 'G']]
-	  );
-	  next();
-	});
+        __.map([["T", "A", "C"], ["C", "G", "C"]])(gn.complements.bind(gn))
+      ).to.eql(
+        [['A', 'T', 'G'], ['G', 'C', 'G']]
+      );
+      next();
+    });
   });
   describe('codons', () => {
     it('can transform dna sequence to codons', (next) => {
       var seq = ['A', 'T', 'G', 'C', 'A', 'T', 'G', 'C'];
       expect(
-		gn.codons(seq)
-	  ).to.eql(
-		[['A', 'T', 'G'], ['C', 'A', 'T']]
-	  );
-	  next();
+        gn.codons(seq)
+      ).to.eql(
+        [['A', 'T', 'G'], ['C', 'A', 'T']]
+      );
+      next();
     });
   });
   describe('translate', () => {
     it('can translate from rna codon to amino', (next) => {
       expect(
-		gn.translate(['G', 'C', 'G'])
-	  ).to.eql(
-		['ala']
-	  );
+        gn.translate(['G', 'C', 'G'])
+      ).to.eql(
+        ['ala']
+      );
       expect(
-		gn.translate(['A', 'U', 'G'])
-	  ).to.eql(
-		['met']
-	  );
-	  next();
+        gn.translate(['A', 'U', 'G'])
+      ).to.eql(
+        ['met']
+      );
+      next();
     });
   });
   describe('transcript', function() {
     it('can transcript from dna sequence to rna sequence', (next) => {
       expect(
-		gn.transcript(["T", "A", "C"])
-	  ).to.eql(
-		['A', 'U', 'G']
-	  );
+        gn.transcript(["T", "A", "C"])
+      ).to.eql(
+        ['A', 'U', 'G']
+      );
       expect(
-		gn.transcript(["C", "G", "C"])
-	  ).to.eql(
-		['G', 'C', 'G']
-	  );
-	  next();
+        gn.transcript(["C", "G", "C"])
+      ).to.eql(
+        ['G', 'C', 'G']
+      );
+      next();
     });
   });
 });
