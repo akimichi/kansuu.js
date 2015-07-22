@@ -1,11 +1,9 @@
 "use strict";
 
-/*
- lambda calculus interpreter
-
- c.f."Structuring functional programs by using monads" by Davor Obradovic
-
- */
+// A lambda calculus interpreter
+// =============================
+//
+// c.f. [Structuring functional programs by using monads](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.39.3974) by Davor Obradovic
 
 var __ = require('../lib/kansuu.js');
 var expect = require('expect.js');
@@ -36,10 +34,7 @@ module.exports = {
     },
     add: (n) => {
       var self = this;
-      expect(n).to.be.a('number');
       return (m) => {
-        expect(m).to.be.a('number');
-        //if(m.subtype === 'number' && n.subtype === 'number' ) {
         if(__.isNumber(m) && __.isNumber(n)) {
           return self.ordinary.unit.call(self,m + n);
         } else {
@@ -47,6 +42,7 @@ module.exports = {
         }
       };
     },
+    // ## evaluate
     evaluate: (exp) => {
       var self = this;
       expect(exp.type).to.eql('exp');
@@ -76,16 +72,17 @@ module.exports = {
         case 'application':
           var rator = exp.content.rator;
           var rand =  exp.content.rand;
-          self.ordinary.flatMap.call(self,self.ordinary.evaluate.call(self,rator)(env))(function (f) {
+          return self.ordinary.flatMap.call(self,self.ordinary.evaluate.call(self,rator)(env))(function (f) {
             return self.ordinary.flatMap.call(self,self.ordinary.evaluate.call(self,rand)(env))(function (a) {
               return self.ordinary.apply.call(self, f)(a);
             });
           });
         default:
-          throw new Error("evaluate should accept expressions");
+          throw new Error("evaluate should accept expressions, but got " + exp);
         }
       };
     },
+    // ## expression
     exp: {
       variable: (name) => {
         return {
@@ -119,7 +116,7 @@ module.exports = {
             type: 'exp',
             subtype: 'lambda',
             content: {
-              name: name,
+              arg: name,
               body: exp
             }
           };
@@ -164,7 +161,7 @@ module.exports = {
         };
       }
     },
-    // environment
+    // ## environment
     // ~~~haskell
     // type Environment = [(Name, Value)]
     // ~~~

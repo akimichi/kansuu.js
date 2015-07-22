@@ -49,6 +49,30 @@ describe("'interpreter' example", () => {
         );
         next();
       });
+      it('can evaluate identity function', (next) => {
+        var n = intp.ordinary.exp.number(2);
+        var lambda = intp.ordinary.exp.lambda("x")(intp.ordinary.exp.variable("x"));
+        var application = intp.ordinary.exp.app(lambda)(n);
+        expect(
+          intp.ordinary.evaluate.call(intp,application)(intp.ordinary.env.empty)
+        ).to.eql(
+          intp.ordinary.unit.call(intp,2)
+        );
+        next();
+      });
+      it('can evaluate (\\x.x + x)(10 + 11) = 42', (next) => {
+        var ten = intp.ordinary.exp.number(10);
+        var eleven = intp.ordinary.exp.number(11);
+        var addition = intp.ordinary.exp.add(ten)(eleven);
+        var lambda = intp.ordinary.exp.lambda("x")(intp.ordinary.exp.add(intp.ordinary.exp.variable("x"))(intp.ordinary.exp.variable("x")));
+        var application = intp.ordinary.exp.app(lambda)(addition);
+        expect(
+          intp.ordinary.evaluate.call(intp,application)(intp.ordinary.env.empty)
+        ).to.eql(
+          intp.ordinary.unit.call(intp,42)
+        );
+        next();
+      });
     });
   });
 });

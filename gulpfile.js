@@ -19,7 +19,7 @@ gulp.task('test', function() {
 
 gulp.task('doc', function() {
   //return gulp.src("./lib/*.js")
-  return gulp.src(["./lib/*.js","./test/*.js"])
+  return gulp.src(["./lib/*.js","./examples/*.js","./test/*.js"])
     .pipe(docco())
     .pipe(gulp.dest('./docs'));
 });
