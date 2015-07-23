@@ -12,16 +12,8 @@ var hasProp = {}.hasOwnProperty;
 
 module.exports = {
   ordinary: {
-    unit: (value) => {
-      return __.monad.identity.unit.call(__,value);
-    },
-    flatMap: (instance) => {
-      var self = this;
-      return (transform) => {
-        expect(transform).to.a('function');
-        return transform.call(self, instance);
-      };
-    },
+	unit: __.monad.identity.unit.bind(__),
+	flatMap: __.monad.identity.flatMap.bind(__),
     apply: (rator) => {
       var self = this;
       return (rand) => {
@@ -130,32 +122,6 @@ module.exports = {
             content: {
               rator: rator,
               rand: rand
-            }
-          };
-        };
-      }
-    },
-    data: {
-      number: (value) => {
-        return {
-          type: 'data',
-          subtype: 'number',
-          content: value
-        };
-      },
-      error: {
-        type: 'data',
-        subtype: 'error',
-        content: void(0)
-      },
-      fun: (arg) => {
-        return (body) => {
-          return {
-            type: 'data',
-            subtype: 'function',
-            content: {
-              arg: arg,
-              body: body
             }
           };
         };
