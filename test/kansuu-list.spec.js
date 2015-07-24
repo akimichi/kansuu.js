@@ -178,9 +178,8 @@ describe("'list' module", function() {
     // );
     next();
   });
-  it("'list#filter'", function(next) {
-
-    var even = function(n){
+  it("'list#filter'", (next) => {
+    var even = (n) => {
       return (n % 2) === 0;
     };
     var list = __.list.mkList.bind(__)([0,1,2,3,4]);
@@ -189,6 +188,26 @@ describe("'list' module", function() {
       __.list.toArray.bind(__)(result)
     ).to.eql(
       [0,2,4]
+    );
+    var odd = (n) => {
+      return (n % 2) !== 0;
+    };
+    expect(
+      __.list.toArray.call(__,__.list.filter.call(__,list)(odd))
+    ).to.eql(
+      [1,3]
+    );
+    next();
+  });
+  it("'list#find'", (next) => {
+    var odd = (n) => {
+      return (n % 2) !== 0;
+    };
+    var list = __.list.mkList.call(__,[0,1,2,3,4]);
+    expect(
+      __.list.find.call(__,list)(odd)
+    ).to.eql(
+      __.monad.maybe.unit.call(__,1)
     );
     next();
   });

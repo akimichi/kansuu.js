@@ -332,6 +332,11 @@ describe("Kansuu module", function() {
       expect(__.existy(undefined)).to.be(false);
       expect(__.existy(false)).to.be(true);
       expect(__.existy(base.nothing)).to.be(false);
+      expect(
+        __.existy([])
+      ).to.be(
+        true
+      );
       next();
     });
     it("'truthy'", (next) => {
