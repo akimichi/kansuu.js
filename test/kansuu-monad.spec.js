@@ -184,7 +184,8 @@ describe("'monad' module", function() {
       );
       next();
     });
-    it("maybe#lift", function(next){
+    it("maybe#getOrElse");
+    it("maybe#lift", (next) => {
       expect(
         __.monad.maybe.lift.bind(__)(parseInt)(some("123"))
       ).to.eql(
