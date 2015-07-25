@@ -466,6 +466,12 @@ describe("'list' module", function() {
       );
       next();
     });
+    it("append([0])([1]) == [0,1]", (next) => {
+      expect(
+        __.list.append.call(__,mkList([0]))(mkList([1])).isEqual(mkList([0,1]))
+      ).to.ok();
+      next();
+    });
   });
   it("'list#merge'", function(next) {
     var listX = mkList([0,2,4]);

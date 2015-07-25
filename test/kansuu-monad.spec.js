@@ -346,7 +346,6 @@ describe("'monad' module", function() {
 
     it("'list#flatMap'", (next) => {
       this.timeout(5000);
-
       var flatMap = __.monad.list.flatMap.bind(__);
       var list = mkList([3,4,5]);
       expect(

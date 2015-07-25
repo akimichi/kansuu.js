@@ -19,7 +19,7 @@ module.exports = {
       var self = this;
       return (rand) => {
         if(__.typeOf(rator) === 'function'){
-          return self.ordinary.unit.call(self,rator.call(self,rand));
+          return rator.call(self,rand);
         } else {
           return self.ordinary.unit.call(self,undefined);
         }
@@ -130,7 +130,7 @@ module.exports = {
     },
     // ### environment
     // ~~~haskell
-    // type Environment = [(Name, Value)]
+    // type Environment = List[(Name, Value)]
     // ~~~
     env: {
       empty: __.list.empty,
@@ -170,10 +170,9 @@ module.exports = {
   logging: {
     unit: (value) => {
       var self = this;
-      //__.list.censor.call(__,initLog);
       return {
         log: __.list.empty,
-        content: value
+        value: value
       };
     },
     // ### logging#flatMap
@@ -181,13 +180,13 @@ module.exports = {
       var self = this;
       return (transform) => {
         var currentLog = instance.log;
-        var currentValue = instance.content;
+        var currentValue = instance.value;
         var pair = transform(currentValue);
         var newLog = pair.log;
-        var newValue = pair.content;
+        var newValue = pair.value;
         return {
           log: __.list.append.call(__,currentLog)(newLog),
-          content: newValue
+          value: newValue
         };
       };
     },
@@ -255,7 +254,8 @@ module.exports = {
       var self = this;
       return (rand) => {
         if(__.typeOf(rator) === 'function'){
-          return self.logging.unit.call(self,rator.call(self,rand));
+          //return self.logging.unit.call(self,rator.call(self,rand));
+          return rator.call(self,rand);
         } else {
           return self.logging.unit.call(self,undefined);
         }
@@ -276,7 +276,7 @@ module.exports = {
       console.log(value);
       return {
         log: __.list.mkList.call(__,[value]),
-        content: value
+        value: value
       };
     },
     // ### logging#evaluate
@@ -328,7 +328,7 @@ module.exports = {
     },
     // ### environment
     // ~~~haskell
-    // type Environment = [(Name, Value)]
+    // type Environment = List[(Name, Value)]
     // ~~~
     env: {
       empty: __.list.empty,
@@ -354,5 +354,357 @@ module.exports = {
         }
       }
     }
-  }
+  },
+  // ## ambiguous interpreter
+  ambiguous: {
+    unit: __.monad.list.unit.bind(__),
+    flatMap: __.monad.list.flatMap.bind(__),
+    zero: __.list.empty,
+    plus: __.list.append.bind(__),
+    // ### ambiguous#expression
+    exp: {
+      fail: (_) => {
+        return {
+          type: 'exp',
+          subtype: 'fail',
+          content: undefined
+        };
+      },
+      amb: (a) => {
+        return (b) => {
+          return {
+            type: 'exp',
+            subtype: 'amb',
+            content: {
+              a: a,
+              b: b
+            }
+          };
+        };
+      },
+      variable: (name) => {
+        return {
+          type: 'exp',
+          subtype: 'variable',
+          content: name
+        };
+      },
+      number: (n) => {
+        return {
+          type: 'exp',
+          subtype: 'number',
+          content: n
+        };
+      },
+      add: (n) => {
+        return (m) => {
+          return {
+            type: 'exp',
+            subtype: 'add',
+            content: {
+              rator: n,
+              rand: m
+            }
+          };
+        };
+      },
+      lambda: (name) => {
+        return (exp) => {
+          return {
+            type: 'exp',
+            subtype: 'lambda',
+            content: {
+              arg: name,
+              body: exp
+            }
+          };
+        };
+      },
+      app: (rator) => {
+        return (rand) => {
+          return {
+            type: 'exp',
+            subtype: 'application',
+            content: {
+              rator: rator,
+              rand: rand
+            }
+          };
+        };
+      }
+    },
+    apply: (rator) => {
+      var self = this;
+      return (rand) => {
+        if(__.typeOf(rator) === 'function'){
+          return self,rator.call(self,rand);          //return self.ambiguous.unit.call(self,rator.call(self,rand));
+        } else {
+          return self.ambiguous.unit.call(self,undefined);
+        }
+      };
+    },
+    add: (n) => {
+      var self = this;
+      return (m) => {
+        if(__.isNumber(m) && __.isNumber(n)) {
+          return self.ambiguous.unit.call(self,m + n);
+        } else {
+          return self.ambiguous.unit.call(self,undefined);
+        }
+      };
+    },
+    // ### ambiguous#evaluate
+    // evaluate:: Exp -> M[value]
+    evaluate: (exp) => {
+      var self = this;
+      expect(exp.type).to.eql('exp');
+      return (env) => {
+        __.list.censor.call(__,env);
+        switch (exp.subtype) {
+        case 'fail':
+          return self.ambiguous.zero;
+        case 'amb':
+          var aResult = self.ambiguous.evaluate.call(self,
+                                                            exp.content.a)(env);
+          var bResult = self.ambiguous.evaluate.call(self,
+                                                            exp.content.b)(env);
+          return self.ambiguous.plus.call(self,aResult)(bResult);
+        case 'variable':
+          return self.ambiguous.env.lookup.call(self,exp.content, env);
+        case 'number':
+          return self.ambiguous.unit.call(self,exp.content);
+        case 'add':
+          var rator = exp.content.rator;
+          var rand =  exp.content.rand;
+          expect(rator.type).to.eql('exp');
+          expect(rand.type).to.eql('exp');
+          return self.ambiguous.flatMap.call(self,self.ambiguous.evaluate.call(self,rator)(env))(function (m) {
+            return self.ambiguous.flatMap.call(self,self.ambiguous.evaluate.call(self,rand)(env))(function (n) {
+              return self.ambiguous.add.call(self, m)(n);
+            });
+          });
+        case 'lambda':
+          var closure = (arg) => {
+            var newEnv = self.ambiguous.env.extend.call(self, __.pair.mkPair.call(__,exp.content.arg)(arg),env);
+            return self.ambiguous.evaluate.call(self,exp.content.body)(newEnv);
+          };
+          return self.ambiguous.unit.call(self,closure);
+        case 'application':
+          var rator = exp.content.rator;
+          var rand =  exp.content.rand;
+          return self.ambiguous.flatMap.call(self,self.ambiguous.evaluate.call(self,rator)(env))(function (f) {
+            return self.ambiguous.flatMap.call(self,self.ambiguous.evaluate.call(self,rand)(env))(function (a) {
+              return self.ambiguous.apply.call(self, f)(a);
+            });
+          });
+        default:
+          throw new Error("evaluate should accept expressions, but got " + exp);
+        }
+      };
+    },
+    // ### 'ambiguous' environment
+    // ~~~haskell
+    // type Environment = List[(Name, Value)]
+    // ~~~
+    env: {
+      empty: __.list.empty,
+      extend: (pair, oldenv) => {
+        __.pair.censor.call(__,pair);
+        __.list.censor.call(__,oldenv);
+        return __.list.cons.call(__, pair)(oldenv);
+      },
+      lookup: (name, env) => {
+        var self = this;
+        if(__.list.isEmpty.call(__,env)) {
+          return self.ambiguous.unit.call(self,undefined);
+        } else {
+          return __.list.foldr.call(__,env)(self.ambiguous.unit.call(self,undefined))((item) => {
+            return (accumulator) => {
+              if(item.left === name) {
+                return self.ambiguous.unit.call(self,item.right);
+              } else {
+                return accumulator;
+              }
+            };
+          });
+        }
+      }
+    }
+  },
+  // // ## lazy interpreter
+  // lazy: {
+  //   unit: __.monad.list.unit.bind(__),
+  //   flatMap: __.monad.list.flatMap.bind(__),
+  //   zero: __.list.empty,
+  //   plus: __.list.append.bind(__),
+  //   // ### lazy#expression
+  //   exp: {
+  //     fail: (_) => {
+  //       return {
+  //         type: 'exp',
+  //         subtype: 'fail',
+  //         content: undefined
+  //       };
+  //     },
+  //     amb: (a) => {
+  //       return (b) => {
+  //         return {
+  //           type: 'exp',
+  //           subtype: 'amb',
+  //           content: {
+  //             a: a,
+  //             b: b
+  //           }
+  //         };
+  //       };
+  //     },
+  //     variable: (name) => {
+  //       return {
+  //         type: 'exp',
+  //         subtype: 'variable',
+  //         content: name
+  //       };
+  //     },
+  //     number: (n) => {
+  //       return {
+  //         type: 'exp',
+  //         subtype: 'number',
+  //         content: n
+  //       };
+  //     },
+  //     add: (n) => {
+  //       return (m) => {
+  //         return {
+  //           type: 'exp',
+  //           subtype: 'add',
+  //           content: {
+  //             rator: n,
+  //             rand: m
+  //           }
+  //         };
+  //       };
+  //     },
+  //     lambda: (name) => {
+  //       return (exp) => {
+  //         return {
+  //           type: 'exp',
+  //           subtype: 'lambda',
+  //           content: {
+  //             arg: name,
+  //             body: exp
+  //           }
+  //         };
+  //       };
+  //     },
+  //     app: (rator) => {
+  //       return (rand) => {
+  //         return {
+  //           type: 'exp',
+  //           subtype: 'application',
+  //           content: {
+  //             rator: rator,
+  //             rand: rand
+  //           }
+  //         };
+  //       };
+  //     }
+  //   },
+  //   apply: (rator) => {
+  //     var self = this;
+  //     return (rand) => {
+  //       if(__.typeOf(rator) === 'function'){
+  //         return self,rator.call(self,rand);          //return self.lazy.unit.call(self,rator.call(self,rand));
+  //       } else {
+  //         return self.lazy.unit.call(self,undefined);
+  //       }
+  //     };
+  //   },
+  //   add: (n) => {
+  //     var self = this;
+  //     return (m) => {
+  //       if(__.isNumber(m) && __.isNumber(n)) {
+  //         return self.lazy.unit.call(self,m + n);
+  //       } else {
+  //         return self.lazy.unit.call(self,undefined);
+  //       }
+  //     };
+  //   },
+  //   // ### lazy#evaluate
+  //   // evaluate:: Exp -> M[value]
+  //   evaluate: (exp) => {
+  //     var self = this;
+  //     expect(exp.type).to.eql('exp');
+  //     return (env) => {
+  //       __.list.censor.call(__,env);
+  //       switch (exp.subtype) {
+  //       case 'fail':
+  //         return self.lazy.zero;
+  //       case 'amb':
+  //         var aResult = self.lazy.evaluate.call(self,
+  //                                                           exp.content.a)(env);
+  //         var bResult = self.lazy.evaluate.call(self,
+  //                                                           exp.content.b)(env);
+  //         return self.lazy.plus.call(self,aResult)(bResult);
+  //       case 'variable':
+  //         return self.lazy.env.lookup.call(self,exp.content, env);
+  //       case 'number':
+  //         return self.lazy.unit.call(self,exp.content);
+  //       case 'add':
+  //         var rator = exp.content.rator;
+  //         var rand =  exp.content.rand;
+  //         expect(rator.type).to.eql('exp');
+  //         expect(rand.type).to.eql('exp');
+  //         return self.lazy.flatMap.call(self,self.lazy.evaluate.call(self,rator)(env))(function (m) {
+  //           return self.lazy.flatMap.call(self,self.lazy.evaluate.call(self,rand)(env))(function (n) {
+  //             return self.lazy.add.call(self, m)(n);
+  //           });
+  //         });
+  //       case 'lambda':
+  //         var closure = (arg) => {
+  //           var newEnv = self.lazy.env.extend.call(self, __.pair.mkPair.call(__,exp.content.arg)(arg),env);
+  //           return self.lazy.evaluate.call(self,exp.content.body)(newEnv);
+  //         };
+  //         return self.lazy.unit.call(self,closure);
+  //       case 'application':
+  //         var rator = exp.content.rator;
+  //         var rand =  exp.content.rand;
+  //         return self.lazy.flatMap.call(self,self.lazy.evaluate.call(self,rator)(env))(function (f) {
+  //           return self.lazy.flatMap.call(self,self.lazy.evaluate.call(self,rand)(env))(function (a) {
+  //             return self.lazy.apply.call(self, f)(a);
+  //           });
+  //         });
+  //       default:
+  //         throw new Error("evaluate should accept expressions, but got " + exp);
+  //       }
+  //     };
+  //   },
+  //   // ### 'lazy' environment
+  //   // ~~~haskell
+  //   // type Environment = List[(Name, M[Value])]
+  //   // ~~~
+  //   env: {
+  //     empty: __.list.empty,
+  //     extend: (pair, oldenv) => {
+  //       __.pair.censor.call(__,pair);
+  //       __.list.censor.call(__,oldenv);
+  //       return __.list.cons.call(__, pair)(oldenv);
+  //     },
+  //     lookup: (name, env) => {
+  //       var self = this;
+  //       if(__.list.isEmpty.call(__,env)) {
+  //         return self.lazy.unit.call(self,undefined);
+  //       } else {
+  //         return __.list.foldr.call(__,env)(self.lazy.unit.call(self,undefined))((item) => {
+  //           return (accumulator) => {
+  //             if(item.left === name) {
+  //               return self.lazy.unit.call(self,item.right);
+  //             } else {
+  //               return accumulator;
+  //             }
+  //           };
+  //         });
+  //       }
+  //     }
+  //   }
+  // }
 };

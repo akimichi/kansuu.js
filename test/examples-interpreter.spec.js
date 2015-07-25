@@ -99,7 +99,7 @@ describe("'interpreter' example", () => {
       it('can evaluate logging', (next) => {
         var exp = intp.logging.exp.log(intp.logging.exp.number(2));
         expect(
-          intp.logging.evaluate.call(intp,exp)(intp.logging.env.empty).content
+          intp.logging.evaluate.call(intp,exp)(intp.logging.env.empty).value
         ).to.eql(
           2
         );
@@ -112,47 +112,63 @@ describe("'interpreter' example", () => {
           var n = intp.logging.exp.number(2);
           var m = intp.logging.exp.number(3);
           var exp = intp.logging.exp.log(intp.logging.exp.add(n)(m));
-          return intp.logging.evaluate.call(intp,exp)(intp.logging.env.empty).content;
+          return intp.logging.evaluate.call(intp,exp)(intp.logging.env.empty).value;
         }()).to.eql(
           5
         );
+        expect(function () {
+          var n = intp.logging.exp.number(2);
+          var m = intp.logging.exp.number(3);
+          var exp = intp.logging.exp.log(intp.logging.exp.add(n)(m));
+          return __.list.toArray.call(__,
+                                      intp.logging.evaluate.call(intp,exp)(intp.logging.env.empty).log);
+        }()).to.eql(
+          [5]
+        );
+        expect(function () {
+          var n = intp.logging.exp.log(intp.logging.exp.number(2));
+          var m = intp.logging.exp.log(intp.logging.exp.number(3));
+          var exp = intp.logging.exp.log(intp.logging.exp.add(n)(m));
+          return __.list.toArray.call(__,
+                                      intp.logging.evaluate.call(intp,exp)(intp.logging.env.empty).log);
+        }()).to.eql(
+          [2,3,5]
+        );
         next();
       });
-      // it('can evaluate add', (next) => {
-      //   var n = intp.logging.exp.number(2);
-      //   var m = intp.logging.exp.number(3);
-      //   var exp = intp.logging.exp.add(n)(m);
-      //   expect(
-      //     intp.logging.evaluate.call(intp,exp)(intp.logging.env.empty)
-      //   ).to.eql(
-      //     intp.logging.unit.call(intp,5)
-      //   );
-      //   next();
-      // });
-      // it('can evaluate identity function', (next) => {
-      //   var n = intp.logging.exp.number(2);
-      //   var lambda = intp.logging.exp.lambda("x")(intp.logging.exp.variable("x"));
-      //   var application = intp.logging.exp.app(lambda)(n);
-      //   expect(
-      //     intp.logging.evaluate.call(intp,application)(intp.logging.env.empty)
-      //   ).to.eql(
-      //     intp.logging.unit.call(intp,2)
-      //   );
-      //   next();
-      // });
-      // it('can evaluate (\\x.x + x)(10 + 11) = 42', (next) => {
-      //   var ten = intp.logging.exp.number(10);
-      //   var eleven = intp.logging.exp.number(11);
-      //   var addition = intp.logging.exp.add(ten)(eleven);
-      //   var lambda = intp.logging.exp.lambda("x")(intp.logging.exp.add(intp.logging.exp.variable("x"))(intp.logging.exp.variable("x")));
-      //   var application = intp.logging.exp.app(lambda)(addition);
-      //   expect(
-      //     intp.logging.evaluate.call(intp,application)(intp.logging.env.empty)
-      //   ).to.eql(
-      //     intp.logging.unit.call(intp,42)
-      //   );
-      //   next();
-      // });
+    });
+  });
+  describe("'ambiguous' interpreter", () => {
+    describe("evaluate", () => {
+      it('can evaluate number', (next) => {
+        var exp = intp.ambiguous.exp.number(2);
+        expect(
+          intp.ambiguous.evaluate.call(intp,exp)(intp.ambiguous.env.empty).isEqual(intp.ambiguous.unit(2))
+        ).to.ok();
+        next();
+      });
+      it('can evaluate variable', (next) => {
+        var exp = intp.ambiguous.exp.variable("a");
+        var env = intp.ambiguous.env.extend.call(intp, __.pair.mkPair.call(__,"a")(1),intp.ambiguous.env.empty);
+        expect(
+          intp.ambiguous.evaluate.call(intp,exp)(env).isEqual(intp.ambiguous.unit.call(intp,1))
+        ).to.ok();
+        next();
+      });
+      it('can evaluate (\\x.x + x)(amd (2,3)) = [4,6]', (next) => {
+        this.timeout(5000);
+        var x = intp.ambiguous.exp.variable("x");
+        var addition = intp.ambiguous.exp.add(x)(x);
+        var lambda = intp.ambiguous.exp.lambda("x")(addition);
+        var n = intp.ambiguous.exp.number(2);
+        var m = intp.ambiguous.exp.number(3);
+        var amb = intp.ambiguous.exp.amb.call(intp,n)(m);
+        var application = intp.ambiguous.exp.app(lambda)(amb);
+        expect(
+          intp.ambiguous.evaluate.call(intp,application)(intp.ambiguous.env.empty).isEqual(__.list.mkList.call(__,[4,6]))
+        ).to.ok();
+        next();
+      });
     });
   });
 });
