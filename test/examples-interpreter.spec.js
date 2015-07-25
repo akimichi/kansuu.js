@@ -206,4 +206,56 @@ describe("'interpreter' example", () => {
       });
     });
   });
+  describe("'cps' interpreter", () => {
+    describe("evaluate", () => {
+      it('can evaluate number', (next) => {
+        var exp = intp.cps.exp.number(2);
+        expect(
+          intp.cps.evaluate.call(intp,exp)(intp.cps.env.empty)(__.monad.identity.unit.bind(intp))
+        ).to.equal(
+          2
+        );
+        next();
+      });
+      it('can evaluate variable', (next) => {
+        var exp = intp.cps.exp.variable("a");
+        var env = intp.cps.env.extend.call(intp, __.pair.mkPair.call(__,"a")(1),intp.cps.env.empty);
+        expect(
+          intp.cps.evaluate.call(intp,exp)(env)(__.monad.identity.unit.bind(intp))
+        ).to.equal(
+          1
+        );
+        next();
+      });
+      it('can evaluate (\\x.x)(2) = 2', (next) => {
+        this.timeout(5000);
+        var x = intp.cps.exp.variable("x");
+        //var addition = intp.cps.exp.add(x)(x);
+        //var lambda = intp.cps.exp.lambda("x")(x);
+        var n = intp.cps.exp.number(2);
+        var lambda = intp.cps.exp.lambda("x")(x);
+        var application = intp.cps.exp.app(lambda)(n);
+        expect(
+          intp.cps.evaluate.call(intp,application)(intp.cps.env.empty)(__.monad.identity.unit.bind(intp))
+        ).to.equal(
+          2
+        );
+        next();
+      });
+      it('can evaluate (\\x.x+x)(2) = 4', (next) => {
+        this.timeout(5000);
+        var x = intp.cps.exp.variable("x");
+        var addition = intp.cps.exp.add(x)(x);
+        var lambda = intp.cps.exp.lambda("x")(addition);
+        var n = intp.cps.exp.number(2);
+        var application = intp.cps.exp.app(lambda)(n);
+        expect(
+          intp.cps.evaluate.call(intp,application)(intp.cps.env.empty)(__.monad.identity.unit.bind(intp))
+        ).to.equal(
+          4
+        );
+        next();
+      });
+    });
+  });
 });
