@@ -171,4 +171,39 @@ describe("'interpreter' example", () => {
       });
     });
   });
+  describe("'lazy' interpreter", () => {
+    describe("evaluate", () => {
+      it('can evaluate number', (next) => {
+        var exp = intp.lazy.exp.number(2);
+        expect(
+          intp.lazy.evaluate.call(intp,exp)(intp.lazy.env.empty).isEqual(intp.lazy.unit(2))
+        ).to.ok();
+        next();
+      });
+      it('can evaluate variable', (next) => {
+        var exp = intp.lazy.exp.variable("a");
+        var n = intp.lazy.unit(1);
+        var env = intp.lazy.env.extend.call(intp, __.pair.mkPair.call(__,"a")(n),intp.lazy.env.empty);
+        //console.log(intp.lazy.evaluate.call(intp,exp)(env));
+        expect(
+          intp.lazy.evaluate.call(intp,exp)(env).isEqual(intp.lazy.unit.call(intp,1))
+        ).to.ok();
+        next();
+      });
+      it('can evaluate (\\x.x + x)(amd (2,3)) = [4,5,5,6]', (next) => {
+        this.timeout(5000);
+        var x = intp.lazy.exp.variable("x");
+        var addition = intp.lazy.exp.add(x)(x);
+        var lambda = intp.lazy.exp.lambda("x")(addition);
+        var n = intp.lazy.exp.number(2);
+        var m = intp.lazy.exp.number(3);
+        var amb = intp.lazy.exp.amb.call(intp,n)(m);
+        var application = intp.lazy.exp.app(lambda)(amb);
+        expect(
+          intp.lazy.evaluate.call(intp,application)(intp.lazy.env.empty).isEqual(__.list.mkList.call(__,[4,5,5,6]))
+        ).to.ok();
+        next();
+      });
+    });
+  });
 });

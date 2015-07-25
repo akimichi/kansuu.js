@@ -3,7 +3,10 @@
 // A lambda calculus interpreter
 // =============================
 //
-// c.f. [Structuring functional programs by using monads](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.39.3974) by Davor Obradovic
+// * [The essence of functional programming](http://page.mi.fu-berlin.de/scravy/realworldhaskell/materialien/the-essence-of-functional-programming.pdf) by Philip Wadler
+// * [Structuring functional programs by using monads](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.39.3974) by Davor Obradovic
+//
+
 
 var __ = require('../lib/kansuu.js');
 var expect = require('expect.js');
@@ -150,19 +153,15 @@ module.exports = {
         // };
         // return __.monad.maybe.getOrElse.call(__,
         //                                      __.list.find.call(__,env)(predicate))(undefined);
-        if(__.list.isEmpty.call(__,env)) {
-          return self.ordinary.unit.call(self,undefined);
-        } else {
-          return __.list.foldr.call(__,env)(self.ordinary.unit.call(self,undefined))((item) => {
-            return (accumulator) => {
-              if(item.left === name) {
-                return self.ordinary.unit.call(self,item.right);
-              } else {
-                return accumulator;
-              }
-            };
-          });
-        }
+        return __.list.foldr.call(__,env)(self.ordinary.unit.call(self,undefined))((item) => {
+          return (accumulator) => {
+            if(item.left === name) {
+              return self.ordinary.unit.call(self,item.right);
+            } else {
+              return accumulator;
+            }
+          };
+        });
       }
     }
   },
@@ -339,19 +338,15 @@ module.exports = {
       },
       lookup: (name, env) => {
         var self = this;
-        if(__.list.isEmpty.call(__,env)) {
-          return self.logging.unit.call(self,undefined);
-        } else {
-          return __.list.foldr.call(__,env)(self.logging.unit.call(self,undefined))((item) => {
-            return (accumulator) => {
-              if(item.left === name) {
-                return self.logging.unit.call(self,item.right);
-              } else {
-                return accumulator;
-              }
-            };
-          });
-        }
+        return __.list.foldr.call(__,env)(self.logging.unit.call(self,undefined))((item) => {
+          return (accumulator) => {
+            if(item.left === name) {
+              return self.logging.unit.call(self,item.right);
+            } else {
+              return accumulator;
+            }
+          };
+        });
       }
     }
   },
@@ -433,16 +428,18 @@ module.exports = {
         };
       }
     },
+    // ## ambiguous#apply
     apply: (rator) => {
       var self = this;
       return (rand) => {
         if(__.typeOf(rator) === 'function'){
-          return self,rator.call(self,rand);          //return self.ambiguous.unit.call(self,rator.call(self,rand));
+          return rator.call(self,rand);
         } else {
           return self.ambiguous.unit.call(self,undefined);
         }
       };
     },
+    // ## ambiguous#add
     add: (n) => {
       var self = this;
       return (m) => {
@@ -515,196 +512,195 @@ module.exports = {
       },
       lookup: (name, env) => {
         var self = this;
-        if(__.list.isEmpty.call(__,env)) {
-          return self.ambiguous.unit.call(self,undefined);
-        } else {
-          return __.list.foldr.call(__,env)(self.ambiguous.unit.call(self,undefined))((item) => {
-            return (accumulator) => {
-              if(item.left === name) {
-                return self.ambiguous.unit.call(self,item.right);
-              } else {
-                return accumulator;
-              }
-            };
-          });
-        }
+        return __.list.foldr.call(__,env)(self.ambiguous.unit.call(self,undefined))((item) => {
+          return (accumulator) => {
+            if(item.left === name) {
+              return self.ambiguous.unit.call(self,item.right);
+            } else {
+              return accumulator;
+            }
+          };
+        });
       }
     }
   },
-  // // ## lazy interpreter
-  // lazy: {
-  //   unit: __.monad.list.unit.bind(__),
-  //   flatMap: __.monad.list.flatMap.bind(__),
-  //   zero: __.list.empty,
-  //   plus: __.list.append.bind(__),
-  //   // ### lazy#expression
-  //   exp: {
-  //     fail: (_) => {
-  //       return {
-  //         type: 'exp',
-  //         subtype: 'fail',
-  //         content: undefined
-  //       };
-  //     },
-  //     amb: (a) => {
-  //       return (b) => {
-  //         return {
-  //           type: 'exp',
-  //           subtype: 'amb',
-  //           content: {
-  //             a: a,
-  //             b: b
-  //           }
-  //         };
-  //       };
-  //     },
-  //     variable: (name) => {
-  //       return {
-  //         type: 'exp',
-  //         subtype: 'variable',
-  //         content: name
-  //       };
-  //     },
-  //     number: (n) => {
-  //       return {
-  //         type: 'exp',
-  //         subtype: 'number',
-  //         content: n
-  //       };
-  //     },
-  //     add: (n) => {
-  //       return (m) => {
-  //         return {
-  //           type: 'exp',
-  //           subtype: 'add',
-  //           content: {
-  //             rator: n,
-  //             rand: m
-  //           }
-  //         };
-  //       };
-  //     },
-  //     lambda: (name) => {
-  //       return (exp) => {
-  //         return {
-  //           type: 'exp',
-  //           subtype: 'lambda',
-  //           content: {
-  //             arg: name,
-  //             body: exp
-  //           }
-  //         };
-  //       };
-  //     },
-  //     app: (rator) => {
-  //       return (rand) => {
-  //         return {
-  //           type: 'exp',
-  //           subtype: 'application',
-  //           content: {
-  //             rator: rator,
-  //             rand: rand
-  //           }
-  //         };
-  //       };
-  //     }
-  //   },
-  //   apply: (rator) => {
-  //     var self = this;
-  //     return (rand) => {
-  //       if(__.typeOf(rator) === 'function'){
-  //         return self,rator.call(self,rand);          //return self.lazy.unit.call(self,rator.call(self,rand));
-  //       } else {
-  //         return self.lazy.unit.call(self,undefined);
-  //       }
-  //     };
-  //   },
-  //   add: (n) => {
-  //     var self = this;
-  //     return (m) => {
-  //       if(__.isNumber(m) && __.isNumber(n)) {
-  //         return self.lazy.unit.call(self,m + n);
-  //       } else {
-  //         return self.lazy.unit.call(self,undefined);
-  //       }
-  //     };
-  //   },
-  //   // ### lazy#evaluate
-  //   // evaluate:: Exp -> M[value]
-  //   evaluate: (exp) => {
-  //     var self = this;
-  //     expect(exp.type).to.eql('exp');
-  //     return (env) => {
-  //       __.list.censor.call(__,env);
-  //       switch (exp.subtype) {
-  //       case 'fail':
-  //         return self.lazy.zero;
-  //       case 'amb':
-  //         var aResult = self.lazy.evaluate.call(self,
-  //                                                           exp.content.a)(env);
-  //         var bResult = self.lazy.evaluate.call(self,
-  //                                                           exp.content.b)(env);
-  //         return self.lazy.plus.call(self,aResult)(bResult);
-  //       case 'variable':
-  //         return self.lazy.env.lookup.call(self,exp.content, env);
-  //       case 'number':
-  //         return self.lazy.unit.call(self,exp.content);
-  //       case 'add':
-  //         var rator = exp.content.rator;
-  //         var rand =  exp.content.rand;
-  //         expect(rator.type).to.eql('exp');
-  //         expect(rand.type).to.eql('exp');
-  //         return self.lazy.flatMap.call(self,self.lazy.evaluate.call(self,rator)(env))(function (m) {
-  //           return self.lazy.flatMap.call(self,self.lazy.evaluate.call(self,rand)(env))(function (n) {
-  //             return self.lazy.add.call(self, m)(n);
-  //           });
-  //         });
-  //       case 'lambda':
-  //         var closure = (arg) => {
-  //           var newEnv = self.lazy.env.extend.call(self, __.pair.mkPair.call(__,exp.content.arg)(arg),env);
-  //           return self.lazy.evaluate.call(self,exp.content.body)(newEnv);
-  //         };
-  //         return self.lazy.unit.call(self,closure);
-  //       case 'application':
-  //         var rator = exp.content.rator;
-  //         var rand =  exp.content.rand;
-  //         return self.lazy.flatMap.call(self,self.lazy.evaluate.call(self,rator)(env))(function (f) {
-  //           return self.lazy.flatMap.call(self,self.lazy.evaluate.call(self,rand)(env))(function (a) {
-  //             return self.lazy.apply.call(self, f)(a);
-  //           });
-  //         });
-  //       default:
-  //         throw new Error("evaluate should accept expressions, but got " + exp);
-  //       }
-  //     };
-  //   },
-  //   // ### 'lazy' environment
-  //   // ~~~haskell
-  //   // type Environment = List[(Name, M[Value])]
-  //   // ~~~
-  //   env: {
-  //     empty: __.list.empty,
-  //     extend: (pair, oldenv) => {
-  //       __.pair.censor.call(__,pair);
-  //       __.list.censor.call(__,oldenv);
-  //       return __.list.cons.call(__, pair)(oldenv);
-  //     },
-  //     lookup: (name, env) => {
-  //       var self = this;
-  //       if(__.list.isEmpty.call(__,env)) {
-  //         return self.lazy.unit.call(self,undefined);
-  //       } else {
-  //         return __.list.foldr.call(__,env)(self.lazy.unit.call(self,undefined))((item) => {
-  //           return (accumulator) => {
-  //             if(item.left === name) {
-  //               return self.lazy.unit.call(self,item.right);
-  //             } else {
-  //               return accumulator;
-  //             }
-  //           };
-  //         });
-  //       }
-  //     }
-  //   }
-  // }
+  // ## 'lazy' interpreter
+  lazy: {
+    unit: __.monad.list.unit.bind(__),
+    flatMap: __.monad.list.flatMap.bind(__),
+    zero: __.list.empty,
+    plus: __.list.append.bind(__),
+    // ### lazy#expression
+    exp: {
+      fail: (_) => {
+        return {
+          type: 'exp',
+          subtype: 'fail',
+          content: undefined
+        };
+      },
+      amb: (a) => {
+        return (b) => {
+          return {
+            type: 'exp',
+            subtype: 'amb',
+            content: {
+              a: a,
+              b: b
+            }
+          };
+        };
+      },
+      variable: (name) => {
+        return {
+          type: 'exp',
+          subtype: 'variable',
+          content: name
+        };
+      },
+      number: (n) => {
+        return {
+          type: 'exp',
+          subtype: 'number',
+          content: n
+        };
+      },
+      add: (n) => {
+        return (m) => {
+          return {
+            type: 'exp',
+            subtype: 'add',
+            content: {
+              rator: n,
+              rand: m
+            }
+          };
+        };
+      },
+      lambda: (name) => {
+        return (exp) => {
+          return {
+            type: 'exp',
+            subtype: 'lambda',
+            content: {
+              arg: name,
+              body: exp
+            }
+          };
+        };
+      },
+      app: (rator) => {
+        return (rand) => {
+          return {
+            type: 'exp',
+            subtype: 'application',
+            content: {
+              rator: rator,
+              rand: rand
+            }
+          };
+        };
+      }
+    },
+    // ### lazy##apply
+    // apply:: (Value) -> M[Value] -> M[Value]
+    apply: (rator) => {
+      var self = this;
+      return (rand) => {
+        if(__.typeOf(rator) === 'function'){
+          return rator.call(self,rand);
+        } else {
+          return self.lazy.unit.call(self,undefined);
+        }
+      };
+    },
+    // ### lazy##add
+    add: (n) => {
+      var self = this;
+      return (m) => {
+        if(__.isNumber(m) && __.isNumber(n)) {
+          return self.ambiguous.unit.call(self,m + n);
+        } else {
+          return self.ambiguous.unit.call(self,undefined);
+        }
+      };
+    },
+    // ### lazy#evaluate
+    // evaluate:: Exp -> M[value]
+    evaluate: (exp) => {
+      var self = this;
+      expect(exp.type).to.eql('exp');
+      return (env) => {
+        __.list.censor.call(__,env);
+        switch (exp.subtype) {
+        case 'fail':
+          return self.lazy.zero;
+        case 'amb':
+          var aResult = self.lazy.evaluate.call(self,
+                                                            exp.content.a)(env);
+          var bResult = self.lazy.evaluate.call(self,
+                                                            exp.content.b)(env);
+          return self.lazy.plus.call(self,aResult)(bResult);
+        case 'variable':
+          return self.lazy.env.lookup.call(self,exp.content, env);
+        case 'number':
+          return self.lazy.unit.call(self,exp.content);
+        case 'add':
+          var rator = exp.content.rator;
+          var rand =  exp.content.rand;
+          expect(rator.type).to.eql('exp');
+          expect(rand.type).to.eql('exp');
+          return self.lazy.flatMap.call(self,self.lazy.evaluate.call(self,rator)(env))(function (m) {
+            return self.lazy.flatMap.call(self,self.lazy.evaluate.call(self,rand)(env))(function (n) {
+              return self.lazy.add.call(self, m)(n);
+            });
+          });
+        case 'lambda':
+          var closure = (arg) => {
+            var newEnv = self.lazy.env.extend.call(self, __.pair.mkPair.call(__,exp.content.arg)(arg),env);
+            return self.lazy.evaluate.call(self,exp.content.body)(newEnv);
+          };
+          return self.lazy.unit.call(self,closure);
+        case 'application':
+          var rator = exp.content.rator;
+          var rand =  exp.content.rand;
+          return self.lazy.flatMap.call(self,self.lazy.evaluate.call(self,rator)(env))(function (f) {
+            return self.lazy.apply.call(self, f)(self.lazy.evaluate.call(self,rand)(env));
+          });
+        default:
+          throw new Error("evaluate should accept expressions, but got " + exp);
+        }
+      };
+    },
+    // ### 'lazy' environment
+    // ~~~haskell
+    // type Environment = List[(Name, M[Value])]
+    // ~~~
+    env: {
+      empty: __.list.empty,
+      extend: (pair, oldenv) => {
+        __.pair.censor.call(__,pair);
+        __.list.censor.call(__,oldenv);
+        return __.list.cons.call(__, pair)(oldenv);
+      },
+      // ## lazy#lookup
+      // ~~~
+      // lookup:: (String,Env) -> M[Value]
+      // ~~~
+      lookup: (name, env) => {
+        var self = this;
+        if(__.list.isEmpty.call(__,env)) {
+          return self.lazy.unit.call(self,undefined);
+        } else {
+          var head = env.head;
+          var tail = env.tail;
+          if(head.left === name) {
+            return head.right;
+          } else {
+            return self.lazy.env.lookup.call(self,name, tail);
+          }
+        }
+      }
+    }
+  }
 };
