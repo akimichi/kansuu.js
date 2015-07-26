@@ -230,8 +230,6 @@ describe("'interpreter' example", () => {
       it('can evaluate (\\x.x)(2) = 2', (next) => {
         this.timeout(5000);
         var x = intp.cps.exp.variable("x");
-        //var addition = intp.cps.exp.add(x)(x);
-        //var lambda = intp.cps.exp.lambda("x")(x);
         var n = intp.cps.exp.number(2);
         var lambda = intp.cps.exp.lambda("x")(x);
         var application = intp.cps.exp.app(lambda)(n);
