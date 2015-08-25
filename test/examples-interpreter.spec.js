@@ -256,4 +256,22 @@ describe("'interpreter' example", () => {
       });
     });
   });
+  // describe("'callcc' interpreter", () => {
+  //   describe("evaluate", () => {
+  //     it('can evaluate (Add (Num 1) (Callcc "k" (Add (Num 2) (App (Var "k") (Num 4)))))', (next) => {
+  //       this.timeout(5000);
+  //       var k = intp.callcc.exp.variable("k");
+  //       var one = intp.cps.exp.number(1);
+  //       var two = intp.callcc.exp.number(2);
+  //       var four = intp.callcc.exp.number(4);
+  //       var expression = intp.cps.exp.add(one)(intp.callcc.exp.callcc.call(intp,"k")(intp.cps.exp.add(two)(intp.cps.exp.app(k)(four))));
+  //       expect(
+  //         intp.callcc.evaluate.call(intp,expression)(intp.callcc.env.empty)
+  //       ).to.equal(
+  //         2
+  //       );
+  //       next();
+  //     });
+  //   });
+  // });
 });

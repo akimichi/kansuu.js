@@ -561,24 +561,54 @@ describe("'list' module", function() {
     );
     next();
   });
-  // it("'list#unfold'", function(next) {
-  //   expect((_) => {
-  //      return __.list.unfold.bind(__)(0)((n) => {
-  //        if(n < 10) {
-  //          return __.monad.maybe.unit.bind(__)(__.pair.cons.bind(__)(n*2)(n+1));
-  //        } else {
-  //          return __.monad.maybe.nothing;
-  //        }
-  //      });
-  //   }).to.eql(
-  //      10
-  //    );
-  //   expect(((_)=> {
-  //      var taken = __.stream.take.bind(__)(stream)(3);
-  //      return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([10,12,14]));
-  //   })()).to.ok();
-  //   next();
-  // });
+  it("'list#unfold'", function(next) {
+    //  unfoldr (\b -> if b == 0 then Nothing else Just (b, b-1)) 10
+    //  > [10,9,8,7,6,5,4,3,2,1]
+    var id = (x) => {
+      return x;
+    };
+    var prev = (x) => {
+      return x - 1;
+    };
+    var isZero = (n) => {
+      return n === 0;
+    };
+    expect(
+      toArray(__.list.unfold.call(__,isZero)(id)(prev)(10))
+    ).to.eql(
+      [10,9,8,7,6,5,4,3,2,1]
+    );
+
+    /*
+     fibonacci :: [Integer]
+     fibonacci = unfoldr (\[a,b] -> Just(a+b,[b,b+a])) [0,1]
+
+     Prelude> take 10 fibonacci
+     [1,2,3,5,8,13,21,34,55,89]
+
+     */
+    // var fibonacci = (list) => {
+    //   return __.list.unfold.call(__, (pair) => {
+
+    //   })();
+    // };
+    // expect((_) => {
+    //    return __.list.unfold.bind(__)(0)((n) => {
+    //      if(n < 10) {
+    //        return __.monad.maybe.unit.bind(__)(__.pair.cons.bind(__)(n*2)(n+1));
+    //      } else {
+    //        return __.monad.maybe.nothing;
+    //      }
+    //    });
+    // }).to.eql(
+    //    10
+    //  );
+    // expect(((_)=> {
+    //    var taken = __.stream.take.bind(__)(stream)(3);
+    //    return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([10,12,14]));
+    // })()).to.ok();
+    next();
+  });
   describe("functor laws on list", function() {
     var list = __.list.mkList.bind(__)([0,1,2,3]);
     it("map id == id", function(next){
