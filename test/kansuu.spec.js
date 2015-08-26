@@ -660,5 +660,15 @@ describe("Kansuu module", function() {
   //     next();
   //    });
   // });
-
+  it("times",(next) => {
+    var succ = (n) => {
+      return n + 1;
+    };
+    expect(
+      __.times.call(__,3)(succ)(0)
+    ).to.be(
+      3
+    );
+    next();
+  });
 });

@@ -55,7 +55,7 @@ describe("'list' module", function() {
     );
     next();
   });
-  it("'list#toArray'", function(next) {
+  it("'list#toArray'", (next) => {
     var list = __.list.mkList.bind(__)([0,1,2,3]);
     expect(
       __.list.toArray.bind(__)(list)
@@ -64,7 +64,7 @@ describe("'list' module", function() {
     );
     next();
   });
-  it("'list#last'", function(next) {
+  it("'list#last'", (next) => {
     var list = __.list.mkList.bind(__)([0,1,2,3]);
     expect(
       __.list.last.bind(__)(list)
@@ -73,6 +73,26 @@ describe("'list' module", function() {
     );
     next();
   });
+  it("'list#at'", (next) => {
+    var list = __.list.mkList.bind(__)([0,1,2,3]);
+    expect(
+      __.list.at.call(__,list)(0)
+    ).to.eql(
+      0
+    );
+    expect(
+      __.list.at.call(__,list)(1)
+    ).to.eql(
+      1
+    );
+    expect(
+      __.list.at.call(__,list)(2)
+    ).to.eql(
+      2
+    );
+    next();
+  });
+
   it("'list#concat'", function(next) {
     var list1 = __.list.mkList.bind(__)([0,1]);
     var list2 = __.list.mkList.bind(__)([2,3]);
@@ -579,34 +599,36 @@ describe("'list' module", function() {
       [10,9,8,7,6,5,4,3,2,1]
     );
 
-    /*
-     fibonacci :: [Integer]
-     fibonacci = unfoldr (\[a,b] -> Just(a+b,[b,b+a])) [0,1]
-
-     Prelude> take 10 fibonacci
-     [1,2,3,5,8,13,21,34,55,89]
-
-     */
-    // var fibonacci = (list) => {
-    //   return __.list.unfold.call(__, (pair) => {
-
-    //   })();
-    // };
-    // expect((_) => {
-    //    return __.list.unfold.bind(__)(0)((n) => {
-    //      if(n < 10) {
-    //        return __.monad.maybe.unit.bind(__)(__.pair.cons.bind(__)(n*2)(n+1));
-    //      } else {
-    //        return __.monad.maybe.nothing;
-    //      }
-    //    });
-    // }).to.eql(
-    //    10
-    //  );
-    // expect(((_)=> {
-    //    var taken = __.stream.take.bind(__)(stream)(3);
-    //    return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([10,12,14]));
-    // })()).to.ok();
+    //  fibonacci :: [Integer]
+    //  fibonacci = unfoldr (\[a,b] -> Just(a+b,[b,b+a])) [0,1]
+    //
+    //  Prelude> take 10 fibonacci
+    //  [1,2,3,5,8,13,21,34,55,89]
+    //
+    // var fibonacci = ((initialList) => {
+    //   var always = (list) => {
+    //     // return true;
+    //     var zeroth = __.list.at.call(__,list)(0);
+    //     // var first = __.list.at.call(__,list)(1);
+    //     return zeroth > 10;
+    //   };
+    //   var mapper = (list) => {
+    //     var zeroth = __.list.at.call(__,list)(0);
+    //     var first = __.list.at.call(__,list)(1);
+    //     return zeroth + first;
+    //   };
+    //   var next = (list) => {
+    //     var zeroth = __.list.at.call(__,list)(0);
+    //     var first = __.list.at.call(__,list)(1);
+    //     return __.list.mkList.call(__,[first,zeroth + first]);
+    //   };
+    //   return __.list.unfold.call(__, always)(mapper)(next)(initialList);
+    // })(__.list.mkList.call(__,[0,1]));
+    // expect(
+    //   toArray(__.list.take.call(__,fibonacci)(5))
+    // ).to.eql(
+    //   [10,9,8,7,6,5,4,3,2,1]
+    // );
     next();
   });
   describe("functor laws on list", function() {
