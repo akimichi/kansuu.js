@@ -36,6 +36,22 @@ describe("'stream' module", function() {
       ).to.eql(intStream);
       next();
     });
+    it("stream#cons", function(next) {
+      var one = () => {
+        return 1;
+      };
+      var two = () => {
+        return 2;
+        ;;
+      };
+      var stream = __.stream.cons.call(__,one)(two);
+      expect(
+        stream.value()
+      ).to.eql(
+        1
+      );
+      next();
+    });
     it("'isEmpty'", function(next) {
       expect(
         __.stream.isEmpty(empty)
@@ -157,6 +173,18 @@ describe("'stream' module", function() {
       );
       next();
     });
+    // it("stream#cycle", function(next) {
+    //   // cycle(1 to 3) take 2
+    //   var list =__.list.mkList.call(__,[1,2,3]);
+    //   //var list =__.stream.mkStream.call(__,[1,2,3]);
+    //   var cycle = __.stream.cycle.call(__,list);
+    //   console.log(cycle);
+    //   var taken = __.stream.take.call(__,cycle)(10);
+    //   expect(((_) => {
+    //     return __.list.isEqual.call(__,taken)(__.list.mkList.call(__,[10,12,14]));
+    //   })()).to.ok();
+    //   next();
+    // });
     it("stream#from", function(next) {
       var ints = __.stream.from.bind(__)(0);
       expect(
