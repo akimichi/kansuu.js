@@ -63,6 +63,7 @@ describe("'stream' module", function() {
     next();
   });
   it("stream#isEqual", function(next) {
+    this.timeout(5000);
     var one = 1;
     var two = () => {
       return {
@@ -284,6 +285,46 @@ describe("'stream' module", function() {
     // })()).to.ok();
     next();
   });
+  it("stream#repeat", function(next) {
+    var ones = __.stream.repeat.call(__,1);
+    expect(
+      __.stream.head.call(__,ones)
+    ).to.eql(
+      1
+    );
+
+    expect(
+      __.compose.call(__,__.stream.head)(__.stream.tail)(ones)
+    ).to.eql(
+      1
+    );
+    next();
+  });
+  it("stream#map", (next) => {
+    var ints = __.stream.mkStream.bind(__)([0,1,2,3]);
+    var double = (n) => {
+      return n * 2;
+    };
+    expect(
+      isEqual(__.stream.map.call(__,ints)(double))(__.stream.mkStream.bind(__)([0,2,4,6]))
+    ).to.ok();
+    next();
+  });
+  it("stream#flatten", (next) => {
+    var innerStream = mkStream([0,1]);
+    // var head = () => {
+    //   return innerStream;
+    // };
+    // var tail = () => {
+    //   return empty;
+    // };
+    // var stream = __.stream.cons.bind(__)(head)(tail);
+    var stream = __.stream.cons.call(__,innerStream)(empty);
+    expect(
+      isEqual(__.stream.flatten.call(__,stream))(innerStream)
+    ).to.ok();
+    next();
+  });
   // it("integer example", function(next) {
   //   // ints = 0,1,2,3,4,...
   //   var ints = __.stream.mkStream.bind(__)([0,1,2,3,4,5]);
@@ -301,25 +342,6 @@ describe("'stream' module", function() {
   //   expect(
   //     doubles.next().next().value()
   //   ).to.eql(4);
-  //   next();
-  // });
-  // it("stream#repeat", function(next) {
-  //   var ones = __.stream.repeat.bind(__)(1);
-  //   expect(
-  //     ones.value()
-  //   ).to.eql(
-  //     1
-  //   );
-  //   expect(
-  //     ones.next().next().value()
-  //   ).to.eql(
-  //     1
-  //   );
-  //   expect(
-  //     ones.next().next().next().value()
-  //   ).to.eql(
-  //     1
-  //   );
   //   next();
   // });
   // // it("stream#cycle", function(next) {
@@ -389,30 +411,6 @@ describe("'stream' module", function() {
   //   };
   //   expect(
   //     isEqual(__.stream.filter.bind(__)(ints)(isEven))(evens)
-  //   ).to.ok();
-  //   next();
-  // });
-  // it("stream#map", (next) => {
-  //   var ints = __.stream.mkStream.bind(__)([0,1,2,3]);
-  //   var double = (n) => {
-  //     return n * 2;
-  //   };
-  //   expect(
-  //     isEqual(__.stream.map.bind(__)(ints)(double))(__.stream.mkStream.bind(__)([0,2,4,6]))
-  //   ).to.ok();
-  //   next();
-  // });
-  // it("stream#flatten", (next) => {
-  //   var innerStream = mkStream.bind(__)([0,1]);
-  //   var head = () => {
-  //     return innerStream;
-  //   };
-  //   var tail = () => {
-  //     return empty;
-  //   };
-  //   var stream = __.stream.cons.bind(__)(head)(tail);
-  //   expect(
-  //     isEqual(__.stream.flatten.call(__,stream))(innerStream)
   //   ).to.ok();
   //   next();
   // });
