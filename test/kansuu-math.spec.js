@@ -59,21 +59,21 @@ describe("math module", function() {
     );
     next();
   });
-  it("'primes'", function(next) {
-    this.timeout(5000);
-    var primes = math.primes.bind(math)();
-    expect(
-      toArray(__.stream.take.bind(__)(primes)(3))
-    ).to.eql(
-      [ 2, 3, 5]
-    );
-    expect(
-      toArray(__.stream.take.bind(__)(primes)(10))
-    ).to.eql(
-      [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 ]
-    );
-    next();
-  });
+  // it("'primes'", function(next) {
+  //   this.timeout(5000);
+  //   var primes = math.primes.bind(math)();
+  //   expect(
+  //     toArray(__.stream.take.bind(__)(primes)(3))
+  //   ).to.eql(
+  //     [ 2, 3, 5]
+  //   );
+  //   expect(
+  //     toArray(__.stream.take.bind(__)(primes)(10))
+  //   ).to.eql(
+  //     [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 ]
+  //   );
+  //   next();
+  // });
   it("'factors'", function(next) {
     expect(
       toArray(math.factors.call(math,84))
