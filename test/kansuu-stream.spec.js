@@ -244,28 +244,90 @@ describe("'stream' module", function() {
         var taken = __.stream.take.call(__,stream)(1);
         return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([10]));
       })()).to.ok();
-      expect(((_)=> {
-        var taken = __.stream.take.call(__,stream)(3);
-        return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([10,12,14]));
-      })()).to.ok();
+      expect(
+        toArray(__.stream.take.call(__,stream)(3))
+      ).to.eql(
+        [10,12,14]
+      );
+      expect(
+        toArray(__.stream.take.call(__,stream)(4))
+      ).to.eql(
+        [10,12,14,16]
+      );
       next();
     });
+    describe("stream#filter", () => {
+      it("finite stream with stream#filter", (next) => {
+        var ints = mkStream([0,1,2,3,4,5]);
+        var evens = mkStream([0,2,4]);
+        var isEven = (n) => {
+          return n % 2 === 0;
+        };
+        expect(
+          isEqual(__.stream.filter.call(__,ints)(isEven))(evens)
+        ).to.ok();
+        next();
+      });
+      it("infinite stream with stream#filter", (next) => {
+        var ints = __.stream.from.call(__,0)(math.succ);
+        var isEven = (n) => {
+          return n % 2 === 0;
+        };
+        expect(
+          toArray(__.stream.take.call(__,__.stream.filter.call(__,ints)(isEven))(3))
+        ).to.eql(
+          [0,2,4]
+        );
+        next();
+      });
+    });
     // it("prime stream", function(next) {
-    //    var stream = __.stream.unfold.bind(__)(2)((n) => {
-    //      if(math.isPrime(n)) {
-    //        return __.monad.maybe.unit.bind(__)(__.pair.cons.bind(__)(n)(n+1));
-    //      } else {
-    //        return __.monad.maybe.nothing;
-    //      }
-    //    });
-    //    __.stream.censor(stream);
-    //    expect(((_)=> {
-    //      var list = __.stream.take.bind(__)(stream)(10);
-    //      return __.list.toArray.bind(__)(list);
-    //    })()).to.eql(
-    //      [2,3]
-    //    );
-    //    next();
+    //   var moreThanThree = __.stream.from.call(__,3)(math.succ);
+    //   var primes = (_) => {
+    //     var one = 1;
+    //     var tail = () => {
+    //       return __.stream.filter.call(__,moreThanThree)(math.isPrime);
+    //       // return {
+    //       //   type : 'stream',
+    //       //   value : 2,
+    //       //   next : __.stream.empty
+    //       // };
+    //     };
+    //     return __.stream.cons.call(__,2)(tail);
+    //   };
+
+    //   // var primesFrom = (start) => {
+    //   //   return __.stream.unfold.call(__,start)((n) => {
+    //   //     if(__.truthy(math.isPrime(n))) {
+    //   //       return __.monad.maybe.unit.call(__,__.pair.cons.call(__,n)(n+1));
+    //   //     } else {
+    //   //       return primesFrom.call(__,n+1);
+    //   //     }
+    //   //   });
+    //   // };
+    //   // var primes = primesFrom(2);
+
+    //   expect(
+    //     __.stream.head.call(__,primes)
+    //   ).to.eql(
+    //     2
+    //   );
+    //   // expect(
+    //   //   __.compose.call(__,__.stream.head)(__.stream.tail)(primes)
+    //   // ).to.eql(
+    //   //   3
+    //   // );
+    //   // expect(
+    //   //   __.stream.at.call(__,primes)(3)
+    //   // ).to.eql(
+    //   //   3
+    //   // );
+    //   // expect(
+    //   //   toArray(__.stream.take.call(__,primes)(10))
+    //   // ).to.eql(
+    //    //   []
+    //   // );
+    //   next();
     // });
   });
   it("stream#constant", function(next) {
@@ -395,17 +457,6 @@ describe("'stream' module", function() {
     ).to.eql(
       1
     );
-    next();
-  });
-  it("stream#filter", (next) => {
-    var ints = mkStream([0,1,2,3,4,5]);
-    var evens = mkStream([0,2,4]);
-    var isEven = (n) => {
-      return n % 2 === 0;
-    };
-    expect(
-      isEqual(__.stream.filter.call(__,ints)(isEven))(evens)
-    ).to.ok();
     next();
   });
   it("stream#merge", function(next) {
