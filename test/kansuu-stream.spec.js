@@ -147,21 +147,54 @@ describe("'stream' module", function() {
     ).to.ok();
     next();
   });
-  it("stream#take(stream)(n)", function(next) {
-    var intStream = mkStream([0,1,2,3,4,5]);
-    expect(((_)=> {
-      var taken = __.stream.take.call(__,intStream)(1);
-      return __.list.isEqual.call(__,taken)(__.list.mkList.bind(__)([0]));
-    })()).to.ok();
-    expect(((_)=> {
-      var taken = __.stream.take.call(__,intStream)(2);
-      return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([0,1]));
-    })()).to.ok();
-    expect(((_)=> {
-      var taken = __.stream.take.call(__,intStream)(3);
-      return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([0,1,2]));
-    })()).to.ok();
-    next();
+  describe("stream#take", () => {
+    it("finite stream", function(next) {
+      var intStream = mkStream([0,1,2,3,4,5]);
+      expect(((_)=> {
+        var taken = __.stream.take.call(__,intStream)(1);
+        return __.list.isEqual.call(__,taken)(__.list.mkList.bind(__)([0]));
+      })()).to.ok();
+      expect(((_)=> {
+        var taken = __.stream.take.call(__,intStream)(2);
+        return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([0,1]));
+      })()).to.ok();
+      expect(((_)=> {
+        var taken = __.stream.take.call(__,intStream)(3);
+        return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([0,1,2]));
+      })()).to.ok();
+      next();
+    });
+    it("infinite stream with stream#from", function(next) {
+      var succ = (n) => {
+        return n + 1;
+      };
+      var ints = __.stream.from.call(__,0)(succ);
+      expect(
+        toArray(__.stream.take.call(__,ints)(1))
+      ).to.eql(
+        [0]
+      );
+      expect(
+        toArray(__.stream.take.call(__,ints)(3))
+      ).to.eql(
+        [0,1,2]
+      );
+      next();
+    });
+    it("infinite stream with stream#repeat", function(next) {
+      var ones = __.stream.repeat.call(__,1);
+      expect(
+        toArray(__.stream.take.call(__,ones)(1))
+      ).to.eql(
+        [1]
+      );
+      expect(
+        toArray(__.stream.take.call(__,ones)(3))
+      ).to.eql(
+        [1,1,1]
+      );
+      next();
+    });
   });
   it("stream#zip", function(next) {
     var evens = __.stream.mkStream.bind(__)([0,2,4]);
@@ -191,13 +224,6 @@ describe("'stream' module", function() {
     ).to.eql(
       2
     );
-    // expect(
-    //   __.stream.at.call(__,
-    //                     __.stream.iterate.call(__,
-    //                                            math.multiply(2))(1))(9)
-    // ).to.eql(
-    //   512
-    // );
     next();
   });
   describe("stream#unfold", function() {
@@ -251,7 +277,6 @@ describe("'stream' module", function() {
     );
     expect(
       __.compose.call(__,__.stream.head)(__.stream.tail)(ones)
-      //ones.next().next().value()
     ).to.eql(
       1
     );
@@ -259,6 +284,13 @@ describe("'stream' module", function() {
       __.compose.call(__,__.stream.head)(__.compose.call(__,__.stream.tail)(__.stream.tail))(ones)
     ).to.eql(
       1
+    );
+    var list =__.list.mkList.call(__,[1,2,3]);
+    var lists = __.stream.constant.call(__,list);
+    expect(
+      toArray(__.stream.head.call(__,lists))
+    ).to.eql(
+      [1,2,3]
     );
     next();
   });
@@ -274,15 +306,7 @@ describe("'stream' module", function() {
       )
     ).to.eql(
       [1,2,4,8,16,32,64,128,256,512]
-    )
-    // expect(((_)=> {
-    //   var answer = __.stream.take.call(__,
-    //                                    __.stream.iterate.call(__,
-    //                                                           math.multiply(2))(1))(10);
-    //   return __.list.isEqual.call(__,
-    //                               answer)(__.list.mkList.call(__,
-    //                                                           [1,2,4,8,16,32,64,128,256,512]));
-    // })()).to.ok();
+    );
     next();
   });
   it("stream#repeat", function(next) {
@@ -325,6 +349,92 @@ describe("'stream' module", function() {
     ).to.ok();
     next();
   });
+  it("stream#flatMap", (next) => {
+    var stream1 = mkStream([0,1]);
+    var stream2 = mkStream([0,2]);
+    var double = (n) => {
+      return n * 2;
+    };
+    expect(
+      isEqual(__.stream.flatMap.call(__,stream1)(function(n) {
+        return mkStream([n * 2]);
+      }))(stream2)).to.ok();
+    next();
+  });
+  it("stream#exists", function(next) {
+    var ints = mkStream([0,1,2,3,4,5]);
+    expect(
+      __.stream.exists.call(__,ints)(n => {
+        return n === 3;
+      })
+    ).to.eql(
+      true
+    );
+    var evens = mkStream([0,2,4]);
+    expect(
+      __.stream.exists.call(__,evens)(n => {
+        return (n % 2) === 1;
+      })
+    ).to.eql(
+      false
+    );
+    next();
+  });
+  it("stream#from", function(next) {
+    var succ = (n) => {
+      return n + 1;
+    };
+    var ints = __.stream.from.call(__,0)(succ);
+    expect(
+      __.stream.head.call(__,ints)
+    ).to.eql(
+      0
+    );
+    expect(
+      __.compose.call(__,__.stream.head)(__.stream.tail)(ints)
+    ).to.eql(
+      1
+    );
+    next();
+  });
+  it("stream#filter", (next) => {
+    var ints = mkStream([0,1,2,3,4,5]);
+    var evens = mkStream([0,2,4]);
+    var isEven = (n) => {
+      return n % 2 === 0;
+    };
+    expect(
+      isEqual(__.stream.filter.call(__,ints)(isEven))(evens)
+    ).to.ok();
+    next();
+  });
+  it("stream#merge", function(next) {
+    this.timeout(5000);
+    var evens = mkStream([0,2,4]);
+    var odds = mkStream([1,3,5]);
+    var ints = mkStream([0,1,2,3,4,5]);
+    expect(
+      toArray(__.stream.take.call(__,__.stream.merge.call(__,evens)(odds))(6))
+    ).to.eql(
+      [0,1,2,3,4,5]
+    );
+    expect(
+      isEqual(__.stream.merge.call(__,evens)(odds))(ints)
+    ).to.ok();
+    next();
+  });
+  // it("stream#cycle", function(next) {
+  //   // cycle(1 to 3) take 2
+  //   var list =__.list.mkList.call(__,[1,2,3]);
+  //   //var list =__.stream.mkStream.call(__,[1,2,3]);
+  //   var cycle = __.stream.cycle.call(__,list);
+  //   // console.log(cycle);
+  //   var taken = __.stream.take.call(__,cycle)(10);
+  //   expect(((_) => {
+  //     return __.list.isEqual.call(__,taken)(__.list.mkList.call(__,[10,12,14]));
+  //   })()).to.ok();
+  //   next();
+  // });
   // it("integer example", function(next) {
   //   // ints = 0,1,2,3,4,...
   //   var ints = __.stream.mkStream.bind(__)([0,1,2,3,4,5]);
@@ -344,112 +454,7 @@ describe("'stream' module", function() {
   //   ).to.eql(4);
   //   next();
   // });
-  // // it("stream#cycle", function(next) {
-  // //   // cycle(1 to 3) take 2
-  // //   var list =__.list.mkList.call(__,[1,2,3]);
-  // //   //var list =__.stream.mkStream.call(__,[1,2,3]);
-  // //   var cycle = __.stream.cycle.call(__,list);
-  // //   console.log(cycle);
-  // //   var taken = __.stream.take.call(__,cycle)(10);
-  // //   expect(((_) => {
-  // //     return __.list.isEqual.call(__,taken)(__.list.mkList.call(__,[10,12,14]));
-  // //   })()).to.ok();
-  // //   next();
-  // // });
-  // it("stream#from", function(next) {
-  //   var ints = __.stream.from.bind(__)(0);
-  //   expect(
-  //     ints.value()
-  //   ).to.eql(
-  //     0
-  //   );
-  //   expect(
-  //     ints.next().value()
-  //   ).to.eql(
-  //     1
-  //   );
-  //   expect(
-  //     ints.next().next().value()
-  //   ).to.eql(
-  //     2
-  //   );
-  //   next();
-  // });
-  // it("stream#exists", function(next) {
-  //   var ints = __.stream.mkStream.bind(__)([0,1,2,3,4,5]);
-  //   expect(
-  //     __.stream.exists.bind(__)(ints)(n => {
-  //       return n === 3;
-  //     })
-  //   ).to.eql(
-  //     true
-  //   );
-  //   var evens = __.stream.mkStream.bind(__)([0,2,4]);
-  //   expect(
-  //     __.stream.exists.bind(__)(evens)(n => {
-  //       return (n % 2) === 1;
-  //     })
-  //   ).to.eql(
-  //     false
-  //   );
-  //   next();
-  // });
-  // it("stream#merge", function(next) {
-  //   var evens = __.stream.mkStream.bind(__)([0,2,4]);
-  //   var odds = __.stream.mkStream.bind(__)([1,3,5]);
-  //   var ints = __.stream.mkStream.bind(__)([0,1,2,3,4,5]);
-  //   expect(
-  //     isEqual(__.stream.merge.bind(__)(evens)(odds))(ints)
-  //   ).to.ok();
-  //   next();
-  // });
-  // it("stream#filter", (next) => {
-  //   var ints = __.stream.mkStream.bind(__)([0,1,2,3,4,5]);
-  //   var evens = __.stream.mkStream.bind(__)([0,2,4]);
-  //   var isEven = (n) => {
-  //     return n % 2 === 0;
-  //   };
-  //   expect(
-  //     isEqual(__.stream.filter.bind(__)(ints)(isEven))(evens)
-  //   ).to.ok();
-  //   next();
-  // });
-  // it("stream#flatMap", (next) => {
-  //   var stream1 = mkStream([0,1]);
-  //   var stream2 = mkStream([0,2]);
-  //   var double = (n) => {
-  //     return n * 2;
-  //   };
-  //   expect(
-  //     isEqual(__.stream.flatMap.call(__,stream1)(function(n) {
-  //       return mkStream([n * 2]);
-  //     }))(stream2)).to.ok();
-  //   next();
-  // });
   // /*
-  //  it("stream#cons", function(next) {
-  //  // var ones = function(){
-  //  //    var self = this;
-  //  //    return __.stream.cons.bind(__)(base.thunk(0))(base.thunk.bind(__)(self.ones));
-  //  // };
-  //  var fromEnum = {
-  //  one: function(from){
-  //  var self = this;
-  //  return  __.stream.cons.bind(__)(base.thunk(from))(base.thunk.bind(__)(self.one(from)));
-  //  }
-  //  };
-  //  expect(
-  //  ones().value()
-  //  ).to.eql(
-  //  0
-  //  );
-  //  expect(
-  //  ones().next().value()
-  //  ).to.eql(
-  //  0
-  //  );
-  //  next();
-  //  });
   //  it("random float example", function(next) {
   //  var generate = function(seed){
   //  var seedrandom = require('seedrandom');
