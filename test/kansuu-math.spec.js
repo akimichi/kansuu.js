@@ -11,14 +11,24 @@ describe("math module", function() {
   //   expect(math.lower.bind(__)(17.3)).to.be(-1);
   //   next();
   // });
-  it("'isPrime'", function(next) {
+  it("'isPrime'", (next) => {
     expect(
-      math.isPrime(3)
+      math.isPrime.call(math,3)
     ).to.be(
       true
     );
     expect(
-      math.isPrime.bind(__)(2)
+      math.isPrime.bind(math)(2)
+    ).to.eql(
+      true
+    );
+    expect(
+      math.isPrime.call(math,4)
+    ).to.eql(
+      false
+    );
+    expect(
+      math.isPrime.call(math,13)
     ).to.eql(
       true
     );
@@ -61,17 +71,17 @@ describe("math module", function() {
   });
   // it("'primes'", function(next) {
   //   this.timeout(5000);
-  //   var primes = math.primes.bind(math)();
+  //   // var primes = math.primes.call(math)();
   //   expect(
-  //     toArray(__.stream.take.bind(__)(primes)(3))
+  //     toArray(__.stream.take.bind(__)(math.primes.bind(math))(3))
   //   ).to.eql(
   //     [ 2, 3, 5]
   //   );
-  //   expect(
-  //     toArray(__.stream.take.bind(__)(primes)(10))
-  //   ).to.eql(
-  //     [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 ]
-  //   );
+  //   // expect(
+  //   //   toArray(__.stream.take.bind(__)(primes)(10))
+  //   // ).to.eql(
+  //   //   [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 ]
+  //   // );
   //   next();
   // });
   it("'factors'", function(next) {
