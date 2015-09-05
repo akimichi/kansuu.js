@@ -1,6 +1,6 @@
 {
   "name": "kansuu.js",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Yet another functional programming library for node.js",
   "main": "lib/kansuu.js",
   "scripts": {
@@ -21,7 +21,9 @@
   },
   "homepage": "https://github.com/akimichi/kansuu.js",
   "dependencies": {
-    "expect.js": "^0.3.1"
+    "expect.js": "^0.3.1",
+    "seedrandom": "^2.3.11",
+    "random-js": "^1.0.4"
   },
   "devDependencies": {
     "docco": "^0.7.0",
@@ -31,8 +33,6 @@
     "gulp-mocha": "^2.0.0",
     "gulp-run": "^1.6.7",
     "mocha": "^2.2.1",
-    "quickcheck": "0.0.4",
-    "random-js": "^1.0.4",
-    "seedrandom": "^2.3.11"
+    "quickcheck": "0.0.4"
   }
 }
