@@ -138,15 +138,6 @@ describe("'stream' module", function() {
   //    ).to.eql([0,1,2]);
   //    next();
   // });
-  it("stream#append", function(next) {
-    var evens = mkStream([0,2,4]);
-    var odds = mkStream([1,3,5]);
-    var ints = mkStream([0,2,4,1,3,5]);
-    expect(
-      isEqual(__.stream.append.call(__,evens)(odds))(ints)
-    ).to.ok();
-    next();
-  });
   describe("stream#take", () => {
     it("finite stream", function(next) {
       var intStream = mkStream([0,1,2,3,4,5]);
@@ -281,54 +272,6 @@ describe("'stream' module", function() {
         next();
       });
     });
-    // it("prime stream", function(next) {
-    //   var moreThanThree = __.stream.from.call(__,3)(math.succ);
-    //   var primes = (_) => {
-    //     var one = 1;
-    //     var tail = () => {
-    //       return __.stream.filter.call(__,moreThanThree)(math.isPrime);
-    //       // return {
-    //       //   type : 'stream',
-    //       //   value : 2,
-    //       //   next : __.stream.empty
-    //       // };
-    //     };
-    //     return __.stream.cons.call(__,2)(tail);
-    //   };
-
-    //   // var primesFrom = (start) => {
-    //   //   return __.stream.unfold.call(__,start)((n) => {
-    //   //     if(__.truthy(math.isPrime(n))) {
-    //   //       return __.monad.maybe.unit.call(__,__.pair.cons.call(__,n)(n+1));
-    //   //     } else {
-    //   //       return primesFrom.call(__,n+1);
-    //   //     }
-    //   //   });
-    //   // };
-    //   // var primes = primesFrom(2);
-
-    //   expect(
-    //     __.stream.head.call(__,primes)
-    //   ).to.eql(
-    //     2
-    //   );
-    //   // expect(
-    //   //   __.compose.call(__,__.stream.head)(__.stream.tail)(primes)
-    //   // ).to.eql(
-    //   //   3
-    //   // );
-    //   // expect(
-    //   //   __.stream.at.call(__,primes)(3)
-    //   // ).to.eql(
-    //   //   3
-    //   // );
-    //   // expect(
-    //   //   toArray(__.stream.take.call(__,primes)(10))
-    //   // ).to.eql(
-    //    //   []
-    //   // );
-    //   next();
-    // });
   });
   it("stream#constant", function(next) {
     var ones = __.stream.constant.call(__,1);
@@ -396,20 +339,50 @@ describe("'stream' module", function() {
     ).to.ok();
     next();
   });
-  it("stream#flatten", (next) => {
-    var innerStream = mkStream([0,1]);
-    // var head = () => {
-    //   return innerStream;
-    // };
-    // var tail = () => {
-    //   return empty;
-    // };
-    // var stream = __.stream.cons.bind(__)(head)(tail);
-    var stream = __.stream.cons.call(__,innerStream)(empty);
-    expect(
-      isEqual(__.stream.flatten.call(__,stream))(innerStream)
-    ).to.ok();
-    next();
+  describe("stream#append", () => {
+    it("finite stream with stream#append", (next) => {
+      var evens = mkStream([0,2,4]);
+      var odds = mkStream([1,3,5]);
+      var ints = mkStream([0,2,4,1,3,5]);
+      expect(
+        isEqual(__.stream.append.call(__,evens)(odds))(ints)
+      ).to.ok();
+      next();
+    });
+    it("infinite stream with stream#append", (next) => {
+      var evens = mkStream([0,2,4]);
+      var ints = __.stream.from.call(__,0)(math.succ);
+      expect(
+        toArray(__.stream.take.call(__,__.stream.append.call(__,evens)(ints))(5))
+      ).to.eql(
+        [0,2,4, 0, 1]
+      );
+      next();
+    });
+  });
+  describe("stream#flatten", () => {
+    it("finite stream with stream#flatten", (next) => {
+      var innerStream = mkStream([0,1]);
+      var stream = __.stream.cons.call(__,innerStream)(empty);
+      expect(
+        isEqual(__.stream.flatten.call(__,stream))(innerStream)
+      ).to.ok();
+      next();
+    });
+    it("infinite stream with stream#flatten", (next) => {
+      var innerStream = mkStream([0,1]);
+      var ints = __.stream.from.call(__,0)(math.succ);
+      var stream = __.stream.cons.call(__,innerStream)(ints);
+      expect(
+        toArray(__.stream.take.call(__,__.stream.flatten.call(__,stream))(4))
+      ).to.eql(
+        [0,2,4]
+      );
+      // expect(
+      //   isEqual(__.stream.flatten.call(__,stream))(innerStream)
+      // ).to.ok();
+      next();
+    });
   });
   it("stream#flatMap", (next) => {
     var stream1 = mkStream([0,1]);
