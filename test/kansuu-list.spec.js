@@ -357,6 +357,16 @@ describe("'list' module", function() {
     );
     next();
   });
+  it("'list#shred'", (next) => {
+    this.timeout(5000);
+    var list = __.list.fromArray.call(__,[0,1,2,3,4,5]);
+    expect(
+      __.list.toArray.call(__,__.list.shred.call(__,list)(2))
+    ).to.eql(
+      [[0,1],[2,3],[4,5]]
+    );
+    next();
+  });
   it("'list#init'", function(next) {
     var list = __.list.mkList.bind(__)([0,1,2,3]);
     var init = __.list.init.bind(__)(list);
