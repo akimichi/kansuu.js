@@ -14,6 +14,22 @@ describe("'list' module", function() {
     ints: __.list.mkList.bind(__)([0,1,2,3])
   };
 
+  describe("mkList", () => {
+    it("fromString", (next) => {
+      var list = __.list.fromString.call(__,"this is a string");
+      expect(
+        list.head
+      ).to.eql(
+        't'
+      );
+      expect(
+        list.tail.head
+      ).to.eql(
+        'h'
+      );
+      next();
+    });
+  });
   it("'cons' should construct a list object", function(next) {
     var list = __.list.cons.bind(__)(0)(__.list.empty);
     expect(
