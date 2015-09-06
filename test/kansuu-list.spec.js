@@ -30,6 +30,45 @@ describe("'list' module", function() {
       next();
     });
   });
+  describe("'list#isEqual'", function() {
+    it("'isEqual' to be true", function(next) {
+      expect(function(){
+        var list1 = __.list.mkList.bind(__)([2,0,3,1]);
+        var list2 = __.list.mkList.bind(__)([2,0,3,1]);
+        return list1.isEqual(list2);
+      }()).to.eql(
+        true
+      );
+      next();
+    });
+    it("'isEqual' to be false when two list have different length", function(next) {
+      expect(function(){
+        var list1 = __.list.mkList.bind(__)([2,0,3,1,4]);
+        var list2 = __.list.mkList.bind(__)([2,0,3,1]);
+        return list1.isEqual(list2);
+      }()).to.eql(
+        false
+      );
+      expect(function(){
+        var list1 = __.list.mkList.bind(__)([2,0,3,1]);
+        var list2 = __.list.mkList.bind(__)([2,0,3,1,4]);
+        return list1.isEqual(list2);
+      }()).to.eql(
+        false
+      );
+      next();
+    });
+    it("'isEqual' to be false", function(next) {
+      expect(function(){
+        var list1 = __.list.mkList.bind(__)([2,0,3,1]);
+        var list2 = __.list.mkList.bind(__)([0,2,3,1]);
+        return list1.isEqual(list2);
+      }()).to.eql(
+        false
+      );
+      next();
+    });
+  });
   it("'cons' should construct a list object", function(next) {
     var list = __.list.cons.bind(__)(0)(__.list.empty);
     expect(
@@ -57,15 +96,6 @@ describe("'list' module", function() {
     var list = __.list.mkList.bind(__)([0,1,2,3]);
     expect(
       __.list.tail.bind(__)(list).head
-    ).to.eql(
-      1
-    );
-    next();
-  });
-  it("'list.tail' should return the tail of a list", function(next) {
-    var list = __.list.mkList.bind(__)([0,1,2,3]);
-    expect(
-      list.tail.head
     ).to.eql(
       1
     );
@@ -549,45 +579,6 @@ describe("'list' module", function() {
       []
     );
     next();
-  });
-  describe("'list#isEqual'", function() {
-    it("'isEqual' to be true", function(next) {
-      expect(function(){
-        var list1 = __.list.mkList.bind(__)([2,0,3,1]);
-        var list2 = __.list.mkList.bind(__)([2,0,3,1]);
-        return list1.isEqual(list2);
-      }()).to.eql(
-        true
-      );
-      next();
-    });
-    it("'isEqual' to be false when two list have different length", function(next) {
-      expect(function(){
-        var list1 = __.list.mkList.bind(__)([2,0,3,1,4]);
-        var list2 = __.list.mkList.bind(__)([2,0,3,1]);
-        return list1.isEqual(list2);
-      }()).to.eql(
-        false
-      );
-      expect(function(){
-        var list1 = __.list.mkList.bind(__)([2,0,3,1]);
-        var list2 = __.list.mkList.bind(__)([2,0,3,1,4]);
-        return list1.isEqual(list2);
-      }()).to.eql(
-        false
-      );
-      next();
-    });
-    it("'isEqual' to be false", function(next) {
-      expect(function(){
-        var list1 = __.list.mkList.bind(__)([2,0,3,1]);
-        var list2 = __.list.mkList.bind(__)([0,2,3,1]);
-        return list1.isEqual(list2);
-      }()).to.eql(
-        false
-      );
-      next();
-    });
   });
   it("'list#replicate'", function(next) {
     expect(
