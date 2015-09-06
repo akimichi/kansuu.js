@@ -347,6 +347,16 @@ describe("'list' module", function() {
     );
     next();
   });
+  it("'list#splitAt'", (next) => {
+    this.timeout(5000);
+    var list = __.list.fromArray.call(__,[0,1,2,3]);
+    expect(
+      __.list.toArray.call(__,__.list.splitAt.call(__,list)(2))
+    ).to.eql(
+      [[0,1],[2,3]]
+    );
+    next();
+  });
   it("'list#init'", function(next) {
     var list = __.list.mkList.bind(__)([0,1,2,3]);
     var init = __.list.init.bind(__)(list);
@@ -683,6 +693,7 @@ describe("'list' module", function() {
       next();
     });
     it("(xs `append` ys) `append` zs == xs `append` (ys `append` zs)", function(next){
+      this.timeout(5000);
       var xs = __.list.mkList.bind(__)([0,1]);
       var ys = __.list.mkList.bind(__)([1,2]);
       var zs = __.list.mkList.bind(__)([2,3]);
@@ -691,6 +702,21 @@ describe("'list' module", function() {
       ).to.eql(
         toArray(append(xs)(append(ys)(zs)))
       );
+      next();
+    });
+  });
+  describe("examples", () => {
+    it("manipulate :788115012A8100247F7841E1000C8323000037FFFFFFFC27", (next) => {
+      this.timeout(10000);
+      var input = ":788115012A8100247F7841E1000C8323000037FFFFFFFC27";
+      var list = __.list.fromString.call(__,input).tail;
+
+      expect(
+        toArray(list)
+      ).to.eql(
+        __.string.toArray.call(__,"788115012A8100247F7841E1000C8323000037FFFFFFFC27")
+      );
+
       next();
     });
   });

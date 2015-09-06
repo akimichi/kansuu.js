@@ -97,6 +97,7 @@ describe("'interpreter' example", () => {
         next();
       });
       it('can evaluate logging', (next) => {
+        this.timeout(5000);
         var exp = intp.logging.exp.log(intp.logging.exp.number(2));
         expect(
           intp.logging.evaluate.call(intp,exp)(intp.logging.env.empty).value

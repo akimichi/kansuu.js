@@ -220,6 +220,7 @@ describe("'monad' module", function() {
       next();
     });
     it("primes", (next) => {
+      this.timeout(5000);
       var primeOrNot = (n) => {
         if(math.isPrime(n)){
           return some(n);
