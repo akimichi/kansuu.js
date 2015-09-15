@@ -361,7 +361,7 @@ describe("Kansuu module", function() {
         );
         next();
       });
-      it("isEmpty(string) ", function(next) {
+      it("isEmpty(string) ", (next) => {
         expect(
           __.isEmpty.bind(__)("")
         ).to.be(
@@ -376,7 +376,30 @@ describe("Kansuu module", function() {
       });
     });
   });
-  describe("combinators", function() {
+  describe("objects", () => {
+    it("'empty'", (next) => {
+      expect(
+        __.objects.empty
+      ).to.eql(
+        {}
+      );
+      next();
+    });
+    it("'set'", (next) => {
+      expect(
+        __.objects.set.call(__, "a")(1)(__.objects.empty)
+      ).to.eql(
+        {"a": 1}
+      );
+      expect(
+        __.compose.call(__, __.objects.set.call(__,"a")(1))(__.objects.set.call(__,"b")(2))(__.objects.empty)
+      ).to.eql(
+        {"a": 1, "b": 2}
+      );
+      next();
+    });
+  });
+  describe("combinators", () => {
     var S = __.combinator.S;
     var K = __.combinator.K;
     var I = __.combinator.I;
