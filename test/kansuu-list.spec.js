@@ -586,6 +586,7 @@ describe("'list' module", function() {
     next();
   });
   it("'list#sort'", function(next) {
+    this.timeout(5000);
     expect(function(){
       var list = __.list.mkList.bind(__)([2,0,3,1]);
       return __.list.toArray.bind(__)(__.list.sort.bind(__)(list));
@@ -656,6 +657,14 @@ describe("'list' module", function() {
     // ).to.eql(
     //   [10,9,8,7,6,5,4,3,2,1]
     // );
+    next();
+  });
+  it("'list#range'", (next) => {
+    expect(
+      toArray(__.list.range.call(__,0)(5))
+    ).to.eql(
+      [0,1,2,3,4,5]
+    );
     next();
   });
   describe("functor laws on list", function() {
