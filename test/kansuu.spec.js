@@ -376,7 +376,7 @@ describe("Kansuu module", function() {
       });
     });
   });
-  describe("objects", () => {
+  describe("'objects' module", () => {
     it("'empty'", (next) => {
       expect(
         __.objects.empty
@@ -398,6 +398,9 @@ describe("Kansuu module", function() {
       );
       next();
     });
+  });
+  describe("'array' module", () => {
+    it("'empty'");
   });
   describe("combinators", () => {
     var S = __.combinator.S;
