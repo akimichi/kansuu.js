@@ -24,8 +24,12 @@ describe("math module", function() {
     );
     next();
   });
-  it("'isMoreThan'", function(next) {
-    expect(math.isMoreThan(3)(2)).to.be(false);
+  it("'isMoreThan'", (next) => {
+    expect(math.isMoreThan(2)(3)).to.be(true);
+    next();
+  });
+  it("'isLessThan'", (next) => {
+    expect(math.isLessThan(3)(2)).to.be(true);
     next();
   });
   it("'leq'", function(next) {
