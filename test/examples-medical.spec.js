@@ -12,4 +12,26 @@ describe("'medical' example", () => {
     ).to.be.within(24.0, 25.0)
     next();
   });
+  describe('person', () => {
+	var male = med.algebraic.male({
+	  weight: 72,
+	  height: 175
+	});
+	var female = med.algebraic.female({
+	  weight: 54,
+	  height: 160
+	});
+	it('BMI', (next) => {
+      expect(
+		med.algebraic.evaluate.call(med,male).BMI
+      ).to.be(23.510204081632654)
+      next();
+	});
+	it('TBW', (next) => {
+      expect(
+		med.algebraic.evaluate.call(med,female).TBW
+      ).to.be(27)
+      next();
+	});
+  });
 });

@@ -10,6 +10,43 @@ var hasProp = {}.hasOwnProperty;
 
 
 module.exports = {
+  algebraic: {
+    match: (exp, pattern) => {
+      return exp.call(pattern, pattern);
+    },
+    male: (data) => {
+      return (pattern) => {
+        return pattern.male(data);
+      };
+    },
+    female: (data) => {
+      return (pattern) => {
+        return pattern.female(data);
+      };
+    },
+    evaluate: (person) => {
+	  var self = this;
+      return self.algebraic.match(person, {
+        male: (data) => {
+          return {
+			BMI: self.BMI(data.weight, data.height),
+			// total body water
+			TBW: data.weight * 0.6,
+			// estimated blood volume
+			EBV: 0.168 * Math.pow(data.height,3) + 0.050 * data.weight + 0.444
+		  };
+        },
+        female: (data) => {
+          return {
+			BMI: self.BMI(data.weight, data.height),
+			TBW: data.weight * 0.5,
+			// estimated blood volume = 0.250 \times height^3 + 0.625 \times weight - 0.662
+			EBV: 0.250 * Math.pow(data.height,3) + 0.625 * data.weight - 0.662
+		  };
+        },
+      });
+    }
+  },
   /* #@range_begin(BMI) */
   BMI: (weight /* kg */, height /* cm */) => {
 	var height_in_meter = height / 100.0;
@@ -17,11 +54,6 @@ module.exports = {
   },
   /* #@range_end(BMI) */
   // total body water
-  /* #@range_begin(TBW) */
-  TBW: (weight /* kg */) => {
-	return weigth * 0.6;
-  },
-  /* #@range_end(TBW) */
   /*
   mEq =mg/式量×価数= mmol ×価数
   mg = mEq ×式量/価数= mmol ×式量
