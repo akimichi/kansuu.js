@@ -34,4 +34,22 @@ describe("'medical' example", () => {
       next();
 	});
   });
+  describe('case', () => {
+	var male = med.algebraic.male({
+	  weight: 62.9,
+	  height: 174
+	});
+	it('BMI', (next) => {
+      expect(
+		med.algebraic.evaluate.call(med,male).BMI
+      ).to.be(23.510204081632654)
+      next();
+	});
+	it('TBW', (next) => {
+      expect(
+		med.algebraic.evaluate.call(med,male).TBW
+      ).to.be(27)
+      next();
+	});
+  });
 });
