@@ -30,7 +30,7 @@ describe("'medical' example", () => {
 	it('TBW', (next) => {
       expect(
 		med.algebraic.evaluate.call(med,female).TBW
-      ).to.be(27)
+      ).to.be(29.783085)
       next();
 	});
   });
@@ -42,13 +42,13 @@ describe("'medical' example", () => {
 	it('BMI', (next) => {
       expect(
 		med.algebraic.evaluate.call(med,male).BMI
-      ).to.be(23.510204081632654)
+      ).to.be(20.775531774342713)
       next();
 	});
 	it('TBW', (next) => {
       expect(
 		med.algebraic.evaluate.call(med,male).TBW
-      ).to.be(27)
+      ).to.be(38.5476065)
       next();
 	});
   });
