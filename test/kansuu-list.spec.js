@@ -367,6 +367,17 @@ describe("'list' module", function() {
     );
     next();
   });
+  it("'list#shuffle'", (next) => {
+    this.timeout(5000);
+    var listA = __.list.fromArray.call(__,[0,1,2]);
+    var listB = __.list.fromArray.call(__,[3,4,5]);
+    expect(
+      __.list.toArray.call(__,__.list.shuffle.call(__,listA)(listB))
+    ).to.eql(
+	  [ 0, 3, 1, 4, 2, 5 ]
+    );
+    next();
+  });
   it("'list#init'", function(next) {
     var list = __.list.mkList.bind(__)([0,1,2,3]);
     var init = __.list.init.bind(__)(list);
