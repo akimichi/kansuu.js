@@ -51,6 +51,19 @@ describe("'monad' module", function() {
     var map = __.monad.maybeMonad.map.bind(__);
     var isEqual = __.monad.maybeMonad.isEqual.bind(__);
 
+    it("maybeMonad#unit", (next) => {
+      expect(
+        isEqual(unit(1))(unit(1))
+      ).to.be(
+        true
+      );
+      expect(
+        isEqual(nothing)(nothing)
+      ).to.be(
+        true
+      );
+      next();
+    });
     describe("functor laws on maybeMonad", function() {
       it("map id == id", function(next){
         var justOne = just(1);
