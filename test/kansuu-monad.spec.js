@@ -58,12 +58,38 @@ describe("'monad' module", function() {
         true
       );
       expect(
-        // isEqual(unit(null))(unit(null))
         isEqual(nothing)(nothing)
       ).to.eql(
         true
       );
       next();
+    });
+    describe("maybeMonad#flatMap", () => {
+      it("add(maybeMonad)(maybeMonad)", (next) => {
+        var add = (maybeA) => {
+          return (maybeB) => {
+            return __.monad.maybeMonad.flatMap.call(__,maybeA)((a) => {
+              return __.monad.maybeMonad.flatMap.call(__,maybeB)((b) => {
+                return unit(a + b);
+              });
+            });
+          };
+        };
+        var justOne = just(1);
+        var justTwo = just(2);
+        var justThree = just(3);
+        expect(
+          isEqual(add(justOne)(justTwo))(justThree)
+        ).to.eql(
+          true
+        );
+        expect(
+          isEqual(add(justOne)(nothing))(nothing)
+        ).to.eql(
+          true
+        );
+        next();
+      });
     });
     describe("functor laws on maybeMonad", function() {
       it("map id == id", function(next){
@@ -156,34 +182,6 @@ describe("'monad' module", function() {
         ).to.eql(
           true
         );
-        next();
-      });
-    });
-    describe("maybeMonad#flatMap", () => {
-      it("add(maybeMonad)(maybeMonad)", (next) => {
-        var add = (maybeA) => {
-          return (maybeB) => {
-            return __.monad.maybeMonad.flatMap.call(__,maybeA)((a) => {
-              return __.monad.maybeMonad.flatMap.call(__,maybeB)((b) => {
-                return unit(a + b);
-              });
-            });
-          };
-        };
-        var justOne = just(1);
-        var justTwo = just(2);
-        var justThree = just(3);
-        expect(
-          isEqual(add(justOne)(justTwo))(justThree)
-        ).to.eql(
-          true
-        );
-        expect(
-          isEqual(add(justOne)(nothing))(nothing)
-        ).to.eql(
-          true
-        );
-
         next();
       });
     });
