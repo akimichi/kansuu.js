@@ -58,8 +58,9 @@ describe("'monad' module", function() {
         true
       );
       expect(
+        // isEqual(unit(null))(unit(null))
         isEqual(nothing)(nothing)
-      ).to.be(
+      ).to.eql(
         true
       );
       next();
@@ -221,7 +222,7 @@ describe("'monad' module", function() {
           map(justOne)(__.compose.bind(__)(f)(g))
         ).to.eql(
           __.compose.bind(__)(__.flip.bind(__)(map)(f))
-                             (__.flip.bind(__)(map)(g))(justOne)
+          (__.flip.bind(__)(map)(g))(justOne)
         );
         next();
       });
@@ -383,9 +384,9 @@ describe("'monad' module", function() {
       /* doesn't work!!
        var onlyPrimes = __.list.flatMap.bind(__)(list)(primeOrNot);
        expect(
-         __.list.toArray.bind(__)(onlyPrimes)
+       __.list.toArray.bind(__)(onlyPrimes)
        ).to.eql(
-         [some(1),some(2),some(3),some(5),some(7),some(11),some(13)]
+       [some(1),some(2),some(3),some(5),some(7),some(11),some(13)]
        );
        */
       next();
@@ -407,11 +408,11 @@ describe("'monad' module", function() {
       );
       /*
        Seq(1,2,3,4) flatMap { x =>
-         if(x % 2 == 0) Some(x) else None
+       if(x % 2 == 0) Some(x) else None
        } map { x =>
-         x * 2
+       x * 2
        } foreach {
-         println
+       println
        }
        */
       // var some = function(n){
@@ -499,7 +500,7 @@ describe("'monad' module", function() {
           return mkList([x, -x]);
         }))
       ).to.eql(
-          [3,-3,4,-4,5,-5]
+        [3,-3,4,-4,5,-5]
       );
       expect(
         toArray(flatMap(mkList([1,2,3]))(function (x){
@@ -589,18 +590,18 @@ describe("'monad' module", function() {
       expect(
         intRandom.left
       ).to.eql(
-        -1937831252
+          -1937831252
       );
       //var intRandom2 = __.monad.random.int.bind(__)(intRandom.right);
       expect(
-         __.monad.random.int.bind(__)(intRandom.right).left
+        __.monad.random.int.bind(__)(intRandom.right).left
       ).to.eql(
-        -884076225
+          -884076225
       );
       expect(
         __.monad.random.int.bind(__)(intRandom.right).left
       ).to.eql(
-        -505527131
+          -505527131
       );
       // expect(
       //     __.monad.random.int.bind(__)(intRandom.right()).left
