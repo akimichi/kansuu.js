@@ -44,7 +44,6 @@ describe("'monad' module", function() {
   });
   describe("'maybeMonad' monad", () => {
     var just = __.monad.maybeMonad.unit.bind(__);
-    //var nothing = __.monad.maybeMonad.nothing.call(__, null);
     var nothing = __.monad.maybeMonad.nothing.bind(__);
     var flatMap = __.monad.maybeMonad.flatMap.bind(__);
     var unit = __.monad.maybeMonad.unit.bind(__);
@@ -90,6 +89,30 @@ describe("'monad' module", function() {
         );
         next();
       });
+    });
+    it("maybeMonad#getOrElse", (next) => {
+      var get = __.monad.maybeMonad.get.bind(__);
+      var getOrElse = __.monad.maybeMonad.getOrElse.bind(__);
+      expect(
+        getOrElse(unit(1))(null)
+      ).to.be(
+        1
+      );
+      expect(
+        getOrElse(nothing)(0)
+      ).to.be(
+        0
+      );
+      next();
+    });
+    it("maybeMonad#get", (next) => {
+      var get = __.monad.maybeMonad.get.bind(__);
+      expect(
+        get(unit(1))
+      ).to.be(
+        1
+      );
+      next();
     });
     describe("functor laws on maybeMonad", function() {
       it("map id == id", function(next){
