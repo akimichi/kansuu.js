@@ -90,6 +90,25 @@ describe("'monad' module", function() {
         next();
       });
     });
+    describe("maybeMonad#map", () => {
+      it("maybe#map", (next) => {
+        expect(
+          __.monad.maybeMonad.map.bind(__)(justOne)((n) => {
+            return n * 2;
+          })
+        ).to.eql(
+          some(400)
+        );
+        expect(
+          __.monad.maybe.map.bind(__)(nothing)((n) => {
+            return n * 2;
+          })
+        ).to.eql(
+          nothing
+        );
+        next();
+      });
+    });
     it("maybeMonad#getOrElse", (next) => {
       var get = __.monad.maybeMonad.get.bind(__);
       var getOrElse = __.monad.maybeMonad.getOrElse.bind(__);
