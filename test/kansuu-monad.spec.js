@@ -600,29 +600,29 @@ describe("'monad' module", function() {
     var unit = __.monad.stream.unit.bind(__);
     var empty = __.stream.empty;
     var head = __.monad.stream.head.bind(__);
-	var get = __.monad.maybeMonad.get.bind(__);
+    var get = __.monad.maybeMonad.get.bind(__);
     it("stream#unit", (next) => {
-	  var stream = unit(1);
-	  expect(
-		__.monad.maybeMonad.isEqual(head(unit(1))(__.monad.maybeMonad.just(2)))
-	  ).to.be.ok()
-									
-	  // __.algebraic.match(head(unit(1)),{
-	  // 	nothing: () => {
-	  // 	  expect().fail()
-	  // 	},
-	  // 	just: (value) => {
-	  // 	  expect(value).to.eql(1)
-	  // 	}
-	  // })
-	  // 
+      var stream = unit(1);
+      expect(
+        __.monad.maybeMonad.isEqual(head(unit(1))(__.monad.maybeMonad.just(2)))
+      ).to.be.ok()
+                                    
+      // __.algebraic.match(head(unit(1)),{
+      //    nothing: () => {
+      //      expect().fail()
+      //    },
+      //    just: (value) => {
+      //      expect(value).to.eql(1)
+      //    }
+      // })
+      // 
       // expect(
-	  // 	head(unit(1))
+      //    head(unit(1))
       //   // get(head(unit(1)))
       // ).to.eql(
-	  // 	0
+      //    0
       // );
-	  next();
+      next();
     });
   });
   describe("'random' monad", function() {
