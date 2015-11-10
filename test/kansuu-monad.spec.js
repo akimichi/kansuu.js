@@ -598,30 +598,48 @@ describe("'monad' module", function() {
   });
   describe("'stream' monad", () => {
     var unit = __.monad.stream.unit.bind(__);
-    var empty = __.stream.empty;
+    var empty = __.monad.stream.empty.bind(__);
+    var cons = __.monad.stream.cons.bind(__);
     var head = __.monad.stream.head.bind(__);
+    var tail = __.monad.stream.tail.bind(__);
     var get = __.monad.maybeMonad.get.bind(__);
     it("stream#unit", (next) => {
       var stream = unit(1);
+      __.algebraic.match(head(unit(1)),{
+         nothing: () => {
+           expect().fail()
+         },
+         just: (value) => {
+           expect(value).to.eql(1)
+         }
+      })
+      
       expect(
-        __.monad.maybeMonad.isEqual(head(unit(1))(__.monad.maybeMonad.just(2)))
-      ).to.be.ok()
-                                    
-      // __.algebraic.match(head(unit(1)),{
-      //    nothing: () => {
-      //      expect().fail()
-      //    },
-      //    just: (value) => {
-      //      expect(value).to.eql(1)
-      //    }
-      // })
-      // 
-      // expect(
-      //    head(unit(1))
-      //   // get(head(unit(1)))
-      // ).to.eql(
-      //    0
-      // );
+        get(head(unit(1)))
+      ).to.eql(
+         1
+      );
+      next();
+    });
+    it("stream#cons", (next) => {
+      var stream = cons(1, cons(2,empty));
+      expect(
+        get(head(stream))
+      ).to.eql(
+        1
+      );
+      next();
+    });
+    it("stream#tail", (next) => {
+      var stream = cons(1, cons(2,empty));
+      // var stream = cons(1, ()=> {
+	  // 	return cons(2,empty)
+	  // });
+      expect(
+        get(head(tail(stream)))
+      ).to.eql(
+        1
+      );
       next();
     });
   });
