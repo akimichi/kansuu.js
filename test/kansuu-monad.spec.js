@@ -687,11 +687,72 @@ describe("'monad' module", function() {
       ).to.eql(
          4
       );
+      expect(
+        __.monad.stream.toArray.call(__,doubled_stream)
+      ).to.eql(
+         [2,4]
+      );
       next();
     });
+    it("stream#toArray", (next) => {
+      expect(
+		__.monad.stream.toArray.call(__,empty())
+      ).to.eql(
+	  	[]
+	  );
+      expect(
+		__.monad.stream.toArray.call(__,unit(1))
+      ).to.eql(
+	  	[1]
+	  );
+      next();
+    });
+    it("stream#flatten")
+	/*
+    it("stream#flatten", (next) => {
+      expect(
+        __.monad.stream.toArray.call(__,
+	  								 __.monad.stream.flatten.call(__,unit(empty())))
+      ).to.eql(
+	  	[]
+	  );
+	  // stream = [1,2]
+      var innerStream = cons(1, (_) => {
+	  	return cons(2,(_) => {
+	  	  return empty();
+	  	});
+	  });
+	  // stream = [[1,2]]
+	  var outerStream = unit(innerStream);
+      // var outerStream = __.monad.stream.cons.call(__,
+	  // 											  innerStream, (_) => {
+	  // 												return empty()
+	  // 											  });
+	  var flattenedStream = __.monad.stream.flatten.call(__,outerStream);
+	  // __.algebraic.match(flattenedStream,{
+	  // 	empty: (_) => {
+	  // 	  expect().fail()
+	  // 	},
+	  // 	cons: (head,tailThunk) => {
+	  // 	  return expect(head).to.eql(0)
+	  // 	}
+	  // });
+      expect(
+        get(head(flattenedStream))
+      ).to.eql(
+         2
+      );
+      // expect(
+      //   __.monad.stream.toArray.call(__,
+	  // 								 __.monad.stream.flatten.call(__,outerStream))
+      // ).to.eql(
+	  // 	[]
+	  // );
+      next();
+    });
+	*/
   });
   describe("'random' monad", function() {
-
     // var int = __.monad.random.unit.bind(__)(0);
     // var ns = __.monad.random.flatMap.bind(__)(int)(x => {
     //   return __.monad.random.flatMap.bind(__)(int)(y => {
