@@ -622,7 +622,11 @@ describe("'monad' module", function() {
       next();
     });
     it("stream#cons", (next) => {
-      var stream = cons(1, cons(2,empty));
+      var stream = cons(1, (_) => {
+		return cons(2,(_) => {
+		  return empty();
+		});
+	  });
       expect(
         get(head(stream))
       ).to.eql(
@@ -631,14 +635,35 @@ describe("'monad' module", function() {
       next();
     });
     it("stream#tail", (next) => {
-      var stream = cons(1, cons(2,empty));
-      // var stream = cons(1, ()=> {
-	  // 	return cons(2,empty)
-	  // });
+	  // stream = [1,2]
+      var stream = cons(1, (_) => {
+		return cons(2,(_) => {
+		  return empty();
+		});
+	  });
       expect(
-        get(head(tail(stream)))
+        tail(stream)
+      ).to.a("function");
+
+	  __.algebraic.match(tail(stream),{
+        nothing: (_) => {
+		  expect().fail();
+		},
+        just: (tail) => {
+		  __.algebraic.match(tail,{
+			empty: (_) => {
+			  expect().fail();
+			},
+			cons: (head, tailThunk) => {
+			  expect(head).to.eql(2);
+			}
+		  });
+		}
+	  });
+      expect(
+        get(head(get(tail(stream))))
       ).to.eql(
-        1
+        2
       );
       next();
     });
