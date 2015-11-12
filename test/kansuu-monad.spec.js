@@ -667,6 +667,28 @@ describe("'monad' module", function() {
       );
       next();
     });
+    it("stream#map", (next) => {
+	  // stream = [1,2]
+      var stream = cons(1, (_) => {
+		return cons(2,(_) => {
+		  return empty();
+		});
+	  });
+	  var doubled_stream = __.monad.stream.map.call(__,stream)((item) => {
+		return item * 2;
+	  });
+      expect(
+        get(head(doubled_stream))
+      ).to.eql(
+         2
+      );
+      expect(
+        get(head(get(tail(doubled_stream))))
+      ).to.eql(
+         4
+      );
+      next();
+    });
   });
   describe("'random' monad", function() {
 
