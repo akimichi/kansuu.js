@@ -707,15 +707,7 @@ describe("'monad' module", function() {
 	  );
       next();
     });
-    it("stream#flatten")
-	/*
     it("stream#flatten", (next) => {
-      expect(
-        __.monad.stream.toArray.call(__,
-	  								 __.monad.stream.flatten.call(__,unit(empty())))
-      ).to.eql(
-	  	[]
-	  );
 	  // stream = [1,2]
       var innerStream = cons(1, (_) => {
 	  	return cons(2,(_) => {
@@ -724,33 +716,22 @@ describe("'monad' module", function() {
 	  });
 	  // stream = [[1,2]]
 	  var outerStream = unit(innerStream);
-      // var outerStream = __.monad.stream.cons.call(__,
-	  // 											  innerStream, (_) => {
-	  // 												return empty()
-	  // 											  });
 	  var flattenedStream = __.monad.stream.flatten.call(__,outerStream);
-	  // __.algebraic.match(flattenedStream,{
-	  // 	empty: (_) => {
-	  // 	  expect().fail()
-	  // 	},
-	  // 	cons: (head,tailThunk) => {
-	  // 	  return expect(head).to.eql(0)
-	  // 	}
-	  // });
+	  __.algebraic.match(flattenedStream,{
+	  	empty: (_) => {
+	  	  expect().fail()
+	  	},
+	  	cons: (head,tailThunk) => {
+	  	  expect(head).to.eql(1)
+	  	}
+	  });
       expect(
         get(head(flattenedStream))
       ).to.eql(
-         2
+         1
       );
-      // expect(
-      //   __.monad.stream.toArray.call(__,
-	  // 								 __.monad.stream.flatten.call(__,outerStream))
-      // ).to.eql(
-	  // 	[]
-	  // );
       next();
     });
-	*/
   });
   describe("'random' monad", function() {
     // var int = __.monad.random.unit.bind(__)(0);
