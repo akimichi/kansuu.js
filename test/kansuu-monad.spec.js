@@ -666,6 +666,47 @@ describe("'monad' module", function() {
       );
       next();
     });
+    it("stream#toArray", (next) => {
+      expect(
+		__.monad.stream.toArray.call(__,empty())
+      ).to.eql(
+	  	[]
+	  );
+      expect(
+		__.monad.stream.toArray.call(__,unit(1))
+      ).to.eql(
+	  	[1]
+	  );
+      next();
+    });
+    it("stream#concat", (next) => {
+      var xs = __.monad.stream.cons(1, (_) => {
+        return __.monad.stream.empty();
+      });
+      var ysThunk = (_) => {
+        return __.monad.stream.cons(2, (_) => {
+          return __.monad.stream.empty();
+        });
+      };
+      var concatenatedStream = __.monad.stream.concat.call(__,
+														   xs)(ysThunk);
+      expect(
+        get(head(concatenatedStream))
+      ).to.eql(
+        1
+      );
+      expect(
+        get(head(get(tail(concatenatedStream))))
+      ).to.eql(
+        2
+      );
+      expect(
+		__.monad.stream.toArray.call(__,concatenatedStream)
+      ).to.eql(
+	  	[1,2]
+	  );
+      next();
+    });
     it("stream#map", (next) => {
 	  // stream = [1,2]
       var stream = cons(1, (_) => {
@@ -691,29 +732,37 @@ describe("'monad' module", function() {
       ).to.eql(
          [2,4]
       );
-      next();
-    });
-    it("stream#toArray", (next) => {
+	  var ones = cons(1, (_) => {
+		return ones;
+	  });
+	  var twoes = __.monad.stream.map.call(__,ones)((item) => {
+		return item * 2;
+	  });
       expect(
-		__.monad.stream.toArray.call(__,empty())
+        get(head(twoes))
       ).to.eql(
-	  	[]
-	  );
+         2
+      );
       expect(
-		__.monad.stream.toArray.call(__,unit(1))
+        get(head(get(tail(twoes))))
       ).to.eql(
-	  	[1]
-	  );
+         2
+      );
+      expect(
+        get(head(get(tail(get(tail(twoes))))))
+      ).to.eql(
+        2
+      );
       next();
     });
     it("stream#flatten", (next) => {
-	  // stream = [1,2]
+	  // innerStream = [1,2]
       var innerStream = cons(1, (_) => {
 	  	return cons(2,(_) => {
 	  	  return empty();
 	  	});
 	  });
-	  // stream = [[1,2]]
+	  // outerStream = [[1,2]]
 	  var outerStream = unit(innerStream);
 	  var flattenedStream = __.monad.stream.flatten.call(__,outerStream);
 	  __.algebraic.match(flattenedStream,{
@@ -731,69 +780,69 @@ describe("'monad' module", function() {
       );
       next();
     });
-	// it("'stream#flatMap'", (next) => {
-	//   var map = __.monad.stream.map.bind(__);
-	//   var flatMap = __.monad.stream.flatMap.bind(__);
-	//   var toArray = __.monad.stream.toArray.bind(__);
-	//   var unit = __.monad.stream.unit.bind(__);
-	//   var concat = __.monad.stream.concat.bind(__);
-	//   var append = __.monad.stream.append.bind(__);
-    //   /*
-	// 	scala> val nestedNumbers = List(List(1, 2), List(3, 4))
-	// 	scala> nestedNumbers.flatMap(x => x.map(_ * 2))
-	// 	res0: List[Int] = List(2, 4, 6, 8)
-    //   */
-    //   var innerStream12 = cons(1, (_) => {
-	//   	return cons(2,(_) => {
-	//   	  return empty();
-	//   	});
-	//   });
-    //   var innerStream34 = cons(3, (_) => {
-	//   	return cons(4,(_) => {
-	//   	  return empty();
-	//   	});
-	//   });
-	//   // nestedStream = [[1,2],[3,4]]
-	//   var nestedStream = cons(innerStream12, (_) => {
-	// 	return cons(innerStream34,(_) => {
-	// 	  return empty();
-	// 	});
-	//   })
-	//   // var nestedStream = cons(innerStream12, (_) => {
-	//   // 	return unit(innerStream34);
-	//   // 	// return unit(innerStream34);
-	//   // 	// return cons(innerStream34,(_) => {
-	//   // 	//   return empty();
-	//   // 	// });
-	//   // });
-
-    //   // var flattenedStream = flatMap(nestedStream)((item) => {
-    //   //     return unit(item * 2);
-    //   // });
-    //   var flattenedStream = flatMap(nestedStream)((innerStream) => {
-	//   	return flatMap(innerStream)((n) => {
-	// 	  expect(n).to.a('number');
-    //       return unit(n * 2);
-	//   	});
-    //   });
-    //   expect(
-    //     get(head(flattenedStream))
-    //   ).to.eql(
-    //      2
-    //   );
-    //   expect(
-    //     get(head(tail(flattenedStream)))
-    //   ).to.eql(
-    //      2
-    //   );
-    //   // expect(
-	//   // 	toArray(flattenedStream)
-    //   // ).to.eql(
-	//   // 	[2,3]
-	//   // 	// [2,4,6,8]
-    //   // );
-    //   next();
-	// });
+	describe("'stream#flatMap'", () => {
+	  var map = __.monad.stream.map.bind(__);
+	  var flatMap = __.monad.stream.flatMap.bind(__);
+	  var toArray = __.monad.stream.toArray.bind(__);
+	  var unit = __.monad.stream.unit.bind(__);
+	  var concat = __.monad.stream.concat.bind(__);
+	  var append = __.monad.stream.append.bind(__);
+	  it("一段階のflatMap", (next) => {
+		var ones = cons(1, (_) => {
+		  return ones;
+		});
+	  	var twoes = flatMap(ones)((one) => {
+	  	  expect(one).to.a('number');
+	  	  return unit(one * 2);
+	  	});
+	  	expect(
+          get(head(twoes))
+	  	).to.eql(
+          2
+	  	);
+		next();
+	  });
+	  it("二段階のflatMap", (next) => {
+	  	/*
+	  	  scala> val nestedNumbers = List(List(1, 2), List(3, 4))
+	  	  scala> nestedNumbers.flatMap(x => x.map(_ * 2))
+	  	  res0: List[Int] = List(2, 4, 6, 8)
+	  	*/
+	  	var innerStream12 = cons(1, (_) => {
+	  	  return cons(2,(_) => {
+	  		return empty();
+	  	  });
+	  	});
+	  	var innerStream34 = cons(3, (_) => {
+	  	  return cons(4,(_) => {
+	  		return empty();
+	  	  });
+	  	});
+	  	// nestedStream = [[1,2],[3,4]]
+	  	var nestedStream = cons(innerStream12, (_) => {
+	  		return cons(innerStream34,(_) => {
+	  		  return empty();
+	  		});
+	  	});
+	  	var flattenedStream = flatMap(nestedStream)((innerStream) => {
+	  	  return flatMap(innerStream)((n) => {
+	  		expect(n).to.a('number');
+	  		return unit(n * 2);
+	  	  });
+	  	});
+	  	expect(
+          get(head(flattenedStream))
+	  	).to.eql(
+          2
+	  	);
+	  	expect(
+	  	  toArray(flattenedStream)
+	  	).to.eql(
+	  	  [2,4,6,8]
+	  	);
+	  	next();
+	  });
+	});
   });
   describe("'random' monad", function() {
     // var int = __.monad.random.unit.bind(__)(0);
