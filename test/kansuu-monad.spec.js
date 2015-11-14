@@ -57,9 +57,33 @@ describe("'monad' module", function() {
         true
       );
       expect(
-        isEqual(nothing)(nothing)
+        isEqual(nothing())(nothing())
       ).to.eql(
         true
+      );
+      next();
+    });
+    it("maybeMonad#getOrElse", (next) => {
+      var get = __.monad.maybeMonad.get.bind(__);
+      var getOrElse = __.monad.maybeMonad.getOrElse.bind(__);
+      expect(
+        getOrElse(unit(1))(null)
+      ).to.be(
+        1
+      );
+      expect(
+        getOrElse(nothing())(0)
+      ).to.be(
+        0
+      );
+      next();
+    });
+    it("maybeMonad#get", (next) => {
+      var get = __.monad.maybeMonad.get.bind(__);
+      expect(
+        get(unit(1))
+      ).to.be(
+        1
       );
       next();
     });
@@ -83,36 +107,12 @@ describe("'monad' module", function() {
           true
         );
         expect(
-          isEqual(add(justOne)(nothing))(nothing)
+          isEqual(add(justOne)(nothing()))(nothing())
         ).to.eql(
           true
         );
         next();
       });
-    });
-    it("maybeMonad#getOrElse", (next) => {
-      var get = __.monad.maybeMonad.get.bind(__);
-      var getOrElse = __.monad.maybeMonad.getOrElse.bind(__);
-      expect(
-        getOrElse(unit(1))(null)
-      ).to.be(
-        1
-      );
-      expect(
-        getOrElse(nothing)(0)
-      ).to.be(
-        0
-      );
-      next();
-    });
-    it("maybeMonad#get", (next) => {
-      var get = __.monad.maybeMonad.get.bind(__);
-      expect(
-        get(unit(1))
-      ).to.be(
-        1
-      );
-      next();
     });
     describe("functor laws on maybeMonad", function() {
       it("map id == id", function(next){
@@ -123,7 +123,7 @@ describe("'monad' module", function() {
           true
         );
         expect(
-          isEqual(map(nothing)(__.id))(__.id(nothing))
+          isEqual(map(nothing)(__.id))(__.id(nothing()))
         ).to.be(
           true
         );
@@ -153,10 +153,9 @@ describe("'monad' module", function() {
           isEqual(flatMap(justOne)(unit))(justOne)
         ).to.eql(
           true
-          //justOne
         );
         expect(
-          isEqual(flatMap(nothing)(unit))(nothing)
+          isEqual(flatMap(nothing())(unit))(nothing())
         ).to.eql(
           true
         );
@@ -175,7 +174,7 @@ describe("'monad' module", function() {
         );
         /* None flatMap { x => func(x)} should equal(None) */
         expect(
-          isEqual(flatMap(nothing)(square))(nothing)
+          isEqual(flatMap(nothing())(square))(nothing())
         ).to.eql(
           true
         );
@@ -732,6 +731,69 @@ describe("'monad' module", function() {
       );
       next();
     });
+	// it("'stream#flatMap'", (next) => {
+	//   var map = __.monad.stream.map.bind(__);
+	//   var flatMap = __.monad.stream.flatMap.bind(__);
+	//   var toArray = __.monad.stream.toArray.bind(__);
+	//   var unit = __.monad.stream.unit.bind(__);
+	//   var concat = __.monad.stream.concat.bind(__);
+	//   var append = __.monad.stream.append.bind(__);
+    //   /*
+	// 	scala> val nestedNumbers = List(List(1, 2), List(3, 4))
+	// 	scala> nestedNumbers.flatMap(x => x.map(_ * 2))
+	// 	res0: List[Int] = List(2, 4, 6, 8)
+    //   */
+    //   var innerStream12 = cons(1, (_) => {
+	//   	return cons(2,(_) => {
+	//   	  return empty();
+	//   	});
+	//   });
+    //   var innerStream34 = cons(3, (_) => {
+	//   	return cons(4,(_) => {
+	//   	  return empty();
+	//   	});
+	//   });
+	//   // nestedStream = [[1,2],[3,4]]
+	//   var nestedStream = cons(innerStream12, (_) => {
+	// 	return cons(innerStream34,(_) => {
+	// 	  return empty();
+	// 	});
+	//   })
+	//   // var nestedStream = cons(innerStream12, (_) => {
+	//   // 	return unit(innerStream34);
+	//   // 	// return unit(innerStream34);
+	//   // 	// return cons(innerStream34,(_) => {
+	//   // 	//   return empty();
+	//   // 	// });
+	//   // });
+
+    //   // var flattenedStream = flatMap(nestedStream)((item) => {
+    //   //     return unit(item * 2);
+    //   // });
+    //   var flattenedStream = flatMap(nestedStream)((innerStream) => {
+	//   	return flatMap(innerStream)((n) => {
+	// 	  expect(n).to.a('number');
+    //       return unit(n * 2);
+	//   	});
+    //   });
+    //   expect(
+    //     get(head(flattenedStream))
+    //   ).to.eql(
+    //      2
+    //   );
+    //   expect(
+    //     get(head(tail(flattenedStream)))
+    //   ).to.eql(
+    //      2
+    //   );
+    //   // expect(
+	//   // 	toArray(flattenedStream)
+    //   // ).to.eql(
+	//   // 	[2,3]
+	//   // 	// [2,4,6,8]
+    //   // );
+    //   next();
+	// });
   });
   describe("'random' monad", function() {
     // var int = __.monad.random.unit.bind(__)(0);
