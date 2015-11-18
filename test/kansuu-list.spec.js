@@ -621,6 +621,7 @@ describe("'list' module", function() {
     next();
   });
   it("'list#unfold'", function(next) {
+    this.timeout(5000);
     //  unfoldr (\b -> if b == 0 then Nothing else Just (b, b-1)) 10
     //  > [10,9,8,7,6,5,4,3,2,1]
     var id = (x) => {
