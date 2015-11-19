@@ -843,7 +843,51 @@ describe("'monad' module", function() {
 	  	next();
 	  });
 	});
-  });
+	it("'stream#constant'", (next) => {
+	  var ones = __.monad.stream.constant.call(__, 1);
+	  	expect(
+          get(head(ones))
+	  	).to.eql(
+          1
+	  	);
+	  	expect(
+          get(head(get(tail(ones))))
+	  	).to.eql(
+          1
+	  	);
+	  next();
+	});
+	// it("'stream#fromList'", (next) => {
+	//   var list = __.list.mkList.call(__, [1,2,3])
+	//   var stream = __.monad.stream.fromList.call(__, list);
+	//   expect(
+    //     get(head(stream))
+	//   ).to.eql(
+    //     0
+	//   );
+	//   // expect(
+    //   //   get(head(get(tail(ones))))
+	//   // ).to.eql(
+    //   //   1
+	//   // );
+	//   next();
+	// });
+	// it("'stream#cycle'", (next) => {
+	//   var ring = 
+	// var cycles = __.monad.stream.cycle.call(__, 1);
+	//   	expect(
+    //       get(head(ones))
+	//   	).to.eql(
+    //       1
+	//   	);
+	//   	expect(
+    //       get(head(get(tail(ones))))
+	//   	).to.eql(
+    //       1
+	//   	);
+	//   next();
+	// });
+  }); // end of stream monad
   describe("'random' monad", function() {
     // var int = __.monad.random.unit.bind(__)(0);
     // var ns = __.monad.random.flatMap.bind(__)(int)(x => {
