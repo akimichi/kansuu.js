@@ -14,6 +14,33 @@ var hasProp = {}.hasOwnProperty;
 
 
 module.exports = {
+  match: (exp, pattern) => {
+    return exp.call(pattern, pattern);
+  },
+  env: {
+    // ## 環境
+    emptyEnv: (variable) => {
+      return undefined;
+    },
+    /* 変数名に対応する値を環境から取りだす */
+    lookupEnv: (identifier, environment) => {
+      var self = this;
+      return environment.call(self,identifier);
+    },
+    /* 環境を拡張する */
+    extendEnv: (identifier, value, oldenv) => {
+      var self = this;
+      expect(identifier).to.a('string');
+      return (queryIdentifier) => {
+        expect(queryIdentifier).to.a('string');
+        if(identifier === queryIdentifier) {
+          return value;
+        } else {
+          return self.env.lookupEnv(queryIdentifier,oldenv);
+        }
+      };
+    }
+  },
   // ## 'ordinary' interpreter
   ordinary: {
     unit: __.monad.identity.unit.bind(__),
@@ -353,86 +380,123 @@ module.exports = {
   ambiguous: {
     unit: __.monad.list.unit.bind(__),
     flatMap: __.monad.list.flatMap.bind(__),
-    zero: __.list.empty,
-    plus: __.list.append.bind(__),
+    zero: __.monad.list.empty.bind(__),
+    plus: __.monad.list.concat.bind(__),
+    // zero: __.list.empty,
+    // plus: __.list.append.bind(__),
     // ### ambiguous#expression
     exp: {
       fail: (_) => {
-        return {
-          type: 'exp',
-          subtype: 'fail',
-          content: undefined
+        return (pattern) => {
+          return pattern.fail(_);
         };
       },
-      amb: (a) => {
-        return (b) => {
-          return {
-            type: 'exp',
-            subtype: 'amb',
-            content: {
-              a: a,
-              b: b
-            }
-          };
+      amb: (a, b) => {
+        return (pattern) => {
+          return pattern.amb(a,b);
         };
       },
       variable: (name) => {
-        return {
-          type: 'exp',
-          subtype: 'variable',
-          content: name
+        return (pattern) => {
+          return pattern.variable(name);
         };
       },
       number: (n) => {
-        return {
-          type: 'exp',
-          subtype: 'number',
-          content: n
+        return (pattern) => {
+          return pattern.number(n);
         };
       },
-      add: (n) => {
-        return (m) => {
-          return {
-            type: 'exp',
-            subtype: 'add',
-            content: {
-              rator: n,
-              rand: m
-            }
-          };
+      add: (n, m) => {
+        return (pattern) => {
+          return pattern.add(n,m);
         };
       },
-      lambda: (name) => {
-        return (exp) => {
-          return {
-            type: 'exp',
-            subtype: 'lambda',
-            content: {
-              arg: name,
-              body: exp
-            }
-          };
+      lambda: (name, exp) => {
+        return (pattern) => {
+          return pattern.lambda(name, exp);
         };
       },
-      app: (rator) => {
-        return (rand) => {
-          return {
-            type: 'exp',
-            subtype: 'application',
-            content: {
-              rator: rator,
-              rand: rand
-            }
-          };
+      app: (rator,rand) => {
+        return (pattern) => {
+          return pattern.app(rator, rand);
         };
       }
+      // fail: (_) => {
+      //   return {
+      //     type: 'exp',
+      //     subtype: 'fail',
+      //     content: undefined
+      //   };
+      // },
+      // amb: (a) => {
+      //   return (b) => {
+      //     return {
+      //       type: 'exp',
+      //       subtype: 'amb',
+      //       content: {
+      //         a: a,
+      //         b: b
+      //       }
+      //     };
+      //   };
+      // },
+      // variable: (name) => {
+      //   return {
+      //     type: 'exp',
+      //     subtype: 'variable',
+      //     content: name
+      //   };
+      // },
+      // number: (n) => {
+      //   return {
+      //     type: 'exp',
+      //     subtype: 'number',
+      //     content: n
+      //   };
+      // },
+      // add: (n) => {
+      //   return (m) => {
+      //     return {
+      //       type: 'exp',
+      //       subtype: 'add',
+      //       content: {
+      //         rator: n,
+      //         rand: m
+      //       }
+      //     };
+      //   };
+      // },
+      // lambda: (name) => {
+      //   return (exp) => {
+      //     return {
+      //       type: 'exp',
+      //       subtype: 'lambda',
+      //       content: {
+      //         arg: name,
+      //         body: exp
+      //       }
+      //     };
+      //   };
+      // },
+      // app: (rator) => {
+      //   return (rand) => {
+      //     return {
+      //       type: 'exp',
+      //       subtype: 'application',
+      //       content: {
+      //         rator: rator,
+      //         rand: rand
+      //       }
+      //     };
+      //   };
+      // }
     },
     // ## ambiguous#apply
     apply: (rator) => {
       var self = this;
       return (rand) => {
         if(__.typeOf(rator) === 'function'){
-          return rator.call(self,rand);
+          return self.ambiguous.unit.call(self,rator.call(self,rand));
         } else {
           return self.ambiguous.unit.call(self,undefined);
         }
@@ -453,76 +517,117 @@ module.exports = {
     // evaluate:: Exp -> M[value]
     evaluate: (exp) => {
       var self = this;
-      expect(exp.type).to.eql('exp');
-      return (env) => {
-        __.list.censor.call(__,env);
-        switch (exp.subtype) {
-        case 'fail':
-          return self.ambiguous.zero;
-        case 'amb':
-          var aResult = self.ambiguous.evaluate.call(self,
-                                                            exp.content.a)(env);
-          var bResult = self.ambiguous.evaluate.call(self,
-                                                            exp.content.b)(env);
-          return self.ambiguous.plus.call(self,aResult)(bResult);
-        case 'variable':
-          return self.ambiguous.env.lookup.call(self,exp.content, env);
-        case 'number':
-          return self.ambiguous.unit.call(self,exp.content);
-        case 'add':
-          var rator = exp.content.rator;
-          var rand =  exp.content.rand;
-          expect(rator.type).to.eql('exp');
-          expect(rand.type).to.eql('exp');
-          return self.ambiguous.flatMap.call(self,self.ambiguous.evaluate.call(self,rator)(env))(function (m) {
-            return self.ambiguous.flatMap.call(self,self.ambiguous.evaluate.call(self,rand)(env))(function (n) {
-              return self.ambiguous.add.call(self, m)(n);
+      return (environment) => {
+        return self.match(exp, {
+          fail: (_) => {
+            return self.ambiguous.zero();
+          },
+          variable: (name) => {
+            return self.env.lookupEnv.call(self,
+                                           name, environment);
+          },
+          number: (n) => {
+			expect(n).to.a('number');
+            return self.ambiguous.unit.call(self,n);
+          },
+          amd: (a,b) => {
+            var aResult = self.ambiguous.evaluate.call(self,
+                                                       a)(environment);
+            var bResult = self.ambiguous.evaluate.call(self,
+                                                       b)(environment);
+            return self.ambiguous.plus.call(self,aResult)(bResult);
+          },
+          add: (n,m)=> {
+            return self.ambiguous.unit.call(self,n + m);
+          },
+          lambda: (name, exp) => {
+            var closure = (arg) => {
+              var newEnv = self.env.extendEnv.call(self,
+                                                   arg,environment);
+              return self.ambiguous.evaluate.call(self,exp)(newEnv);
+            };
+            return self.ambiguous.unit.call(self,closure);
+          },
+          app: (rator, rand) => {
+            return self.ambiguous.flatMap.call(self,self.ambiguous.evaluate.call(self,rator)(environment))(function (f) {
+              return self.ambiguous.flatMap.call(self,self.ambiguous.evaluate.call(self,rand)(environment))(function (a) {
+                return self.ambiguous.unit.call(self,f(a));
+                // return self.ambiguous.apply.call(self, f)(a);
+              });
             });
-          });
-        case 'lambda':
-          var closure = (arg) => {
-            var newEnv = self.ambiguous.env.extend.call(self, __.pair.mkPair.call(__,exp.content.arg)(arg),env);
-            return self.ambiguous.evaluate.call(self,exp.content.body)(newEnv);
-          };
-          return self.ambiguous.unit.call(self,closure);
-        case 'application':
-          var rator = exp.content.rator;
-          var rand =  exp.content.rand;
-          return self.ambiguous.flatMap.call(self,self.ambiguous.evaluate.call(self,rator)(env))(function (f) {
-            return self.ambiguous.flatMap.call(self,self.ambiguous.evaluate.call(self,rand)(env))(function (a) {
-              return self.ambiguous.apply.call(self, f)(a);
-            });
-          });
-        default:
-          throw new Error("evaluate should accept expressions, but got " + exp);
-        }
+          }
+        });
       };
-    },
+	}
+  },
+      //   switch (exp.subtype) {
+      //   case 'fail':
+      //     return self.ambiguous.zero;
+      //   case 'amb':
+      //     var aResult = self.ambiguous.evaluate.call(self,
+      //                                                exp.content.a)(environment);
+      //     var bResult = self.ambiguous.evaluate.call(self,
+      //                                                exp.content.b)(environment);
+      //     return self.ambiguous.plus.call(self,aResult)(bResult);
+      //   case 'variable':
+      //     return self.ambiguous.env.lookup.call(self,exp.content, environment);
+      //   case 'number':
+      //     return self.ambiguous.unit.call(self,exp.content);
+      //   case 'add':
+      //     var rator = exp.content.rator;
+      //     var rand =  exp.content.rand;
+      //     expect(rator.type).to.eql('exp');
+      //     expect(rand.type).to.eql('exp');
+      //     return self.ambiguous.flatMap.call(self,self.ambiguous.evaluate.call(self,rator)(environment))(function (m) {
+      //       return self.ambiguous.flatMap.call(self,self.ambiguous.evaluate.call(self,rand)(environment))(function (n) {
+      //         return self.ambiguous.add.call(self, m)(n);
+      //       });
+      //     });
+      //   case 'lambda':
+      //     var closure = (arg) => {
+      //       var newEnv = self.ambiguous.env.extend.call(self, __.pair.mkPair.call(__,exp.content.arg)(arg),env);
+      //       return self.ambiguous.evaluate.call(self,exp.content.body)(newEnv);
+      //     };
+      //     return self.ambiguous.unit.call(self,closure);
+      //   case 'application':
+      //     var rator = exp.content.rator;
+      //     var rand =  exp.content.rand;
+      //     return self.ambiguous.flatMap.call(self,self.ambiguous.evaluate.call(self,rator)(env))(function (f) {
+      //       return self.ambiguous.flatMap.call(self,self.ambiguous.evaluate.call(self,rand)(env))(function (a) {
+      //         return self.ambiguous.apply.call(self, f)(a);
+      //       });
+      //     });
+      //   default:
+      //     throw new Error("evaluate should accept expressions, but got " + exp);
+      //   }
+      // };
     // ### 'ambiguous' environment
     // ~~~haskell
     // type Environment = List[(Name, Value)]
     // ~~~
-    env: {
-      empty: __.list.empty,
-      extend: (pair, oldenv) => {
-        __.pair.censor.call(__,pair);
-        __.list.censor.call(__,oldenv);
-        return __.list.cons.call(__, pair)(oldenv);
-      },
-      lookup: (name, env) => {
-        var self = this;
-        return __.list.foldr.call(__,env)(self.ambiguous.unit.call(self,undefined))((item) => {
-          return (accumulator) => {
-            if(item.left === name) {
-              return self.ambiguous.unit.call(self,item.right);
-            } else {
-              return accumulator;
-            }
-          };
-        });
-      }
-    }
-  },
+    // env: {
+    //   empty: (_) => {
+    //     return __.monad.list.empty();
+    //   },
+    //   extend: (pair, oldenv) => {
+    //     return __.monad.list.cons.call(__, pair)(oldenv);
+    //     // __.pair.censor.call(__,pair);
+    //     // __.list.censor.call(__,oldenv);
+    //     // return __.list.cons.call(__, pair)(oldenv);
+    //   },
+    //   lookup: (name, env) => {
+    //     var self = this;
+    //     return __.monad.list.foldr.call(__,env)(self.ambiguous.unit.call(self,undefined))((item) => {
+    //       return (accumulator) => {
+    //         if(item.left === name) {
+    //           return self.ambiguous.unit.call(self,item.right);
+    //         } else {
+    //           return accumulator;
+    //         }
+    //       };
+    //     });
+    //   }
+    // }
   // ## 'lazy' interpreter
   lazy: {
     unit: __.monad.list.unit.bind(__),

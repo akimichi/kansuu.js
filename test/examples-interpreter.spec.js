@@ -143,14 +143,20 @@ describe("'interpreter' example", () => {
     describe("evaluate", () => {
       it('can evaluate number', (next) => {
         var exp = intp.ambiguous.exp.number(2);
-        expect(
-          intp.ambiguous.evaluate.call(intp,exp)(intp.ambiguous.env.empty).isEqual(intp.ambiguous.unit(2))
-        ).to.ok();
+        intp.match(intp.ambiguous.evaluate.call(intp,
+												exp)(intp.env.emptyEnv),{
+												  empty: (_) => {
+													expect().fail();
+												  },
+												  cons: (head, tail) => {
+													expect(head).to.eql(2);
+												  }
+												});
         next();
       });
       it('can evaluate variable', (next) => {
         var exp = intp.ambiguous.exp.variable("a");
-        var env = intp.ambiguous.env.extend.call(intp, __.pair.mkPair.call(__,"a")(1),intp.ambiguous.env.empty);
+        var env = intp.ambiguous.env.extend.call(intp, __.pair.mkPair.call(__,"a")(1),intp.env.empty());
         expect(
           intp.ambiguous.evaluate.call(intp,exp)(env).isEqual(intp.ambiguous.unit.call(intp,1))
         ).to.ok();
@@ -166,7 +172,7 @@ describe("'interpreter' example", () => {
         var amb = intp.ambiguous.exp.amb.call(intp,n)(m);
         var application = intp.ambiguous.exp.app(lambda)(amb);
         expect(
-          intp.ambiguous.evaluate.call(intp,application)(intp.ambiguous.env.empty).isEqual(__.list.mkList.call(__,[4,6]))
+          intp.ambiguous.evaluate.call(intp,application)(intp.env.empty()).isEqual(__.list.mkList.call(__,[4,6]))
         ).to.ok();
         next();
       });
