@@ -421,75 +421,6 @@ module.exports = {
           return pattern.app(rator, rand);
         };
       }
-      // fail: (_) => {
-      //   return {
-      //     type: 'exp',
-      //     subtype: 'fail',
-      //     content: undefined
-      //   };
-      // },
-      // amb: (a) => {
-      //   return (b) => {
-      //     return {
-      //       type: 'exp',
-      //       subtype: 'amb',
-      //       content: {
-      //         a: a,
-      //         b: b
-      //       }
-      //     };
-      //   };
-      // },
-      // variable: (name) => {
-      //   return {
-      //     type: 'exp',
-      //     subtype: 'variable',
-      //     content: name
-      //   };
-      // },
-      // number: (n) => {
-      //   return {
-      //     type: 'exp',
-      //     subtype: 'number',
-      //     content: n
-      //   };
-      // },
-      // add: (n) => {
-      //   return (m) => {
-      //     return {
-      //       type: 'exp',
-      //       subtype: 'add',
-      //       content: {
-      //         rator: n,
-      //         rand: m
-      //       }
-      //     };
-      //   };
-      // },
-      // lambda: (name) => {
-      //   return (exp) => {
-      //     return {
-      //       type: 'exp',
-      //       subtype: 'lambda',
-      //       content: {
-      //         arg: name,
-      //         body: exp
-      //       }
-      //     };
-      //   };
-      // },
-      // app: (rator) => {
-      //   return (rand) => {
-      //     return {
-      //       type: 'exp',
-      //       subtype: 'application',
-      //       content: {
-      //         rator: rator,
-      //         rand: rand
-      //       }
-      //     };
-      //   };
-      // }
     },
     // ## ambiguous#apply
     apply: (rator) => {
@@ -523,8 +454,9 @@ module.exports = {
             return self.ambiguous.zero();
           },
           variable: (name) => {
-            return self.env.lookupEnv.call(self,
-                                           name, environment);
+            return self.ambiguous.unit.call(self,
+											self.env.lookupEnv.call(self,
+																	name, environment));
           },
           number: (n) => {
 			expect(n).to.a('number');
@@ -551,8 +483,9 @@ module.exports = {
           app: (rator, rand) => {
             return self.ambiguous.flatMap.call(self,self.ambiguous.evaluate.call(self,rator)(environment))(function (f) {
               return self.ambiguous.flatMap.call(self,self.ambiguous.evaluate.call(self,rand)(environment))(function (a) {
-                return self.ambiguous.unit.call(self,f(a));
-                // return self.ambiguous.apply.call(self, f)(a);
+                //return self.ambiguous.unit.call(self,f(a));
+                //return self.ambiguous.apply.call(self, f)(a);
+				return self.ambiguous.apply.call(self, f)(a);
               });
             });
           }

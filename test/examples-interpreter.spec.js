@@ -144,36 +144,53 @@ describe("'interpreter' example", () => {
       it('can evaluate number', (next) => {
         var exp = intp.ambiguous.exp.number(2);
         intp.match(intp.ambiguous.evaluate.call(intp,
-												exp)(intp.env.emptyEnv),{
-												  empty: (_) => {
-													expect().fail();
-												  },
-												  cons: (head, tail) => {
-													expect(head).to.eql(2);
-												  }
-												});
+                                                exp)(intp.env.emptyEnv),{
+                                                  empty: (_) => {
+                                                    expect().fail();
+                                                  },
+                                                  cons: (head, tail) => {
+                                                    expect(head).to.eql(2);
+                                                  }
+                                                });
         next();
       });
       it('can evaluate variable', (next) => {
         var exp = intp.ambiguous.exp.variable("a");
-        var env = intp.ambiguous.env.extend.call(intp, __.pair.mkPair.call(__,"a")(1),intp.env.empty());
-        expect(
-          intp.ambiguous.evaluate.call(intp,exp)(env).isEqual(intp.ambiguous.unit.call(intp,1))
-        ).to.ok();
+        var environment = intp.env.extendEnv.call(intp,
+                                                  "a",1,intp.env.emptyEnv);
+        intp.match(intp.ambiguous.evaluate.call(intp,
+                                                exp)(environment),{
+                                                  empty: (_) => {
+                                                    expect().fail();
+                                                  },
+                                                  cons: (head, tail) => {
+                                                    expect(head).to.eql(1);
+                                                  }
+                                                });
         next();
       });
       it('can evaluate (\\x.x + x)(amd (2,3)) = [4,6]', (next) => {
         this.timeout(5000);
         var x = intp.ambiguous.exp.variable("x");
-        var addition = intp.ambiguous.exp.add(x)(x);
-        var lambda = intp.ambiguous.exp.lambda("x")(addition);
+        var addition = intp.ambiguous.exp.add(x,x);
+        var lambda = intp.ambiguous.exp.lambda("x",addition); // λx.x + x
         var n = intp.ambiguous.exp.number(2);
         var m = intp.ambiguous.exp.number(3);
-        var amb = intp.ambiguous.exp.amb.call(intp,n)(m);
-        var application = intp.ambiguous.exp.app(lambda)(amb);
-        expect(
-          intp.ambiguous.evaluate.call(intp,application)(intp.env.empty()).isEqual(__.list.mkList.call(__,[4,6]))
-        ).to.ok();
+        var amb = intp.ambiguous.exp.amb.call(intp,
+                                              n,m);
+        var application = intp.ambiguous.exp.app(lambda,amb);
+        intp.match(intp.ambiguous.evaluate.call(intp,
+                                                application)(intp.env.emptyEnv),{
+                                                  empty: (_) => {
+                                                    expect().fail();
+                                                  },
+                                                  cons: (head, tail) => {
+                                                    expect(head).to.eql(1);
+                                                  }
+                                                });
+        // expect(
+        //   intp.ambiguous.evaluate.call(intp,application)(intp.env.emptyEnv).isEqual(__.list.mkList.call(__,[4,6]))
+        // ).to.ok();
         next();
       });
     });
