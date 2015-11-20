@@ -6,24 +6,28 @@ var base = require('../lib/kansuu-base.js');
 var intp = require('../examples/interpreter.js');
 
 describe("'interpreter' example", () => {
-  describe("ordinary", () => {
-    describe("environment", () => {
-      it('can lookup env', (next) => {
-        var env = intp.ordinary.env.extend.call(intp, __.pair.mkPair.call(__,"a")(1),intp.ordinary.env.empty);
-        expect(
-          intp.ordinary.env.lookup.call(intp,"a", env)
-        ).to.eql(
-          intp.ordinary.unit.call(intp,1)
-        );
-        next();
-      });
+  describe("environment", () => {
+    it('can lookup env', (next) => {
+      var env = intp.env.extendEnv.call(intp,
+										"a",1,intp.env.emptyEnv);
+      expect(
+        intp.env.lookupEnv.call(intp,"a", env)
+      ).to.eql(
+		1
+        // intp.unit.call(intp,1)
+      );
+      next();
     });
+  });
+  describe("ordinary", () => {
     describe("evaluate", () => {
       it('can evaluate variable', (next) => {
         var exp = intp.ordinary.exp.variable("a");
-        var env = intp.ordinary.env.extend.call(intp, __.pair.mkPair.call(__,"a")(1),intp.ordinary.env.empty);
+        var env = intp.env.extendEnv.call(intp,
+										  "a",1, intp.env.emptyEnv);
         expect(
-          intp.ordinary.evaluate.call(intp,exp)(env)
+          intp.ordinary.evaluate.call(intp,
+									  exp)(env)
         ).to.eql(
           intp.ordinary.unit.call(intp,1)
         );
@@ -32,7 +36,7 @@ describe("'interpreter' example", () => {
       it('can evaluate number', (next) => {
         var exp = intp.ordinary.exp.number(2);
         expect(
-          intp.ordinary.evaluate.call(intp,exp)(intp.ordinary.env.empty)
+          intp.ordinary.evaluate.call(intp,exp)(intp.env.emptyEnv)
         ).to.eql(
           intp.ordinary.unit.call(intp,2)
         );
@@ -41,9 +45,9 @@ describe("'interpreter' example", () => {
       it('can evaluate add', (next) => {
         var n = intp.ordinary.exp.number(2);
         var m = intp.ordinary.exp.number(3);
-        var exp = intp.ordinary.exp.add(n)(m);
+        var add = intp.ordinary.exp.add(n,m);
         expect(
-          intp.ordinary.evaluate.call(intp,exp)(intp.ordinary.env.empty)
+          intp.ordinary.evaluate.call(intp,add)(intp.env.emptyEnv)
         ).to.eql(
           intp.ordinary.unit.call(intp,5)
         );
@@ -51,10 +55,11 @@ describe("'interpreter' example", () => {
       });
       it('can evaluate identity function', (next) => {
         var n = intp.ordinary.exp.number(2);
-        var lambda = intp.ordinary.exp.lambda("x")(intp.ordinary.exp.variable("x"));
-        var application = intp.ordinary.exp.app(lambda)(n);
+		var x = intp.ordinary.exp.variable("x");
+        var lambda = intp.ordinary.exp.lambda(x, x);
+        var application = intp.ordinary.exp.app(lambda,n);
         expect(
-          intp.ordinary.evaluate.call(intp,application)(intp.ordinary.env.empty)
+          intp.ordinary.evaluate.call(intp,application)(intp.env.emptyEnv)
         ).to.eql(
           intp.ordinary.unit.call(intp,2)
         );
@@ -63,11 +68,12 @@ describe("'interpreter' example", () => {
       it('can evaluate (\\x.x + x)(10 + 11) = 42', (next) => {
         var ten = intp.ordinary.exp.number(10);
         var eleven = intp.ordinary.exp.number(11);
-        var addition = intp.ordinary.exp.add(ten)(eleven);
-        var lambda = intp.ordinary.exp.lambda("x")(intp.ordinary.exp.add(intp.ordinary.exp.variable("x"))(intp.ordinary.exp.variable("x")));
-        var application = intp.ordinary.exp.app(lambda)(addition);
+        var addition = intp.ordinary.exp.add(ten,eleven);
+		var x = intp.ordinary.exp.variable("x");
+        var lambda = intp.ordinary.exp.lambda(x,intp.ordinary.exp.add(x,x));
+        var application = intp.ordinary.exp.app(lambda,addition);
         expect(
-          intp.ordinary.evaluate.call(intp,application)(intp.ordinary.env.empty)
+          intp.ordinary.evaluate.call(intp,application)(intp.env.emptyEnv)
         ).to.eql(
           intp.ordinary.unit.call(intp,42)
         );
@@ -167,6 +173,26 @@ describe("'interpreter' example", () => {
                                                     expect(head).to.eql(1);
                                                   }
                                                 });
+        next();
+      });
+      it('can evaluate (\\x.x)(1) = 1', (next) => {
+        this.timeout(5000);
+        var x = intp.ambiguous.exp.variable("x");
+        var lambda = intp.ambiguous.exp.lambda("x",x); // λx.x
+        var n = intp.ambiguous.exp.number(1);
+        var application = intp.ambiguous.exp.app(lambda,n);
+        intp.match(intp.ambiguous.evaluate.call(intp,
+                                                application)(intp.env.emptyEnv),{
+                                                  empty: (_) => {
+                                                    expect().fail();
+                                                  },
+                                                  cons: (head, tail) => {
+                                                    expect(head).to.eql(0);
+                                                  }
+                                                });
+        // expect(
+        //   intp.ambiguous.evaluate.call(intp,application)(intp.env.emptyEnv).isEqual(__.list.mkList.call(__,[4,6]))
+        // ).to.ok();
         next();
       });
       it('can evaluate (\\x.x + x)(amd (2,3)) = [4,6]', (next) => {

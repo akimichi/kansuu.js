@@ -45,6 +45,40 @@ module.exports = {
   ordinary: {
     unit: __.monad.identity.unit.bind(__),
     flatMap: __.monad.identity.flatMap.bind(__),
+    // ### expression
+    exp: {
+      fail: (_) => {
+        return (pattern) => {
+          return pattern.fail(_);
+        };
+      },
+      number: (n) => {
+        return (pattern) => {
+          return pattern.number(n);
+        };
+      },
+      variable: (name) => {
+        return (pattern) => {
+          return pattern.variable(name);
+        };
+      },
+      add: (n, m) => {
+        return (pattern) => {
+          return pattern.add(n,m);
+        };
+      },
+      lambda: (variable, exp) => {
+		expect(variable).to.a('function');
+        return (pattern) => {
+          return pattern.lambda(variable, exp);
+        };
+      },
+      app: (rator,rand) => {
+        return (pattern) => {
+          return pattern.app(rator, rand);
+        };
+      }
+    },
     apply: (rator) => {
       var self = this;
       return (rand) => {
@@ -55,142 +89,93 @@ module.exports = {
         }
       };
     },
-    add: (n) => {
-      var self = this;
-      return (m) => {
-        if(__.isNumber(m) && __.isNumber(n)) {
-          return self.ordinary.unit.call(self,m + n);
-        } else {
-          return self.ordinary.unit.call(self,undefined);
-        }
-      };
-    },
-    // ### evaluate
+    // add: (n) => {
+    //   var self = this;
+    //   return (m) => {
+    //     if(__.isNumber(m) && __.isNumber(n)) {
+    //       return self.ordinary.unit.call(self,m + n);
+    //     } else {
+    //       return self.ordinary.unit.call(self,undefined);
+    //     }
+    //   };
+    // },
+    // ### ordinary#evaluate
     evaluate: (exp) => {
       var self = this;
-      expect(exp.type).to.eql('exp');
-      return (env) => {
-        __.list.censor.call(__,env);
-        switch (exp.subtype) {
-        case 'variable':
-          return self.ordinary.env.lookup.call(self,exp.content, env);
-        case 'number':
-          return self.ordinary.unit.call(self,exp.content);
-        case 'add':
-          var rator = exp.content.rator;
-          var rand =  exp.content.rand;
-          expect(rator.type).to.eql('exp');
-          expect(rand.type).to.eql('exp');
-          return self.ordinary.flatMap.call(self,self.ordinary.evaluate.call(self,rator)(env))(function (m) {
-            return self.ordinary.flatMap.call(self,self.ordinary.evaluate.call(self,rand)(env))(function (n) {
-              return self.ordinary.add.call(self, m)(n);
-            });
-          });
-        case 'lambda':
-          var closure = (arg) => {
-            var newEnv = self.ordinary.env.extend.call(self, __.pair.mkPair.call(__,exp.content.arg)(arg),env);
-            return self.ordinary.evaluate.call(self,exp.content.body)(newEnv);
-          };
-          return self.ordinary.unit.call(self,closure);
-        case 'application':
-          var rator = exp.content.rator;
-          var rand =  exp.content.rand;
-          return self.ordinary.flatMap.call(self,self.ordinary.evaluate.call(self,rator)(env))(function (f) {
-            return self.ordinary.flatMap.call(self,self.ordinary.evaluate.call(self,rand)(env))(function (a) {
-              return self.ordinary.apply.call(self, f)(a);
-            });
-          });
-        default:
-          throw new Error("evaluate should accept expressions, but got " + exp);
-        }
+      return (environment) => {
+        return self.match(exp, {
+          fail: (_) => {
+            return self.ordinary.unit(undefined);
+          },
+          variable: (name) => {
+            return self.ordinary.unit(self.env.lookupEnv.call(self,
+															  name, environment));
+          },
+          number: (n) => {
+			expect(n).to.a('number');
+            return self.ordinary.unit(n);
+          },
+          add: (expN,expM)=> {
+			return self.ordinary.flatMap(self.ordinary.evaluate.call(self,expN)(environment))((n) => {
+			  return self.ordinary.flatMap(self.ordinary.evaluate.call(self,expM)(environment))((m) => {
+				return self.ordinary.unit(n + m);
+			  });
+			});
+          },
+          lambda: (identifier, bodyExp) => {
+            /* クロージャーを返す */
+            return (actualArg) => {
+              return self.match(identifier,{ // maybeを返すべきか？
+                variable: (name) => {
+                  return self.ordinary.evaluate.call(self,
+													 bodyExp)(self.env.extendEnv(name, actualArg ,environment));
+                }
+              });
+            };
+          },
+          app: (exp, arg) => {
+			return self.ordinary.flatMap(self.ordinary.evaluate.call(self,exp)(environment))((rator) => {
+			  return self.ordinary.flatMap(self.ordinary.evaluate.call(self,arg)(environment))((rand) => {
+				return self.ordinary.unit(rator(rand));
+			  });
+			});
+          }
+        });
       };
-    },
-    // ### expression
-    exp: {
-      variable: (name) => {
-        return {
-          type: 'exp',
-          subtype: 'variable',
-          content: name
-        };
-      },
-      number: (n) => {
-        return {
-          type: 'exp',
-          subtype: 'number',
-          content: n
-        };
-      },
-      add: (n) => {
-        return (m) => {
-          return {
-            type: 'exp',
-            subtype: 'add',
-            content: {
-              rator: n,
-              rand: m
-            }
-          };
-        };
-      },
-      lambda: (name) => {
-        return (exp) => {
-          return {
-            type: 'exp',
-            subtype: 'lambda',
-            content: {
-              arg: name,
-              body: exp
-            }
-          };
-        };
-      },
-      app: (rator) => {
-        return (rand) => {
-          return {
-            type: 'exp',
-            subtype: 'application',
-            content: {
-              rator: rator,
-              rand: rand
-            }
-          };
-        };
-      }
     },
     // ### environment
     // ~~~haskell
     // type Environment = List[(Name, Value)]
     // ~~~
-    env: {
-      empty: __.list.empty,
-      extend: (pair, oldenv) => {
-        __.pair.censor.call(__,pair);
-        __.list.censor.call(__,oldenv);
-        return __.list.cons.call(__, pair)(oldenv);
-      },
-      lookup: (name, env) => {
-        var self = this;
-        // var predicate = (pair) => {
-        //   if(pair.left === name) {
-        //     return true;
-        //   } else {
-        //     return false;
-        //   }
-        // };
-        // return __.monad.maybe.getOrElse.call(__,
-        //                                      __.list.find.call(__,env)(predicate))(undefined);
-        return __.list.foldr.call(__,env)(self.ordinary.unit.call(self,undefined))((item) => {
-          return (accumulator) => {
-            if(item.left === name) {
-              return self.ordinary.unit.call(self,item.right);
-            } else {
-              return accumulator;
-            }
-          };
-        });
-      }
-    }
+    // env: {
+    //   empty: __.list.empty,
+    //   extend: (pair, oldenv) => {
+    //     __.pair.censor.call(__,pair);
+    //     __.list.censor.call(__,oldenv);
+    //     return __.list.cons.call(__, pair)(oldenv);
+    //   },
+    //   lookup: (name, env) => {
+    //     var self = this;
+    //     // var predicate = (pair) => {
+    //     //   if(pair.left === name) {
+    //     //     return true;
+    //     //   } else {
+    //     //     return false;
+    //     //   }
+    //     // };
+    //     // return __.monad.maybe.getOrElse.call(__,
+    //     //                                      __.list.find.call(__,env)(predicate))(undefined);
+    //     return __.list.foldr.call(__,env)(self.ordinary.unit.call(self,undefined))((item) => {
+    //       return (accumulator) => {
+    //         if(item.left === name) {
+    //           return self.ordinary.unit.call(self,item.right);
+    //         } else {
+    //           return accumulator;
+    //         }
+    //       };
+    //     });
+    //   }
+    // }
   },
   // ## logging interpreter
   logging: {
