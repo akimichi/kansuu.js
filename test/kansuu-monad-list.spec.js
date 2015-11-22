@@ -54,6 +54,18 @@ describe("list' monad module", function() {
     );
     next();
   });
+  it("'list#forEach'", (next) => {
+    var seq = __.monad.list.concat.call(__, unit(1))(unit(2));
+    var forEach = __.monad.list.forEach.bind(__);
+    expect(
+      forEach(seq)((item) => {
+  		return item;
+      })
+    ).to.eql(
+      undefined
+    );
+    next();
+  });
   describe("'list' monad", function() {
     it("'list#flatMap'", (next) => {
       this.timeout(6000);

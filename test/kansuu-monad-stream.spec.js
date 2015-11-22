@@ -302,6 +302,17 @@ res0: List[Int] = List(2, 4, 6, 8)
     ).to.eql(
       [1,2,3]
     );
+	var intgersFrom = (n) => {
+	  return __.monad.stream.cons.call(__, n, (_) => {
+		return intgersFrom(n + 1);
+	  });
+	};
+    expect(
+      toArray(take(intgersFrom(1))(5))
+    ).to.eql(
+      [1,2,3,4,5]
+    );
+	
     next();
   });
   it("'stream#cycle'", (next) => {
@@ -317,6 +328,45 @@ res0: List[Int] = List(2, 4, 6, 8)
       toArray(take(cycles)(5))
     ).to.eql(
       [1,2,1,2,1]
+    );
+    next();
+  });
+  it("'stream#filter'", (next) => {
+	var filter = __.monad.stream.filter.bind(__);
+	var take = __.monad.stream.take.bind(__);
+	var toArray = __.monad.stream.toArray.bind(__);
+	var intgersFrom = (n) => {
+	  return __.monad.stream.cons.call(__, n, (_) => {
+		return intgersFrom(n + 1);
+	  });
+	};
+    var even = (n) => {
+      return 0 === (n % 2);
+    };
+    expect(
+      toArray(filter(take(intgersFrom(1))(10))(even))
+    ).to.eql(
+      [2,4,6,8,10]
+    );
+    next();
+  });
+  it("'stream#foldr'", (next) => {
+	var foldr = __.monad.stream.foldr.bind(__);
+	var take = __.monad.stream.take.bind(__);
+	var intgersFrom = (n) => {
+	  return __.monad.stream.cons.call(__, n, (_) => {
+		return intgersFrom(n + 1);
+	  });
+	};
+	var upto3 = take(intgersFrom(0))(3);
+    expect(
+      foldr(upto3)(0)((element) => {
+		return (accumulator) => {
+		  return accumulator + element;
+		};
+	  })
+    ).to.eql(
+      3
     );
     next();
   });
