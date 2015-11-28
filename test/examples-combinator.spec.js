@@ -10,7 +10,7 @@ describe("'combinator' example", () => {
 	var not = (predicate) => {
 	  return (data) => {
 		return ! predicate(data);
-	  }
+	  };
 	};
 	var and = (predicate1) => {
       return (predicate2) => {
