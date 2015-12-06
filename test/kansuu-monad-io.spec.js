@@ -8,13 +8,48 @@ var seedrandom = require('seedrandom');
 var Random = require("random-js");
 var rng = Random.engines.mt19937();
 
-describe("'monad' module", function() {
+describe("'IO' monad module", function() {
   describe("'IO' monad", function() {
-    it("'writer'", function(next) {
-      var squared = function(x) {
+    it("'print'", (next) => {
+      var printer = __.monad.IO.print.call(__,
+                                           "this is a test");
+      printer.run();
+      var printEven = (n) => {
+        if(n % 2 === 0){
+          return __.monad.IO.print.call(__,
+                                           true);
+        } else {
+          return __.monad.IO.print.call(__,
+                                           false);
+        }
+      };
+      printEven(2).run();
+      // expect(
+      //   printEven(2)
+      // ).to.eql(
+      //   printEven(2)
+      // );
+      next();
+    });
+    it("IO#flatMap", (next) => {
+      var readDecimal = __.monad.IO.readFile.call(__,
+                                                  "test/resource/decimal.txt");
+      // console.log(readDecimal.run())
+      console.log(parseInt(readDecimal.run(), 10).toString(16));
+      __.monad.IO.flatMap.call(__, readDecimal)((decimal) => {
+        console.log(decimal);
+        return __.monad.IO.print.call(__,
+                                      parseInt(decimal, 10).toString(16));
+      });
+      next();
+    });
+  });
+  describe("'writer' monad", function() {
+    it("'writer'", (next) => {
+      var squared = (x) => {
         return __.monad.writer.unit.bind(__)(x * x)(__.list.mkList.bind(__)([util.format("%s was squared.",x)]));
       };
-      var halved = function(x) {
+      var halved = (x) => {
         return __.monad.writer.unit.bind(__)(x / 2)(__.list.mkList.bind(__)([util.format("%s was halved.",x)]));
       };
       var answer = __.monad.writer.flatMap.bind(__)(
