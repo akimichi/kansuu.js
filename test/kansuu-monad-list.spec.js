@@ -15,6 +15,9 @@ describe("list' monad module", function() {
   var fromArray = __.monad.list.fromArray.bind(__);
   var toArray = __.monad.list.toArray.bind(__);
   var flatMap = __.monad.list.flatMap.bind(__);
+  var maybeMonad = __.monad.maybeMonad;
+
+  var get = __.monad.maybeMonad.get.bind(__);
 
   it("'monad.list#toArray'", (next) => {
     expect(
@@ -140,6 +143,48 @@ describe("list' monad module", function() {
         );
         next();
       });
+    });
+  });
+  describe("list#head", () => {
+    var head = __.monad.list.head.bind(__);
+    it("head(list)", (next) => {
+      expect(
+        __.monad.maybeMonad.get.call(__,
+                                     head(cons(1, cons(2, empty()))))
+      ).to.eql(
+        1
+      );
+      next();
+    });
+  });
+  describe("list#tail", () => {
+    var tail = __.monad.list.tail.bind(__);
+    it("tail(list)", (next) => {
+      
+      maybeMonad.flatMap.call(__,tail(cons(1, cons(2, empty()))))((tailList) => {
+        expect(
+          toArray(tailList)
+        ).to.eql(
+          [2]
+        );
+      });
+      next();
+    });
+  });
+  describe("list#at", () => {
+    var at = __.monad.list.at.bind(__);
+    it("at(list, 2)", (next) => {
+      expect(
+        get(at(cons(1, cons(2, empty())))(0))
+      ).to.eql(
+        1
+      );
+      expect(
+        get(at(cons(1, cons(2, empty())))(1))
+      ).to.eql(
+        2
+      );
+      next();
     });
   });
 });

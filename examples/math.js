@@ -117,8 +117,15 @@
 	    var leastDivisorOfN = self.leastDivisor(n);
 	    return __.monad.list.cons(leastDivisorOfN, self.factors(n / leastDivisorOfN));
 	  }
-	}
-  };
+	},
+    vector: {
+      mkVector: (alist) => {
+        return (index) => {
+          
+        };
+      }
+    }
+  }; // end of 'self'
 
 
   module.exports = self;
