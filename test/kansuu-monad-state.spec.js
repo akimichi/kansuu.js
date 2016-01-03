@@ -9,16 +9,44 @@ var Random = require("random-js");
 var rng = Random.engines.mt19937();
 
 describe("'monad' module", function() {
-  // describe("'state' monad", function() {
-  //     // it("'state#unit'", (next) => {
-  //     //   var unit = __.monad.state.unit.bind(__);
-  //     //   expect(
-  //     //     unit(1)
-  //     //   ).to.eql(
-  //     //     []
-  //     //   );
-  //     //   next();
-  //     // });
+  var unit = __.monad.state.unit.bind(__);
+  var flatMap = __.monad.state.flatMap.bind(__);
+  describe("'state' monad", function() {
+    it("'state#unit'", (next) => {
+      expect(
+        unit(1)()
+      ).to.eql(
+        1
+      );
+      next();
+    });
+    // it("'state#flatMap'", (next) => {
+    //   var fs = require('fs');
+    //   var write = (path, content) => {
+    //     return () => {
+    //       fs.writeFileSync(path,content);
+    //       return content;
+    //     };
+    //   };
+    //   var read = (path) => {
+    //     return () => {
+    //       return fs.readFileSync(path,'utf8');
+    //     };
+    //   };
+    //   var path = "test/resource/state.txt";
+    //   expect(
+    //    flatMap(read(path))((content) => {
+    //      return flatMap(write(path, "What a wonderful world!"))(() => {
+    //        return null;
+    //      });
+    //    })
+    //   ).to.eql(
+    //     1
+    //   );
+    //   next();
+    // });
+  });
+});
 
   //   describe("stack example", function() {
   //     var pop = (stack) => {
@@ -56,4 +84,3 @@ describe("'monad' module", function() {
   //     });
   //   });
   // });
-});

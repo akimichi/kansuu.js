@@ -118,12 +118,31 @@
 	    return __.monad.list.cons(leastDivisorOfN, self.factors(n / leastDivisorOfN));
 	  }
 	},
+    // ## Vector example
     vector: {
-      mkVector: (alist) => {
+      unit: (alist) => {
         return (index) => {
-          
+          return __.monad.list.at.call(self, alist)(index);
         };
-      }
+      },
+      // zero: self.unit(__.monad.list.fromArray.call(self,[0,0])),
+      add: (vs) => {
+        return (ws) => {
+          return (index) => {
+            return self.monad.maybeMonad.flatMap.call(self, vs(index))((v) => {
+              return self.monad.maybeMonad.flatMap.call(self, ws(index))((w) => {
+                return v + w;
+              });
+            });
+            // return vs(index) + ws(index);
+          };
+        };
+      },
+      // innerProduct: (vs) => {
+      //   return (ws) => {
+      //     return 
+      //   };
+      // }
     }
   }; // end of 'self'
 

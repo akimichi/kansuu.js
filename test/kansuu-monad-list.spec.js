@@ -187,4 +187,22 @@ describe("list' monad module", function() {
       next();
     });
   });
+  describe("list#generate", () => {
+    var generate = __.monad.list.generate.bind(__);
+    it("generate(list)", (next) => {
+      var list = cons(1, cons(2, empty()));
+      var generator = generate(list);
+      expect(
+        get(generator())
+      ).to.eql(
+        1
+      );
+      expect(
+        get(generator())
+      ).to.eql(
+        2
+      );
+      next();
+    });
+  });
 });
