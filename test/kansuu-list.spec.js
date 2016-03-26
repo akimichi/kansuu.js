@@ -16,16 +16,26 @@ describe("'list' module", function() {
 
   describe("mkList", () => {
     it("fromString", (next) => {
-      var list = __.list.fromString.call(__,"this is a string");
+      var theList = __.list.fromString.call(__,"this is a string");
       expect(
-        list.head
+        theList.head
       ).to.eql(
         't'
       );
       expect(
-        list.tail.head
+        theList.tail.head
       ).to.eql(
         'h'
+      );
+      expect(
+        __.list.fromString.call(__,"これは文字列です").head
+      ).to.eql(
+        'こ'
+      );
+      expect(
+        __.list.fromString.call(__,"これは文字列です").tail.head
+      ).to.eql(
+        'れ'
       );
       next();
     });
@@ -347,7 +357,7 @@ describe("'list' module", function() {
     );
     next();
   });
-  it("'list#splitAt'", (next) => {
+  it("'list#splitAt' はリストのn番目の要素で分割する", (next) => {
     this.timeout(5000);
     var list = __.list.fromArray.call(__,[0,1,2,3]);
     expect(
