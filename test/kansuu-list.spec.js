@@ -2,16 +2,17 @@
 
 var expect = require('expect.js');
 var __ = require('../lib/kansuu.js');
+var list = require('../lib/kansuu-list.js');
 
 describe("'list' module", function() {
-  var toArray = __.list.toArray.bind(__);
-  var mkList = __.list.mkList.bind(__);
-  var map = __.list.map.bind(__);
-  var append = __.list.append.bind(__);
-  var empty = __.list.empty;
+  var toArray = list.toArray.bind(__);
+  const mkList = list.mkList.bind(__);
+  var map = list.map.bind(__);
+  var append = list.append.bind(__);
+  var empty = list.empty;
 
-  var fixtures = {
-    ints: __.list.mkList.bind(__)([0,1,2,3])
+  const fixtures = {
+    ints: mkList([0,1,2,3])
   };
 
   describe("mkList", () => {

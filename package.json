@@ -20,10 +20,13 @@
     "url": "https://github.com/akimichi/kansuu.js/issues"
   },
   "homepage": "https://github.com/akimichi/kansuu.js",
+  "engines": {
+    "node": "4.2.x"
+  },
   "dependencies": {
     "expect.js": "^0.3.1",
-    "seedrandom": "^2.3.11",
-    "random-js": "^1.0.4"
+    "random-js": "1.0.8",
+    "seedrandom": "^2.3.11"
   },
   "devDependencies": {
     "docco": "^0.7.0",
