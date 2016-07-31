@@ -746,19 +746,19 @@ describe("'list' module", function() {
       next();
     });
   });
-  describe("examples", () => {
-    it("manipulate :788115012A8100247F7841E1000C8323000037FFFFFFFC27", (next) => {
-      this.timeout(10000);
-      var input = ":788115012A8100247F7841E1000C8323000037FFFFFFFC27";
-      var list = __.list.fromString.call(__,input).tail;
+  // describe("examples", () => {
+  //   it("manipulate :788115012A8100247F7841E1000C8323000037FFFFFFFC27", (next) => {
+  //     this.timeout(10000);
+  //     var input = ":788115012A8100247F7841E1000C8323000037FFFFFFFC27";
+  //     var list = __.list.fromString.call(__,input).tail;
 
-      expect(
-        toArray(list)
-      ).to.eql(
-        __.string.toArray.call(__,"788115012A8100247F7841E1000C8323000037FFFFFFFC27")
-      );
+  //     expect(
+  //       toArray(list)
+  //     ).to.eql(
+  //       __.string.toArray.call(__,"788115012A8100247F7841E1000C8323000037FFFFFFFC27")
+  //     );
 
-      next();
-    });
-  });
+  //     next();
+  //   });
+  // });
 });
