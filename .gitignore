@@ -32,3 +32,8 @@ node_modules
 
 # docco
 docs/
+
+
+# neovim
+Session.vim
+

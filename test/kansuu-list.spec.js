@@ -1,22 +1,23 @@
 "use strict";
 
-var expect = require('expect.js');
-var __ = require('../lib/kansuu.js');
+const expect = require('expect.js');
+const list = require('../lib/kansuu-list.js');
+// var __ = require('../lib/kansuu.js');
 
 describe("'list' module", function() {
-  var toArray = __.list.toArray.bind(__);
-  var mkList = __.list.mkList.bind(__);
-  var map = __.list.map.bind(__);
-  var append = __.list.append.bind(__);
-  var empty = __.list.empty;
+  // var toArray = __.list.toArray.bind(__);
+  // var mkList = __.list.mkList.bind(__);
+  // var map = __.list.map.bind(__);
+  // var append = __.list.append.bind(__);
+  // var empty = __.list.empty;
 
   var fixtures = {
-    ints: __.list.mkList.bind(__)([0,1,2,3])
+    ints: list.mkList([0,1,2,3])
   };
 
   describe("mkList", () => {
     it("fromString", (next) => {
-      var theList = __.list.fromString.call(__,"this is a string");
+      var theList = list.fromString("this is a string");
       expect(
         theList.head
       ).to.eql(
@@ -28,12 +29,12 @@ describe("'list' module", function() {
         'h'
       );
       expect(
-        __.list.fromString.call(__,"これは文字列です").head
+        list.fromString("これは文字列です").head
       ).to.eql(
         'こ'
       );
       expect(
-        __.list.fromString.call(__,"これは文字列です").tail.head
+        list.fromString("これは文字列です").tail.head
       ).to.eql(
         'れ'
       );
@@ -79,33 +80,33 @@ describe("'list' module", function() {
       next();
     });
   });
-  it("'cons' should construct a list object", function(next) {
-    var list = __.list.cons.bind(__)(0)(__.list.empty);
+  it("'cons' should construct a list object", (next) => {
+    const alist = list.cons(0,list.empty);
     expect(
-      list.head
+      list.head(alist)
     ).to.eql(
       0
     );
     expect(
-      list.tail
+      list.tail(alist)
     ).to.eql(
-      __.list.empty
+      list.empty
     );
     next();
   });
   it("'list#head' should return the head of a list", function(next) {
-    var list = __.list.mkList.bind(__)([0,1,2,3]);
+    const alist = list.mkList([0,1,2,3]);
     expect(
-      list.head
+      list.head(alist)
     ).to.eql(
       0
     );
     next();
   });
   it("'list#tail' should return the tail of a list", function(next) {
-    var list = __.list.mkList.bind(__)([0,1,2,3]);
+    const alist = list.mkList([0,1,2,3]);
     expect(
-      __.list.tail.bind(__)(list).head
+      list.head(list.tail(alist))
     ).to.eql(
       1
     );
@@ -408,14 +409,14 @@ describe("'list' module", function() {
     next();
   });
   describe("folding higher-functions", () => {
-    var foldr = __.list.foldr.bind(__);
-    var foldl = __.list.foldl.bind(__);
-    var reduce = __.list.reduce.bind(__);
+    // var foldr = __.list.foldr.bind(__);
+    // var foldl = __.list.foldl.bind(__);
+    // var reduce = __.list.reduce.bind(__);
     it("'list#foldr'", function(next) {
-      var list = __.list.mkList.bind(__)([0,1,2,3]);
+      var alist = list.mkList([0,1,2,3]);
       expect(
-        foldr(list)(0)(function(item){
-          return function(accumulator){
+        foldr(alist)(0)((item) => {
+          return (accumulator) => {
             return item + accumulator;
           };
         })
@@ -424,19 +425,19 @@ describe("'list' module", function() {
       );
       next();
     });
-    it("'list#foldl'", function(next) {
-      var list = __.list.mkList.bind(__)([0,1,2,3]);
-      expect(
-        foldl(list)(0)(function(item){
-          return function(accumulator){
-            return item + accumulator;
-          };
-        })
-      ).to.eql(
-        6
-      );
-      next();
-    });
+    // it("'list#foldl'", function(next) {
+    //   var list = __.list.mkList.bind(__)([0,1,2,3]);
+    //   expect(
+    //     foldl(list)(0)(function(item){
+    //       return function(accumulator){
+    //         return item + accumulator;
+    //       };
+    //     })
+    //   ).to.eql(
+    //     6
+    //   );
+    //   next();
+    // });
     it("'list#reduce'", function(next) {
       var list = __.list.mkList.bind(__)([0,1,2,3]);
       expect(
@@ -543,13 +544,12 @@ describe("'list' module", function() {
     next();
   });
   describe("'list#append'", () => {
-    var listX = mkList([0,2,4]);
-    var listY = mkList([1,3,5]);
+    var listX = list.mkList([0,2,4]);
+    var listY = list.mkList([1,3,5]);
     it("append(xs)(ys)", (next) => {
-      var appended = __.list.append.call(__,
-                                         listX)(listY);
+      var appended = list.append(listX)(listY);
       expect(
-        __.list.toArray.call(__,appended)
+        list.toArray(appended)
       ).to.eql(
         [ 0,2,4,1,3,5]
       );
@@ -690,15 +690,15 @@ describe("'list' module", function() {
     next();
   });
   describe("functor laws on list", function() {
-    var list = __.list.mkList.bind(__)([0,1,2,3]);
-    it("map id == id", function(next){
-      expect(
-        toArray(map(list)(__.id))
-      ).to.eql(
-        toArray(__.id(list))
-      );
-      next();
-    });
+    var alist = list.mkList([0,1,2,3]);
+    // it("map id == id", (next) => {
+    //   expect(
+    //     toArray(map(list)(__.id))
+    //   ).to.eql(
+    //     toArray(__.id(list))
+    //   );
+    //   next();
+    // });
     it("map (f . g)  == map f . map g", function(next){
       var f = (n) => {
         return n + 1;
@@ -707,21 +707,21 @@ describe("'list' module", function() {
         return - n;
       };
       expect(
-        toArray(map(list)(__.compose.bind(__)(f)(g)))
+        list.toArray(map(alist)(__.compose.bind(__)(f)(g)))
       ).to.eql(
-        toArray(__.compose.bind(__)(__.flip.bind(__)(map)(f))
+        list.toArray(__.compose.bind(__)(__.flip.bind(__)(map)(f))
                                    (__.flip.bind(__)(map)(g))(list))
       );
       next();
     });
   });
   describe("monoid laws on list", function() {
-    var list = __.list.mkList.bind(__)([0,1,2,3]);
-    it("empty `append` xs == xs", function(next){
+    var alist = list.mkList([0,1,2,3]);
+    it("empty `append` xs == xs", (next) => {
       expect(
-        toArray(append(empty)(list))
+        list.toArray(list.append(empty)(alist))
       ).to.eql(
-        toArray(list)
+        list.toArray(alist)
       );
       next();
     });

@@ -21,9 +21,10 @@
   },
   "homepage": "https://github.com/akimichi/kansuu.js",
   "dependencies": {
+    "babel-preset-node8-es6": "^12.0.0",
     "expect.js": "^0.3.1",
-    "seedrandom": "^2.3.11",
-    "random-js": "^1.0.4"
+    "random-js": "^1.0.4",
+    "seedrandom": "^2.3.11"
   },
   "devDependencies": {
     "docco": "^0.7.0",
