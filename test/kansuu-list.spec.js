@@ -598,31 +598,31 @@ describe("'list' module", function() {
     );
     next();
   });
-  it("'list#sort'", function(next) {
+  it("'list#sort'", (next) => {
     this.timeout(5000);
     expect(function(){
-      var list = __.list.mkList.bind(__)([2,0,3,1]);
-      return __.list.toArray.bind(__)(__.list.sort.bind(__)(list));
+      var alist = list.mkList([2,0,3,1]);
+      return list.toArray(list.sort(alist));
     }()).to.eql(
       [0,1,2,3]
     );
     expect(function(){
-      var nil = __.list.empty;
-      return __.list.toArray.bind(__)(__.list.sort.bind(__)(nil));
+      var nil = list.empty();
+      return list.toArray(list.sort(nil));
     }()).to.eql(
       []
     );
     next();
   });
-  it("'list#replicate'", function(next) {
-    expect(
-      toArray(__.list.replicate.bind(__)(3)("a"))
-    ).to.eql(
-      ["a","a","a"]
-    );
-    next();
-  });
-  it("'list#unfold'", function(next) {
+  // it("'list#replicate'", function(next) {
+  //   expect(
+  //     toArray(__.list.replicate.bind(__)(3)("a"))
+  //   ).to.eql(
+  //     ["a","a","a"]
+  //   );
+  //   next();
+  // });
+  it("'list#unfold'", (next) => {
     this.timeout(5000);
     //  unfoldr (\b -> if b == 0 then Nothing else Just (b, b-1)) 10
     //  > [10,9,8,7,6,5,4,3,2,1]
@@ -636,7 +636,7 @@ describe("'list' module", function() {
       return n === 0;
     };
     expect(
-      toArray(__.list.unfold.call(__,isZero)(id)(prev)(10))
+      list.toArray(list.unfold(isZero)(id)(prev)(10))
     ).to.eql(
       [10,9,8,7,6,5,4,3,2,1]
     );
@@ -673,14 +673,14 @@ describe("'list' module", function() {
     // );
     next();
   });
-  it("'list#range'", (next) => {
-    expect(
-      toArray(__.list.range.call(__,0)(5))
-    ).to.eql(
-      [0,1,2,3,4,5]
-    );
-    next();
-  });
+  // it("'list#range'", (next) => {
+  //   expect(
+  //     toArray(__.list.range.call(__,0)(5))
+  //   ).to.eql(
+  //     [0,1,2,3,4,5]
+  //   );
+  //   next();
+  // });
   describe("functor laws on list", function() {
     var alist = list.mkList([0,1,2,3]);
     // it("map id == id", (next) => {
