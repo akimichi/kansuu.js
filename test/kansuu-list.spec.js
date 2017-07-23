@@ -275,18 +275,18 @@ describe("'list' module", function() {
     );
     next();
   });
-  it("'list#find'", (next) => {
-    var odd = (n) => {
-      return (n % 2) !== 0;
-    };
-    var list = __.list.mkList.call(__,[0,1,2,3,4]);
-    expect(
-      __.list.find.call(__,list)(odd)
-    ).to.eql(
-      __.monad.maybe.unit.call(__,1)
-    );
-    next();
-  });
+  // it("'list#find'", (next) => {
+  //   var odd = (n) => {
+  //     return (n % 2) !== 0;
+  //   };
+  //   var list = __.list.mkList.call(__,[0,1,2,3,4]);
+  //   expect(
+  //     __.list.find.call(__,list)(odd)
+  //   ).to.eql(
+  //     __.monad.maybe.unit.call(__,1)
+  //   );
+  //   next();
+  // });
   it("'list.zip' should zip two lists",function(next){
     var keys = __.list.mkList.bind(__)(["a","b","c"]);
     var values = __.list.mkList.bind(__)([1,2,3]);
