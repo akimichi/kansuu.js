@@ -1,65 +1,57 @@
 "use strict";
 
-var expect = require('expect.js');
-var __ = require('../lib/kansuu.js');
-var base = require('../lib/kansuu-base.js');
-var math = require('../lib/kansuu-math.js');
+const expect = require('expect.js');
+const list = require('../lib/kansuu-list.js');
+const Pair = require('../lib/kansuu-pair.js');
+const Stream = require('../lib/kansuu-stream.js');
 
 
-describe("'stream' module", function() {
-  var isEqual = __.stream.isEqual.bind(__);
-  var empty = __.stream.empty;
-  var mkStream = __.stream.mkStream.bind(__);
-  describe("mkStream", function() {
-    var intStream = __.stream.mkStream.bind(__)([0,1,2,3,4,5]);
-    it("can make a stream", function(next) {
+describe("'stream' module", () => {
+  describe("mkStream", () => {
+    var intStream = Stream.mkStream([0,1,2,3,4,5]);
+    it("can make a stream", (next) => {
       // var stream = __.stream.mkStream.bind(__)(0)(function (n){
       //   return n + 1;
       // });
       expect(
-        intStream.value()
+        Stream.head(intStream)
       ).to.eql(0);
-      expect(
-        intStream.next().value()
-      ).to.eql(1);
-      expect(
-        intStream.next().next().value()
-      ).to.eql(2);
-      expect(
-        intStream.next().next().next().value()
-      ).to.eql(3);
+      // expect(
+      //   intStream.next().value()
+      // ).to.eql(1);
+      // expect(
+      //   intStream.next().next().value()
+      // ).to.eql(2);
+      // expect(
+      //   intStream.next().next().next().value()
+      // ).to.eql(3);
       next();
     });
-    it("can be checked by 'censor'", function(next) {
-      expect(
-        __.stream.censor(intStream)
-      ).to.eql(intStream);
-      next();
-    });
-    it("stream#cons", function(next) {
-      var one = () => {
-        return 1;
-      };
+    it("stream#cons", (next) => {
       var two = () => {
         return 2;
-        ;;
       };
-      var stream = __.stream.cons.call(__,one)(two);
+      var astream = Stream.cons(1,two);
       expect(
-        stream.value()
+        Stream.head(astream)
       ).to.eql(
         1
       );
+      expect(
+        Stream.tail(astream)
+      ).to.eql(
+        2
+      );
       next();
     });
-    it("'isEmpty'", function(next) {
+    it("'isEmpty'", (next) => {
       expect(
-        __.stream.isEmpty(empty)
+        Stream.isEmpty(Stream.empty())
       ).to.eql(
         true
       );
       expect(
-        __.stream.isEmpty(intStream)
+        Stream.isEmpty(intStream)
       ).to.eql(
         false
       );
@@ -84,95 +76,95 @@ describe("'stream' module", function() {
       ).to.eql(4);
       next();
     });
-    it("stream#take(n)", function(next) {
-      var intStream = __.stream.mkStream.bind(__)([0,1,2,3,4,5]);
-      expect(((_)=> {
-        var taken = __.stream.take.bind(__)(intStream)(1);
-        return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([0]));
-      })()).to.ok();
-      expect(((_)=> {
-        var taken = __.stream.take.bind(__)(intStream)(2);
-        return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([0,1]));
-      })()).to.ok();
-      next();
-    });
-    describe("stream#unfold", function() {
-      it("stream 10, 12, 14, 16...", function(next) {
-        var stream = __.stream.unfold.bind(__)(5)((n) => {
-          if(n < 10) {
-            return __.monad.maybe.unit.bind(__)(__.pair.cons.bind(__)(n*2)(n+1));
-          } else {
-            return __.monad.maybe.nothing;
-          }
-        });
-        __.stream.censor(stream);
-        expect(
-          stream.value()
-        ).to.eql(
-          10
-        );
-        expect(((_)=> {
-          var taken = __.stream.take.bind(__)(stream)(3);
-          return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([10,12,14]));
-        })()).to.ok();
-        next();
-      });
-      // it("prime stream", function(next) {
-      //    var stream = __.stream.unfold.bind(__)(2)((n) => {
-      //      if(math.isPrime(n)) {
-      //        return __.monad.maybe.unit.bind(__)(__.pair.cons.bind(__)(n)(n+1));
-      //      } else {
-      //        return __.monad.maybe.nothing;
-      //      }
-      //    });
-      //    __.stream.censor(stream);
-      //    expect(((_)=> {
-      //      var list = __.stream.take.bind(__)(stream)(10);
-      //      return __.list.toArray.bind(__)(list);
-      //    })()).to.eql(
-      //      [2,3]
-      //    );
-      //    next();
-      // });
-    });
-    it("stream#repeat", function(next) {
-      var ones = __.stream.repeat.bind(__)(1);
-      expect(
-        ones.value()
-      ).to.eql(
-        1
-      );
-      expect(
-        ones.next().next().value()
-      ).to.eql(
-        1
-      );
-      expect(
-        ones.next().next().next().value()
-      ).to.eql(
-        1
-      );
-      next();
-    });
-    it("stream#constant", function(next) {
-      var ones = __.stream.constant.bind(__)(1);
-      expect(
-        ones.value()
-      ).to.eql(
-        1
-      );
-      expect(
-        ones.next().next().value()
-      ).to.eql(
-        1
-      );
-      expect(
-        ones.next().next().next().value()
-      ).to.eql(
-        1
-      );
-      next();
-    });
+    // it("stream#take(n)", function(next) {
+    //   var intStream = __.stream.mkStream.bind(__)([0,1,2,3,4,5]);
+    //   expect(((_)=> {
+    //     var taken = __.stream.take.bind(__)(intStream)(1);
+    //     return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([0]));
+    //   })()).to.ok();
+    //   expect(((_)=> {
+    //     var taken = __.stream.take.bind(__)(intStream)(2);
+    //     return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([0,1]));
+    //   })()).to.ok();
+    //   next();
+    // });
+    // describe("stream#unfold", function() {
+    //   it("stream 10, 12, 14, 16...", function(next) {
+    //     var stream = __.stream.unfold.bind(__)(5)((n) => {
+    //       if(n < 10) {
+    //         return __.monad.maybe.unit.bind(__)(__.pair.cons.bind(__)(n*2)(n+1));
+    //       } else {
+    //         return __.monad.maybe.nothing;
+    //       }
+    //     });
+    //     __.stream.censor(stream);
+    //     expect(
+    //       stream.value()
+    //     ).to.eql(
+    //       10
+    //     );
+    //     expect(((_)=> {
+    //       var taken = __.stream.take.bind(__)(stream)(3);
+    //       return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([10,12,14]));
+    //     })()).to.ok();
+    //     next();
+    //   });
+    //   // it("prime stream", function(next) {
+    //   //    var stream = __.stream.unfold.bind(__)(2)((n) => {
+    //   //      if(math.isPrime(n)) {
+    //   //        return __.monad.maybe.unit.bind(__)(__.pair.cons.bind(__)(n)(n+1));
+    //   //      } else {
+    //   //        return __.monad.maybe.nothing;
+    //   //      }
+    //   //    });
+    //   //    __.stream.censor(stream);
+    //   //    expect(((_)=> {
+    //   //      var list = __.stream.take.bind(__)(stream)(10);
+    //   //      return __.list.toArray.bind(__)(list);
+    //   //    })()).to.eql(
+    //   //      [2,3]
+    //   //    );
+    //   //    next();
+    //   // });
+    // });
+    // it("stream#repeat", function(next) {
+    //   var ones = __.stream.repeat.bind(__)(1);
+    //   expect(
+    //     ones.value()
+    //   ).to.eql(
+    //     1
+    //   );
+    //   expect(
+    //     ones.next().next().value()
+    //   ).to.eql(
+    //     1
+    //   );
+    //   expect(
+    //     ones.next().next().next().value()
+    //   ).to.eql(
+    //     1
+    //   );
+    //   next();
+    // });
+    // it("stream#constant", function(next) {
+    //   var ones = __.stream.constant.bind(__)(1);
+    //   expect(
+    //     ones.value()
+    //   ).to.eql(
+    //     1
+    //   );
+    //   expect(
+    //     ones.next().next().value()
+    //   ).to.eql(
+    //     1
+    //   );
+    //   expect(
+    //     ones.next().next().next().value()
+    //   ).to.eql(
+    //     1
+    //   );
+    //   next();
+    // });
     // it("stream#cycle", function(next) {
     //   // cycle(1 to 3) take 2
     //   var list =__.list.mkList.call(__,[1,2,3]);
