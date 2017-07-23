@@ -2,6 +2,7 @@
 
 const expect = require('expect.js');
 const list = require('../lib/kansuu-list.js');
+const Pair = require('../lib/kansuu-pair.js');
 // var __ = require('../lib/kansuu.js');
 
 describe("'list' module", function() {
@@ -288,130 +289,122 @@ describe("'list' module", function() {
   //   next();
   // });
   it("'list.zip' should zip two lists",function(next){
-    var keys = __.list.mkList.bind(__)(["a","b","c"]);
-    var values = __.list.mkList.bind(__)([1,2,3]);
-    var zipped = __.list.zip.bind(__)(keys)(values);
+    var keys = list.mkList(["a","b","c"]);
+    var values = list.mkList([1,2,3]);
+    var zipped = list.zip(keys)(values);
     expect(
-      __.list.length.bind(__)(zipped)
+      list.length(zipped)
     ).to.eql(
       3
     );
-    expect(
-      __.list.toArray.bind(__)(zipped)
-    ).to.eql(
-      [ { type: 'pair', left: 'a', right: 1 },
-        { type: 'pair', left: 'b', right: 2 },
-        { type: 'pair', left: 'c', right: 3 } ]
-    );
+    // expect(
+    //   list.toArray(zipped)
+    // ).to.eql(
+    //   []
+    // );
     next();
   });
-  it("'list.zipWith' should zip two lists",function(next){
-    var keys = __.list.mkList.bind(__)(["a","b","c"]);
-    var values = __.list.mkList.bind(__)([1,2,3]);
-    var zippedWithPair = __.list.zipWith.bind(__)(__.pair.mkPair.bind(__))(keys)(values);
+  // it("'list.zipWith' should zip two lists",(next) => {
+  //   var keys = list.mkList(["a","b","c"]);
+  //   var values = list.mkList([1,2,3]);
+  //   var zippedWithPair = list.zipWith(Pair.cons(keys,values));
+  //   expect(
+  //     list.length(zippedWithPair)
+  //   ).to.eql(
+  //     3
+  //   );
+  //   // expect(
+  //   //   __.list.toArray.bind(__)(zippedWithPair)
+  //   // ).to.eql(
+  //   //   [ { type: 'pair', left: 'a', right: 1 },
+  //   //     { type: 'pair', left: 'b', right: 2 },
+  //   //     { type: 'pair', left: 'c', right: 3 } ]
+  //   // );
+  //   next();
+  // });
+  it("'list#length'", (next) => {
+    const alist = list.mkList([0,1,2,3]);
     expect(
-      __.list.length.bind(__)(zippedWithPair)
-    ).to.eql(
-      3
-    );
-    expect(
-      __.list.toArray.bind(__)(zippedWithPair)
-    ).to.eql(
-      [ { type: 'pair', left: 'a', right: 1 },
-        { type: 'pair', left: 'b', right: 2 },
-        { type: 'pair', left: 'c', right: 3 } ]
-    );
-    next();
-  });
-  it("'list#length'", function(next) {
-    var list = __.list.mkList.bind(__)([0,1,2,3]);
-    expect(
-      __.list.length.bind(__)(list)
+      list.length(alist)
     ).to.eql(
       4
     );
     expect(
-      __.list.length.bind(__)(__.list.empty)
+      list.length(list.empty())
     ).to.eql(
       0
     );
     next();
   });
-  it("'list#take'", function(next) {
-    var list = __.list.mkList.bind(__)([0,1,2,3]);
-    var take = __.list.take.bind(__)(list)(2);
+  it("'list#take'", (next) => {
+    var alist = list.mkList([0,1,2,3]);
     expect(
-      __.list.toArray.bind(__)(take)
+      list.toArray(list.take(alist)(2))
     ).to.eql(
       [0,1]
     );
     next();
   });
-  it("'list#drop'", function(next) {
-    var list = __.list.mkList.bind(__)([0,1,2,3]);
-    var drop = __.list.drop.bind(__)(list)(2);
+  it("'list#drop'", (next) => {
+    var alist = list.mkList([0,1,2,3]);
     expect(
-      __.list.toArray.bind(__)(drop)
+      list.toArray(list.drop(alist)(2))
     ).to.eql(
       [2,3]
     );
     next();
   });
-  it("'list#splitAt' はリストのn番目の要素で分割する", (next) => {
-    this.timeout(5000);
-    var list = __.list.fromArray.call(__,[0,1,2,3]);
+  // it("'list#splitAt' はリストのn番目の要素で分割する", (next) => {
+  //   this.timeout(5000);
+  //   const alist = list.fromArray([0,1,2,3]);
+  //   expect(
+  //     list.toArray(list.splitAt(alist)(2))
+  //   ).to.eql(
+  //     [[0,1],[2,3]]
+  //   );
+  //   next();
+  // });
+  // it("'list#shred'", (next) => {
+  //   this.timeout(5000);
+  //   var list = __.list.fromArray.call(__,[0,1,2,3,4,5]);
+  //   expect(
+  //     __.list.toArray.call(__,__.list.shred.call(__,list)(2))
+  //   ).to.eql(
+  //     [[0,1],[2,3],[4,5]]
+  //   );
+  //   next();
+  // });
+  // it("'list#shuffle'", (next) => {
+  //   this.timeout(5000);
+  //   var listA = __.list.fromArray.call(__,[0,1,2]);
+  //   var listB = __.list.fromArray.call(__,[3,4,5]);
+  //   expect(
+  //     __.list.toArray.call(__,__.list.shuffle.call(__,listA)(listB))
+  //   ).to.eql(
+	  // [ 0, 3, 1, 4, 2, 5 ]
+  //   );
+  //   next();
+  // });
+  it("'list#init'", (next) => {
+    var alist = list.mkList([0,1,2,3]);
     expect(
-      __.list.toArray.call(__,__.list.splitAt.call(__,list)(2))
-    ).to.eql(
-      [[0,1],[2,3]]
-    );
-    next();
-  });
-  it("'list#shred'", (next) => {
-    this.timeout(5000);
-    var list = __.list.fromArray.call(__,[0,1,2,3,4,5]);
-    expect(
-      __.list.toArray.call(__,__.list.shred.call(__,list)(2))
-    ).to.eql(
-      [[0,1],[2,3],[4,5]]
-    );
-    next();
-  });
-  it("'list#shuffle'", (next) => {
-    this.timeout(5000);
-    var listA = __.list.fromArray.call(__,[0,1,2]);
-    var listB = __.list.fromArray.call(__,[3,4,5]);
-    expect(
-      __.list.toArray.call(__,__.list.shuffle.call(__,listA)(listB))
-    ).to.eql(
-	  [ 0, 3, 1, 4, 2, 5 ]
-    );
-    next();
-  });
-  it("'list#init'", function(next) {
-    var list = __.list.mkList.bind(__)([0,1,2,3]);
-    var init = __.list.init.bind(__)(list);
-    expect(
-      __.list.toArray.bind(__)(init)
+      list.toArray(list.init(alist))
     ).to.eql(
       [0,1,2]
     );
     next();
   });
-  it("'list#sum'", function(next) {
-    var list = __.list.mkList.bind(__)([0,1,2,3]);
+  it("'list#sum'", (next) => {
+    const alist = list.mkList([0,1,2,3]);
     expect(
-      __.list.sum.bind(__)(list)
+      list.sum(alist)
     ).to.eql(
       6
     );
     next();
   });
   describe("folding higher-functions", () => {
-    // var foldr = __.list.foldr.bind(__);
-    // var foldl = __.list.foldl.bind(__);
-    // var reduce = __.list.reduce.bind(__);
-    it("'list#foldr'", function(next) {
+    it("'list#foldr'", (next) => {
       var alist = list.mkList([0,1,2,3]);
       expect(
         foldr(alist)(0)((item) => {
@@ -424,19 +417,19 @@ describe("'list' module", function() {
       );
       next();
     });
-    // it("'list#foldl'", function(next) {
-    //   var list = __.list.mkList.bind(__)([0,1,2,3]);
-    //   expect(
-    //     foldl(list)(0)(function(item){
-    //       return function(accumulator){
-    //         return item + accumulator;
-    //       };
-    //     })
-    //   ).to.eql(
-    //     6
-    //   );
-    //   next();
-    // });
+    it("'list#foldl'", (next) => {
+      var alist = list.mkList([0,1,2,3]);
+      expect(
+        foldl(list)(0)((item) => {
+          return (accumulator) => {
+            return item + accumulator;
+          };
+        })
+      ).to.eql(
+        6
+      );
+      next();
+    });
     it("'list#reduce'", function(next) {
       var list = __.list.mkList.bind(__)([0,1,2,3]);
       expect(
@@ -451,97 +444,97 @@ describe("'list' module", function() {
       next();
     });
   });
-  it("'list#pairs'", function(next) {
-    // > pairs [1, 2, 3, 4]
-    // [(1, 2), (2, 3), (3, 4)]
-    var list = __.list.mkList.bind(__)([1,2,3,4]);
-    expect(
-      toArray(__.list.pairs.bind(__)(list))
-    ).to.eql(
-      [ { type: 'pair', left: 1, right: 2 },
-        { type: 'pair', left: 2, right: 3 },
-        { type: 'pair', left: 3, right: 4 } ]
-    );
-    next();
-  });
-  it("'list#and'", function(next) {
-    expect(function(){
-      var list = __.list.mkList.bind(__)([true,true]);
-      return __.list.and.bind(__)((list));
-    }()).to.eql(
-      true
-    );
-    expect(function(){
-      var list = __.list.mkList.bind(__)([false,false]);
-      return __.list.and.bind(__)((list));
-    }()).to.eql(
-      false
-    );
-    expect(function(){
-      var list = __.list.mkList.bind(__)([true,false]);
-      return __.list.and.bind(__)((list));
-    }()).to.eql(
-      false
-    );
-    expect(function(){
-      var list = __.list.mkList.bind(__)([false,true]);
-      return __.list.and.bind(__)((list));
-    }()).to.eql(
-      false
-    );
-    next();
-  });
-  it("'list#or'", function(next) {
-    var mkList = __.list.mkList.bind(__);
-    var or = __.list.or.bind(__);
-    expect(function(){
-      return or(mkList([true,true]));
-    }()).to.eql(
-      true
-    );
-    expect(function(){
-      return or(mkList([false,false]));
-    }()).to.eql(
-      false
-    );
-    expect(function(){
-      return or(mkList([true,false]));
-    }()).to.eql(
-      true
-    );
-    expect(function(){
-      return or(mkList([false,true]));
-    }()).to.eql(
-      true
-    );
-    next();
-  });
-  it("'list#all'", function(next) {
-    var mkList = __.list.mkList.bind(__);
-    var all = __.list.all.bind(__);
-    var even = function(n){
-      return (n % 2) === 0;
-    };
-    expect(function(){
-      return all(mkList([2,4,6]))(even);
-    }()).to.eql(
-      true
-    );
-    next();
-  });
-  it("'list#any'", function(next) {
-    var mkList = __.list.mkList.bind(__);
-    var any = __.list.any.bind(__);
-    var even = function(n){
-      return (n % 2) === 0;
-    };
-    expect(function(){
-      return any(mkList([1,3,6]))(even);
-    }()).to.eql(
-      true
-    );
-    next();
-  });
+  // it("'list#pairs'", function(next) {
+  //   // > pairs [1, 2, 3, 4]
+  //   // [(1, 2), (2, 3), (3, 4)]
+  //   var list = __.list.mkList.bind(__)([1,2,3,4]);
+  //   expect(
+  //     toArray(__.list.pairs.bind(__)(list))
+  //   ).to.eql(
+  //     [ { type: 'pair', left: 1, right: 2 },
+  //       { type: 'pair', left: 2, right: 3 },
+  //       { type: 'pair', left: 3, right: 4 } ]
+  //   );
+  //   next();
+  // });
+  // it("'list#and'", function(next) {
+  //   expect(function(){
+  //     var list = __.list.mkList.bind(__)([true,true]);
+  //     return __.list.and.bind(__)((list));
+  //   }()).to.eql(
+  //     true
+  //   );
+  //   expect(function(){
+  //     var list = __.list.mkList.bind(__)([false,false]);
+  //     return __.list.and.bind(__)((list));
+  //   }()).to.eql(
+  //     false
+  //   );
+  //   expect(function(){
+  //     var list = __.list.mkList.bind(__)([true,false]);
+  //     return __.list.and.bind(__)((list));
+  //   }()).to.eql(
+  //     false
+  //   );
+  //   expect(function(){
+  //     var list = __.list.mkList.bind(__)([false,true]);
+  //     return __.list.and.bind(__)((list));
+  //   }()).to.eql(
+  //     false
+  //   );
+  //   next();
+  // });
+  // it("'list#or'", function(next) {
+  //   var mkList = __.list.mkList.bind(__);
+  //   var or = __.list.or.bind(__);
+  //   expect(function(){
+  //     return or(mkList([true,true]));
+  //   }()).to.eql(
+  //     true
+  //   );
+  //   expect(function(){
+  //     return or(mkList([false,false]));
+  //   }()).to.eql(
+  //     false
+  //   );
+  //   expect(function(){
+  //     return or(mkList([true,false]));
+  //   }()).to.eql(
+  //     true
+  //   );
+  //   expect(function(){
+  //     return or(mkList([false,true]));
+  //   }()).to.eql(
+  //     true
+  //   );
+  //   next();
+  // });
+  // it("'list#all'", function(next) {
+  //   var mkList = __.list.mkList.bind(__);
+  //   var all = __.list.all.bind(__);
+  //   var even = function(n){
+  //     return (n % 2) === 0;
+  //   };
+  //   expect(function(){
+  //     return all(mkList([2,4,6]))(even);
+  //   }()).to.eql(
+  //     true
+  //   );
+  //   next();
+  // });
+  // it("'list#any'", function(next) {
+  //   var mkList = __.list.mkList.bind(__);
+  //   var any = __.list.any.bind(__);
+  //   var even = function(n){
+  //     return (n % 2) === 0;
+  //   };
+  //   expect(function(){
+  //     return any(mkList([1,3,6]))(even);
+  //   }()).to.eql(
+  //     true
+  //   );
+  //   next();
+  // });
   describe("'list#append'", () => {
     var listX = list.mkList([0,2,4]);
     var listY = list.mkList([1,3,5]);
@@ -580,26 +573,26 @@ describe("'list' module", function() {
     });
   });
   it("'list#merge'", function(next) {
-    var listX = mkList([0,2,4]);
-    var listY = mkList([1,3,5]);
-    var merged = __.list.merge.bind(__)(listX)(listY);
+    var listX = list.mkList([0,2,4]);
+    var listY = list.mkList([1,3,5]);
+    var merged = list.merge(listX)(listY);
     expect(
-      __.list.toArray.bind(__)(merged)
+      list.toArray(merged)
     ).to.eql(
       [ 0, 1, 2, 3, 4, 5 ]
     );
     next();
   });
   it("'list#halve'", function(next) {
-    var list = __.list.mkList.bind(__)([0,1,2,3]);
-    var halve = __.list.halve.bind(__)(list);
+    var alist = list.mkList([0,1,2,3]);
+    var result = list.halve(alist);
     expect(
-      __.list.toArray.bind(__)(halve.left)
+      list.toArray(Pair.left(result))
     ).to.eql(
       [ 0, 1 ]
     );
     expect(
-      __.list.toArray.bind(__)(halve.right)
+      list.toArray(Pair.right(result))
     ).to.eql(
       [ 2,3 ]
     );
