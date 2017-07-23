@@ -113,83 +113,82 @@ describe("'list' module", function() {
     next();
   });
   it("'list#toArray'", (next) => {
-    var list = __.list.mkList.bind(__)([0,1,2,3]);
+    var alist = list.mkList([0,1,2,3]);
     expect(
-      __.list.toArray.bind(__)(list)
+      list.toArray(alist)
     ).to.eql(
       [0,1,2,3]
     );
     next();
   });
   it("'list#last'", (next) => {
-    var list = __.list.mkList.bind(__)([0,1,2,3]);
+    var alist = list.mkList([0,1,2,3]);
     expect(
-      __.list.last.bind(__)(list)
+      list.last(alist)
     ).to.eql(
       3
     );
     next();
   });
   it("'list#at'", (next) => {
-    var list = __.list.mkList.bind(__)([0,1,2,3]);
+    var alist = list.mkList([0,1,2,3]);
     expect(
-      __.list.at.call(__,list)(0)
+      list.at(alist)(0)
     ).to.eql(
       0
     );
     expect(
-      __.list.at.call(__,list)(1)
+      list.at(alist)(1)
     ).to.eql(
       1
     );
     expect(
-      __.list.at.call(__,list)(2)
+      list.at(alist)(2)
     ).to.eql(
       2
     );
     next();
   });
 
-  it("'list#concat'", function(next) {
-    var list1 = __.list.mkList.bind(__)([0,1]);
-    var list2 = __.list.mkList.bind(__)([2,3]);
-    var result = __.list.concat.bind(__)(list1)(list2);
+  it("'list#concat'", (next) => {
+    var list1 = list.mkList([0,1]);
+    var list2 = list.mkList([2,3]);
+    var result = list.concat(list1)(list2);
     expect(
-      __.list.length.bind(__)(result)
+      list.length(result)
     ).to.eql(
       4
     );
     expect(
-      __.list.toArray.bind(__)(__.list.take.bind(__)(result)(4))
+      list.toArray(list.take(result)(4))
     ).to.eql(
       [0,1,2,3]
     );
     next();
   });
-  it("'list#reverse'", function(next) {
-    var list = __.list.mkList.bind(__)([0,1,2,3]);
-    var result = __.list.reverse.bind(__)(list);
-    expect(
-      result.head
-    ).to.eql(
-      3
-    );
-    expect(
-      __.list.length.bind(__)(result)
-    ).to.eql(
-      4
-    );
-    next();
-  });
-  it("'list#concat'", function(next) {
+  // it("'list#reverse'", function(next) {
+  //   var alist = list.mkList([0,1,2,3]);
+  //   var result = list.reverse(alist);
+  //   expect(
+  //     list.head(result)
+  //   ).to.eql(
+  //     3
+  //   );
+  //   expect(
+  //     list.length(result)
+  //   ).to.eql(
+  //     4
+  //   );
+  //   next();
+  // });
+  it("'list#concat'", (next) => {
     expect(function(){
-      var list1 = __.list.mkList.bind(__)([0,1]);
-      var list2 = __.list.mkList.bind(__)([2,3]);
-      return toArray(__.list.concat.bind(__)(list1)(list2));
+      var list1 = list.mkList([0,1]);
+      var list2 = list.mkList([2,3]);
+      return list.toArray(list.concat(list1)(list2));
     }()).to.eql(
       [0,1,2,3]
     );
-
     next();
   });
   // ~~~scala
