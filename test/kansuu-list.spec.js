@@ -191,57 +191,23 @@ describe("'list' module", function() {
     );
     next();
   });
-  // ~~~scala
-  //   for(val x <- m1
-  //     val y <- m2)
-  //   yield {x + y}
-  //
-  // becomes...
-  //
-  // m1.flatMap { x =>  m2.map { y =>
-  //                             unit (x+y) }}
-  // ~~~
-  it("'list#flatMap'", function(next) {
-    /*
-    scala> val nestedNumbers = List(List(1, 2), List(3, 4))
-    scala> nestedNumbers.flatMap(x => x.map(_ * 2))
-    res0: List[Int] = List(2, 4, 6, 8)
-     */
-    var List = __.list.mkList.bind(__);
-    var flatMap = __.list.flatMap.bind(__);
-    var map = __.list.map.bind(__);
-    var nestedNumbers = List([List([1, 2]), List([3, 4])]);
-    var toArray = __.list.toArray.bind(__);
-    var flattened = flatMap(nestedNumbers)(function(x){
-      return map(x)(function(n){
-        return n * 2;
-      });
-    });
-    expect(
-      toArray(flattened)
-    ).to.eql(
-      [2,4,6,8]
-    );
-    next();
-  });
-
-  it("'list#map'", function(next) {
-    var list = __.list.mkList.bind(__)([0,1,2,3]);
-    var result = __.list.map.bind(__)(list)(function(item){
+  it("'list#map'", (next) => {
+    var alist = list.mkList([0,1,2,3]);
+    var result = list.map(alist)(item => {
       return item + 10;
     });
     expect(
-      result.head
+      list.head(result)
     ).to.eql(
       10
     );
     expect(
-      result.tail.head
+      list.head(list.tail(result))
     ).to.eql(
       11
     );
     expect(
-      __.list.length.bind(__)(result)
+      list.length(result)
     ).to.eql(
       4
     );
@@ -254,14 +220,48 @@ describe("'list' module", function() {
     // );
     next();
   });
+  // ~~~scala
+  //   for(val x <- m1
+  //     val y <- m2)
+  //   yield {x + y}
+  //
+  // becomes...
+  //
+  // m1.flatMap { x =>  m2.map { y =>
+  //                             unit (x+y) }}
+  // ~~~
+  it("'list#flatMap'", (next) => {
+    /*
+    scala> val nestedNumbers = List(List(1, 2), List(3, 4))
+    scala> nestedNumbers.flatMap(x => x.map(_ * 2))
+    res0: List[Int] = List(2, 4, 6, 8)
+     */
+    var List = list.mkList;
+    var flatMap = list.flatMap;
+    var map = list.map;
+    var nestedNumbers = List([List([1, 2]), List([3, 4])]);
+    var toArray = list.toArray;
+    var flattened = flatMap(nestedNumbers)((x) => {
+      return map(x)(n => {
+        return n * 2;
+      });
+    });
+    expect(
+      toArray(flattened)
+    ).to.eql(
+      [2,4,6,8]
+    );
+    next();
+  });
+
   it("'list#filter'", (next) => {
     var even = (n) => {
       return (n % 2) === 0;
     };
-    var list = __.list.mkList.bind(__)([0,1,2,3,4]);
-    var result = __.list.filter.bind(__)(list)(even);
+    var alist = list.mkList([0,1,2,3,4]);
+    var result = list.filter(alist)(even);
     expect(
-      __.list.toArray.bind(__)(result)
+      list.toArray(result)
     ).to.eql(
       [0,2,4]
     );
@@ -269,7 +269,7 @@ describe("'list' module", function() {
       return (n % 2) !== 0;
     };
     expect(
-      __.list.toArray.call(__,__.list.filter.call(__,list)(odd))
+      list.toArray(list.filter(alist)(odd))
     ).to.eql(
       [1,3]
     );
