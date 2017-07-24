@@ -1,55 +1,75 @@
 "use strict";
 
-// var expect = require('expect.js');
-// var __ = require('../lib/kansuu.js');
-// var base = require('../lib/kansuu-base.js');
-// var math = require('../lib/kansuu-math.js');
+const expect = require('expect.js');
+const __ = require('../lib/kansuu.js');
+const base = require('../lib/kansuu-base.js');
+const math = require('../lib/kansuu-math.js');
 
-// describe("math module", function() {
-//   var toArray = __.list.toArray.bind(__);
-//   // it("'lower'", function(next) {
-//   //   expect(math.lower.bind(__)(17.3)).to.be(-1);
-//   //   next();
-//   // });
-//   it("'isPrime'", function(next) {
-//     expect(
-//       math.isPrime(3)
-//     ).to.be(
-//       true
-//     );
-//     expect(
-//       math.isPrime.bind(__)(2)
-//     ).to.eql(
-//       true
-//     );
-//     next();
-//   });
-//   it("'isMoreThan'", (next) => {
-//     expect(math.isMoreThan(2)(3)).to.be(true);
-//     next();
-//   });
-//   it("'isLessThan'", (next) => {
-//     expect(math.isLessThan(3)(2)).to.be(true);
-//     next();
-//   });
-//   it("'leq'", function(next) {
-//     expect(
-//       math.leq.bind(__)(0)(0)
-//     ).to.be(true);
-//     expect(
-//       math.leq.bind(__)(0)(2)
-//     ).to.be(true);
-//     next();
-//   });
-//   it("'geq'", function(next) {
-//     expect(
-//       math.geq.bind(__)(0)(0)
-//     ).to.be(true);
-//     expect(
-//       math.geq.bind(__)(2)(1)
-//     ).to.be(true);
-//     next();
-//   });
+describe("math module", () => {
+  describe("arithmetic", () => {
+    it("div", (next) => {
+      expect(
+        math.divides(6)(2)
+      ).to.be(
+        false 
+      );
+      expect(
+        math.divides(1)(2)
+      ).to.be(
+        true 
+      );
+      expect(
+        math.divides(0)(2)
+      ).to.be(
+        false 
+      );
+      next();
+    });
+  });
+  it("'isPrime'", (next) => {
+    expect(
+      math.isPrime(3)
+    ).to.be(
+      true
+    );
+    expect(
+      math.isPrime.bind(__)(2)
+    ).to.eql(
+      true
+    );
+    next();
+  });
+
+  it("'isMoreThan'", (next) => {
+    expect(math.isMoreThan(2)(3)).to.be(true);
+    next();
+  });
+  it("'isLessThan'", (next) => {
+    expect(math.isLessThan(3)(2)).to.be(true);
+    next();
+  });
+  it("'leq'", function(next) {
+    expect(
+      math.leq.bind(__)(0)(0)
+    ).to.be(true);
+    expect(
+      math.leq.bind(__)(0)(2)
+    ).to.be(true);
+    next();
+  });
+  it("'geq'", function(next) {
+    expect(
+      math.geq.bind(__)(0)(0)
+    ).to.be(true);
+    expect(
+      math.geq.bind(__)(2)(1)
+    ).to.be(true);
+    next();
+  });
+  // it("'lower'", function(next) {
+  //   expect(math.lower.bind(__)(17.3)).to.be(-1);
+  //   next();
+  // });
 //   it("'innerProduct'", function(next) {
 //     expect(
 //       math.innerProduct.bind(__)(__.list.mkList.bind(__)([0,1]))(__.list.mkList.bind(__)([1,0]))
@@ -137,4 +157,4 @@
 //       next();
 //     });
 //   });
-// });
+});

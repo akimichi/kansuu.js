@@ -239,6 +239,22 @@ describe("array", () => {
     expect(Array.zip(listX)(listY)).to.eql([[0,'h'],[1,'a'],[2,'l'],[3,'l'],[4,'o']]);
     next();
   });
+  describe("folding functions", () => {
+    it("'reduce'", (next) => {
+      var list = [1,2,3];
+      expect(
+        Array.reduce(list)(0)(item =>{
+          return (accumulator) => {
+            return item + accumulator;
+          };
+        })
+      ).to.be(
+        6
+      );
+      next();
+    });
+  });
+
   describe("filter", function() {
     it("'単純なフィルター'", (next) =>  {
       var even = function(n){

@@ -1,9 +1,9 @@
 "use strict";
 
-var expect = require('expect.js');
-var __ = require('../lib/kansuu.js');
-var base = require('../lib/kansuu-base.js');
-var math = require('../lib/kansuu-math.js');
+const expect = require('expect.js');
+const __ = require('../lib/kansuu.js');
+const base = require('../lib/kansuu-base.js');
+const math = require('../lib/kansuu-math.js');
 
 describe("Kansuu module", () => {
   it("'id''", (next) => {
@@ -33,31 +33,6 @@ describe("Kansuu module", () => {
       'undefined'
     );
     next();
-  });
-  describe("arithmetic", () => {
-    it("div", (next) => {
-      expect(
-        __.div(6)(2)
-      ).to.be(
-        3
-      );
-      expect(
-        __.div(8)(3)
-      ).to.be(
-        2
-      );
-      expect(
-        __.div(1)(2)
-      ).to.be(
-        0
-      );
-      expect(
-        __.div(0)(2)
-      ).to.be(
-        0
-      );
-      next();
-    });
   });
   describe("judgment predicates", function() {
     it("'existy'", (next) => {
@@ -326,53 +301,57 @@ describe("Kansuu module", () => {
       next();
     });
   }),
-  describe("functional composition", function() {
-    describe("'compose'", function() {
-      it("'compose one argument functions'", function(next) {
-        var increment = function(n){
+  describe("functional composition", () => {
+    describe("'compose'", () => {
+      it("'compose one argument functions'", (next) => {
+        var increment = (n) => {
           return n + 1;
         };
-        var decrement = function(n){
+        var decrement = (n) => {
           return n - 1;
         };
-        var double = function(n){
+        var double = (n) => {
           return 2 * n;
         };
-        expect(__.compose.bind(__)(increment)(decrement)(5)).to.be(5);
-        expect(__.compose.bind(__)(decrement)(increment)(5)).to.be(5);
-        expect(__.compose.bind(__)(increment)(increment)(5)).to.be(7);
+        expect(__.compose(increment,decrement)(5)).to.be(5);
+        expect(__.compose(decrement,increment)(5)).to.be(5);
+        expect(__.compose(increment,increment)(5)).to.be(7);
         // (n * 2) + 1
-        expect(__.compose.bind(__)(increment)(double)(5)).to.be(11);
+        expect(__.compose(increment,double)(5)).to.be(11);
         // (n + 1) * 2
-        expect(__.compose.bind(__)(double)(increment)(5)).to.be(12);
+        expect(__.compose(double,increment)(5)).to.be(12);
         next();
       });
-      it("'compose two argument functions'", function(next) {
-        var negate = function(x) {
-          return -x;
-        };
-        var multiply = function(x,y){
-          return x * y;
-        };
-        expect((__.compose.bind(__)(negate)(multiply))(2,3)).to.eql(-6);
-        next();
-      });
-      it("compose several functions", function(next) {
-        var not = function(x){
-          return ! x;
-        };
-        expect(
-          __.compose.bind(__)(not)(math.isEqual(3))(3)
-        ).to.eql(
-            false
-        );
-        // expect(
-        //   __.compose.bind(__)(__.not)(math.isEqual(3))(3)
-        // ).to.eql(
-        //  false
-        // );
-        next();
-      });
+      // it("'compose two argument functions'", (next) => {
+      //   var negate = (x) => {
+      //     return -x;
+      //   };
+      //   var multiply = (x,y) => {
+      //     return x * y;
+      //   };
+      //   expect(
+      //       compose(negate,multiply)(2,3)
+      //   ).to.eql(
+      //     -6
+      //   );
+      //   next();
+      // });
+      // it("compose several functions", function(next) {
+      //   var not = function(x){
+      //     return ! x;
+      //   };
+      //   expect(
+      //     __.compose.bind(__)(not)(math.isEqual(3))(3)
+      //   ).to.eql(
+      //       false
+      //   );
+      //   // expect(
+      //   //   __.compose.bind(__)(__.not)(math.isEqual(3))(3)
+      //   // ).to.eql(
+      //   //  false
+      //   // );
+      //   next();
+      // });
     });
     it("'flip'", function(next) {
       var divide = function(x){
@@ -385,34 +364,19 @@ describe("Kansuu module", () => {
       expect(__.flip.bind(__)(__.flip.bind(__)(divide))(12)(3)).to.be(4);
       next();
     });
-    it("'pipe'", function(next) {
-      var increment = function(n){
-        return n + 1;
-      };
-      var double = function(n){
-        return 2 * n;
-      };
-      // (n + 1)* 2
-      expect(__.pipe.bind(__)(increment)(double)(5)).to.be(12);
-      // (n * 2) + 1
-      expect(__.pipe.bind(__)(double)(increment)(5)).to.be(11);
-      next();
-    });
-  });
-  describe("folding functions", function() {
-    it("'reduce'", function(next) {
-      var list = [1,2,3];
-      expect(
-        __.reduce(list)(0)(function(item){
-          return function(accumulator){
-            return item + accumulator;
-          };
-        })
-      ).to.be(
-        6
-      );
-      next();
-    });
+    // it("'pipe'", function(next) {
+    //   var increment = function(n){
+    //     return n + 1;
+    //   };
+    //   var double = function(n){
+    //     return 2 * n;
+    //   };
+    //   // (n + 1)* 2
+    //   expect(__.pipe.bind(__)(increment)(double)(5)).to.be(12);
+    //   // (n * 2) + 1
+    //   expect(__.pipe.bind(__)(double)(increment)(5)).to.be(11);
+    //   next();
+    // });
   });
   // describe("logical operators", function() {
   //    it("'not'", function(next) {
@@ -420,7 +384,7 @@ describe("Kansuu module", () => {
   //     next();
   //    });
   // });
-  it("times",(next) => {
+  it("times", (next) => {
     var succ = (n) => {
       return n + 1;
     };

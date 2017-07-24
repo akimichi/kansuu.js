@@ -3,14 +3,8 @@
 const expect = require('expect.js');
 const list = require('../lib/kansuu-list.js');
 const Pair = require('../lib/kansuu-pair.js');
-// var __ = require('../lib/kansuu.js');
 
 describe("'list' module", function() {
-  // var toArray = __.list.toArray.bind(__);
-  // var mkList = __.list.mkList.bind(__);
-  // var map = __.list.map.bind(__);
-  // var append = __.list.append.bind(__);
-  // var empty = __.list.empty;
 
   var fixtures = {
     ints: list.mkList([0,1,2,3])
