@@ -9,14 +9,21 @@ var Parser = require('../examples/parser.js');
 describe('パーサーコンビネーター', () => {
   var abc = List.fromString("abc");
   describe("parse", (next) => {
-    // it("pure", (next) => {
-    //   expect(
-    //     PP.print(Parser.parse(Parser.pure(1))(abc))
-    //   ).to.eql(
-    //     '[(1,[a,b,c,nil]),nil]'
-    //   );
-    //   next();
-    // });
+    it("pure", (next) => {
+      expect(
+        Pair.left(List.head(
+          Parser.parse(Parser.pure(1))(abc)
+        ))
+      ).to.eql(
+        1 
+      );
+      // expect(
+      //   PP.print(Parser.parse(Parser.pure(1))(abc))
+      // ).to.eql(
+      //   '[(1,[a,b,c,nil]),nil]'
+      // );
+      next();
+    });
     // it("item", (next) => {
     //   expect(
     //     PP.print(Parser.item(List.empty()))
@@ -152,18 +159,20 @@ describe('パーサーコンビネーター', () => {
 
     //   next();
     // });
-    // it("chars", (next) => {
-    //   expect(
-    //     PP.print(
-    //       Parser.parse(
-    //         Parser.chars(List.fromString("abc"))
-    //       )(List.fromString("abcdef"))
-    //     )
-    //   ).to.eql(
-    //     '[(abc,[d,e,f,nil]),nil]'
-    //   );
-    //   next();
-    // });
+    it("chars", (next) => {
+      expect(
+        Pair.left(
+          List.head(
+            Parser.parse(
+              Parser.chars(List.fromString("abc"))
+            )(List.fromString("abcdef"))
+          )
+        )
+      ).to.eql(
+        '[(abc,[d,e,f,nil]),nil]'
+      );
+      next();
+    });
   });
   describe("manyパーサ", (next) => {
     // it("many digit", (next) => {
@@ -337,15 +346,9 @@ describe('パーサーコンビネーター', () => {
       expect(
         Pair.left(
           List.head(
-            Parser.parse(
-              Parser.numeric()
-            )(List.fromString("   -123   "))
+            Parser.parse(Parser.numeric())(List.fromString("   -123   "))
           )
-        )({
-          num: (value) => {
-            return value;
-          }
-        })
+        )
       ).to.eql(
         -123 
       );
@@ -356,11 +359,7 @@ describe('パーサーコンビネーター', () => {
               Parser.numeric()
             )(List.fromString("   0.123   "))
           )
-        )({
-          num: (value) => {
-            return value;
-          }
-        })
+        )
       ).to.eql(
         0.123
       );
@@ -392,11 +391,7 @@ describe('パーサーコンビネーター', () => {
               Parser.boolean()
             )(List.fromString("  #t  "))
           )
-        )({
-          bool: (value) => {
-            return value;
-          }
-        })
+        )
       ).to.eql(
         true 
       );
@@ -446,11 +441,7 @@ describe('パーサーコンビネーター', () => {
               Parser.string()
             )(List.fromString("\"abc\""))
           )
-        )({
-          string: (value) => {
-            return value;
-          }
-        })
+        )
       ).to.eql(
         "abc" 
       );
