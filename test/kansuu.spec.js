@@ -85,29 +85,29 @@ describe("Kansuu module", () => {
       });
     });
   });
-  describe("'objects' module", () => {
-    it("'empty'", (next) => {
-      expect(
-        __.objects.empty
-      ).to.eql(
-        {}
-      );
-      next();
-    });
-    it("'set'", (next) => {
-      expect(
-        __.objects.set.call(__, "a")(1)(__.objects.empty)
-      ).to.eql(
-        {"a": 1}
-      );
-      expect(
-        __.compose.call(__, __.objects.set.call(__,"a")(1))(__.objects.set.call(__,"b")(2))(__.objects.empty)
-      ).to.eql(
-        {"a": 1, "b": 2}
-      );
-      next();
-    });
-  });
+  // describe("'objects' module", () => {
+  //   it("'empty'", (next) => {
+  //     expect(
+  //       __.objects.empty
+  //     ).to.eql(
+  //       {}
+  //     );
+  //     next();
+  //   });
+  //   it("'set'", (next) => {
+  //     expect(
+  //       __.objects.set.call(__, "a")(1)(__.objects.empty)
+  //     ).to.eql(
+  //       {"a": 1}
+  //     );
+  //     expect(
+  //       __.compose.call(__, __.objects.set.call(__,"a")(1))(__.objects.set.call(__,"b")(2))(__.objects.empty)
+  //     ).to.eql(
+  //       {"a": 1, "b": 2}
+  //     );
+  //     next();
+  //   });
+  // });
   describe("'array' module", () => {
     it("'empty'");
   });
