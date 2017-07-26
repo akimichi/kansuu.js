@@ -10,107 +10,68 @@ var Random = require("random-js");
 var rng = Random.engines.mt19937();
 const Either = require('../lib/kansuu-monad.js').either;
 
-describe("'either' monad", function() {
+describe("'either' monad", () => {
   const unit = Either.unit;
   const flatMap = Either.flatMap;
   const left = Either.left;
   const right = Either.right;
 
   it("'either#unit'", (next) => {
-    expect(
-      Pair.toArray(unit(1))
-    ).to.eql(
-      Pair.toArray(Pair.cons(null,1))
-    );
+    Either.match(unit(1),{
+      left: (value) => {
+        expect().fail()
+      },
+      right: (value) => {
+        expect(value).to.eql(1)
+      }
+    });
     next();
   });
   it("'either#flatMap'", (next) => {
     const leftOne = left(1);
-    expect(
-      flatMap(leftOne)(n => {
-        return unit(n + 1);
-      })
-    ).to.eql(
-      leftOne
-    );
-    // expect(
-    //   flatMap(right)(function(n){
-    //     return unit(n + 1);
-    //   })
-    // ).to.eql(
-    //   unit(3)
-    // );
-    next();
-  });
-  it("'either#bindM'", function(next) {
-    var bindM = __.monad.either.bindM.bind(__);
-    var left = __.monad.either.left.call(__, 2);
-    var right = __.monad.either.unit.call(__, 2);
-    expect(
-      bindM(left)(function(n) {
-        return unit(n + 1);
-      })
-    ).to.eql(
-      left
-    );
-    expect(
-      bindM(right)(function(n) {
-        return unit(n + 1);
-      })
-    ).to.eql(
-      unit(3)
-    );
+    Either.match(flatMap(leftOne)(n => {
+      return unit(n + 1);
+    }),{
+      left: (value) => {
+        expect(value).to.eql(1)
+      },
+      right: (value) => {
+        expect().fail()
+      }
+    });
+    const rightOne = right(1);
+    Either.match(flatMap(rightOne)(n => {
+      return unit(n + 1);
+    }),{
+      left: (value) => {
+        expect().fail()
+      },
+      right: (value) => {
+        expect(value).to.eql(2)
+      }
+    });
     next();
   });
 });
-describe("'either' monad", function() {
-  // var unit = __.monad.either.unit.bind(__);
-  it("'either#unit'", function(next) {
-    expect(
-      unit(1)
-    ).to.eql(
-      __.pair.mkPair.call(__,null)(1)
-    );
-    next();
-  });
-  it("'either#flatMap'", function(next) {
-    var flatMap = __.monad.either.flatMap.bind(__);
-    var left = __.monad.either.left.call(__, 2);
-    var right = __.monad.either.unit.call(__, 2);
-    expect(
-      flatMap(left)(function(n){
-        return unit(n + 1);
-      })
-    ).to.eql(
-      left
-    );
-    expect(
-      flatMap(right)(function(n){
-        return unit(n + 1);
-      })
-    ).to.eql(
-      unit(3)
-    );
-    next();
-  });
-  it("'either#bindM'", function(next) {
-    var bindM = __.monad.either.bindM.bind(__);
-    var left = __.monad.either.left.call(__, 2);
-    var right = __.monad.either.unit.call(__, 2);
-    expect(
-      bindM(left)(function(n) {
-        return unit(n + 1);
-      })
-    ).to.eql(
-      left
-    );
-    expect(
-      bindM(right)(function(n) {
-        return unit(n + 1);
-      })
-    ).to.eql(
-      unit(3)
-    );
-    next();
-  });
-});
+// describe("'either' monad", function() {
+//   it("'either#bindM'", function(next) {
+//     var bindM = __.monad.either.bindM.bind(__);
+//     var left = __.monad.either.left.call(__, 2);
+//     var right = __.monad.either.unit.call(__, 2);
+//     expect(
+//       bindM(left)(function(n) {
+//         return unit(n + 1);
+//       })
+//     ).to.eql(
+//       left
+//     );
+//     expect(
+//       bindM(right)(function(n) {
+//         return unit(n + 1);
+//       })
+//     ).to.eql(
+//       unit(3)
+//     );
+//     next();
+//   });
+// });
