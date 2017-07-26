@@ -3,6 +3,7 @@
 var expect = require('expect.js');
 var __ = require('../lib/kansuu.js');
 var qc = require('../lib/kensho.js');
+const List = require('../lib/kansuu-list.js');
 const Stream = require('../lib/kansuu-stream.js');
 
 describe("Kensho module", () => {
@@ -23,12 +24,12 @@ describe("Kensho module", () => {
 	var randomGenerator = qc.randomGen.call(qc,0);
     var randStream = qc.randoms.call(qc, randomGenerator);
     expect(
-      randStream.value()
+      Stream.head(randStream)
     ).to.be(
-      0.038085370776470735
+      0.000000001682261200
     );
     expect(
-      randStream.next().value()
+      Stream.head(Stream.tail(randStream))
     ).to.be(
       0.08624634995353292
     );
@@ -36,8 +37,8 @@ describe("Kensho module", () => {
   });
   it("forAll", function(next) {
     var intStream = qc.ints(1);
-    var intUpto10 = __.stream.take.bind(__)(intStream)(10);
-    var prop = qc.forAll(intUpto10)(function(item){
+    var intUpto10 = Stream.take(intStream)(10);
+    var prop = qc.forAll(intUpto10)(item => {
       return (item > 0) && (item < 11);
     });
 	expect(prop).to.ok();
@@ -49,19 +50,19 @@ describe("Kensho module", () => {
 	// prop_RevUnit x =
 	//   reverse [x] == [x]
 	// ~~~
-	it("reverse [x] == [x]", function(next) {
-	  this.timeout(5000);
+    it("reverse [x] == [x]", function(next) {
+      this.timeout(5000);
       // var prop_RevUnit = function(x){
-	  // 	var list = __.list.mkList.bind(__)([x]);
-	  // 	return __.list.reverse.bind(__)(list).isEqual(list);
+      // 	var list = __.list.mkList.bind(__)([x]);
+      // 	return __.list.reverse.bind(__)(list).isEqual(list);
       // };
       var intStream = qc.ints(1);
-      var intUpto10 = __.stream.take.bind(__)(intStream)(10);
-      var prop = qc.forAll(intUpto10)(function(n){
-		var list = __.list.mkList.bind(__)([n]);
-		return __.list.reverse.bind(__)(list).isEqual(list);
+      var intUpto10 = Stream.take(intStream)(10);
+      var prop = qc.forAll(intUpto10)(n => {
+        var list = List.mkList([n]);
+        return List.isEqual(List.reverse(list),list);
       });
-	  expect(prop).to.ok();
+	    expect(prop).to.ok();
       next();
 	});
 	// ~~~haskell
