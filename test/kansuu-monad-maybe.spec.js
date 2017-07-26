@@ -1,25 +1,30 @@
 "use strict";
 
-var util = require('util');
-var expect = require('expect.js');
-var __ = require('../lib/kansuu.js');
-var math = require('../lib/kansuu-math.js');
+const util = require('util');
+const expect = require('expect.js');
+const __ = require('../lib/kansuu.js');
+const math = require('../lib/kansuu-math.js');
 const List = require('../lib/kansuu-list.js');
-var seedrandom = require('seedrandom');
-var Random = require("random-js");
-var rng = Random.engines.mt19937();
+const seedrandom = require('seedrandom');
+const Random = require("random-js");
+const rng = Random.engines.mt19937();
 const Maybe = require('../lib/kansuu-monad.js').maybe;
 
 describe("'maybe' monad", () => {
-    
+  const isEqual = Maybe.isEqual;
+  const unit = Maybe.unit;
+  const nothing = Maybe.nothing;
+  const just = Maybe.just;
+  const map = Maybe.map;
+  
   it("maybe#unit", (next) => {
     expect(
-      Maybe.isEqual(Maybe.unit(1), Maybe.unit(1))
+      isEqual(unit(1), unit(1))
     ).to.be(
       true
     );
     expect(
-      Maybe.isEqual(Maybe.nothing(), Maybe.nothing())
+      isEqual(nothing(), nothing())
     ).to.eql(
       true
     );
@@ -27,12 +32,12 @@ describe("'maybe' monad", () => {
   });
   it("maybe#getOrElse", (next) => {
     expect(
-      Maybe.getOrElse(Maybe.unit(1))(null)
+      Maybe.getOrElse(unit(1))(null)
     ).to.be(
       1
     );
     expect(
-      Maybe.getOrElse(Maybe.nothing())(0)
+      Maybe.getOrElse(nothing())(0)
     ).to.be(
       0
     );
@@ -40,7 +45,7 @@ describe("'maybe' monad", () => {
   });
   it("maybeMonad#get", (next) => {
     expect(
-      Maybe.get(Maybe.unit(1))
+      Maybe.get(unit(1))
     ).to.be(
       1
     );
@@ -52,21 +57,21 @@ describe("'maybe' monad", () => {
         return (maybeB) => {
           return Maybe.flatMap(maybeA)((a) => {
             return Maybe.flatMap(maybeB)((b) => {
-              return Maybe.unit(a + b);
+              return unit(a + b);
             });
           });
         };
       };
-      var justOne = Maybe.just(1);
-      var justTwo = Maybe.just(2);
-      var justThree = Maybe.just(3);
+      var justOne = just(1);
+      var justTwo = just(2);
+      var justThree = just(3);
       expect(
-        Maybe.isEqual(add(justOne)(justTwo),justThree)
+        isEqual(add(justOne)(justTwo),justThree)
       ).to.eql(
         true
       );
       expect(
-        Maybe.isEqual(add(justOne)(Maybe.nothing()),Maybe.nothing())
+        isEqual(add(justOne)(Maybe.nothing()),Maybe.nothing())
       ).to.eql(
         true
       );
@@ -75,14 +80,14 @@ describe("'maybe' monad", () => {
   });
   describe("functor laws on maybeMonad", function() {
     it("map id == id", (next) => {
-      var justOne = Maybe.just(1);
+      var justOne = just(1);
       expect(
-        Maybe.isEqual(Maybe.map(justOne)(__.id), __.id(justOne))
+        isEqual(Maybe.map(justOne)(__.id), __.id(justOne))
       ).to.be(
         true
       );
       expect(
-        Maybe.isEqual(Maybe.map(Maybe.nothing())(__.id),__.id(Maybe.nothing()))
+        isEqual(Maybe.map(nothing())(__.id),__.id(nothing()))
       ).to.be(
         true
       );
@@ -97,7 +102,8 @@ describe("'maybe' monad", () => {
         return - n;
       };
       expect(
-        Maybe.isEqual(Maybe.map(justOne)(__.compose(f,g)),__.compose(__.flip(Maybe.map,f),__.flip(Maybe.map)(g))(justOne))
+        isEqual(__.flip(Maybe.map)(__.compose(f,g))(justOne),__.compose(__.flip(Maybe.map)(f),__.flip(Maybe.map)(g))(justOne))
+        // isEqual(Maybe.map(justOne)(__.compose(f,g)),__.compose(__.flip(Maybe.map,f),__.flip(Maybe.map)(g))(justOne))
       ).to.be(
         true
       );
@@ -108,12 +114,12 @@ describe("'maybe' monad", () => {
     it("flatMap(m)(unit) == m", (next) => {
       var justOne = Maybe.just(1);
       expect(
-        Maybe.isEqual(Maybe.flatMap(justOne)(Maybe.unit),justOne)
+        isEqual(Maybe.flatMap(justOne)(Maybe.unit),justOne)
       ).to.eql(
         true
       );
       expect(
-        Maybe.isEqual(Maybe.flatMap(Maybe.nothing())(Maybe.unit),Maybe.nothing())
+        isEqual(Maybe.flatMap(Maybe.nothing())(Maybe.unit),Maybe.nothing())
       ).to.eql(
         true
       );
@@ -125,14 +131,14 @@ describe("'maybe' monad", () => {
       };
       /* Just(1) flatMap { x => func(x)} should equal(Just(1)) */
       expect(
-        Maybe.isEqual(Maybe.flatMap(Maybe.just(2))(square), Maybe.just(4))
+        isEqual(Maybe.flatMap(Maybe.just(2))(square), Maybe.just(4))
       ).to.eql(
         true
         //just(4)
       );
       /* None flatMap { x => func(x)} should equal(None) */
       expect(
-        Maybe.isEqual(Maybe.flatMap(Maybe.nothing())(square), Maybe.nothing())
+        isEqual(Maybe.flatMap(Maybe.nothing())(square), Maybe.nothing())
       ).to.eql(
         true
       );
@@ -142,21 +148,21 @@ describe("'maybe' monad", () => {
     // ((p >>= f) >>= g) = p >>= (¥x -> (f x >>= g))
     // ~~~
     //
-    it("flatMap(flatMap(m)(g))(h) == flatMap(m)(¥x => flatMap(g(x))(h))", function(next){
+    it("flatMap(flatMap(m)(g))(h) == flatMap(m)(¥x => flatMap(g(x))(h))", (next) => {
       var justTwo = Maybe.just(2);
-      var square = function(n){
+      var square = (n) => {
         return Maybe.just(n * n);
       };
-      var negate = function(n){
+      var negate = (n) => {
         return Maybe.just(- n);
       };
       expect(
-        Maybe.isEqual(Maybe.flatMap(Maybe.flatMap(justTwo)(square))(negate), Maybe.just(-4))
+        isEqual(Maybe.flatMap(Maybe.flatMap(justTwo)(square))(negate), Maybe.just(-4))
       ).to.eql(
         true
       );
       expect(
-        Maybe.isEqual(Maybe.flatMap(Maybe.flatMap(justTwo)(square))(negate))(Maybe.flatMap(justTwo)(function(x){
+        isEqual(Maybe.flatMap(Maybe.flatMap(justTwo)(square))(negate),Maybe.flatMap(justTwo)(function(x){
           return Maybe.flatMap(square(x))(negate);
         }))
       ).to.eql(
@@ -165,110 +171,9 @@ describe("'maybe' monad", () => {
       next();
     });
   });
-});
-
-describe("'maybe' monad", () => {
-  const some = Maybe.unit;
-  const nothing = Maybe.nothing;
-  const map = Maybe.map;
-
-  describe("functor laws on maybe", function() {
-    it("map id == id", function(next){
-      var justOne = some(1);
-      expect(
-        map(justOne)(__.id)
-      ).to.eql(
-        __.id(justOne)
-      );
-      expect(
-        map(nothing)(__.id)
-      ).to.eql(
-        __.id(nothing)
-      );
-      next();
-    });
-    it("map (f . g)  == map f . map g", function(next){
-      var justOne = some(1);
-      var f = (n) => {
-        return n + 1;
-      };
-      var g = (n) => {
-        return - n;
-      };
-      expect(
-        map(justOne)(__.compose.bind(__)(f)(g))
-      ).to.eql(
-        __.compose.bind(__)(__.flip.bind(__)(map)(f))
-        (__.flip.bind(__)(map)(g))(justOne)
-      );
-      next();
-    });
-  });
-  describe("monad laws on maybe", function() {
-    it("flatMap(m)(unit) == m", function(next){
-      var justOne = some(1);
-      expect(
-        flatMap(justOne)(unit)
-      ).to.eql(
-        justOne
-      );
-      expect(
-        flatMap(nothing)(unit)
-      ).to.eql(
-        nothing
-      );
-      next();
-    });
-    it("flatMap(unit(v))(f) == f(v)", function(next){
-      var square = function(n){
-        return some(n * n);
-      };
-      var nothing = __.monad.maybe.nothing;
-      /* Some(1) flatMap { x => func(x)} should equal(Some(1)) */
-      expect(
-        flatMap(some(2))(square)
-      ).to.eql(
-        some(4)
-      );
-      /* None flatMap { x => func(x)} should equal(None) */
-      expect(
-        flatMap(nothing)(square)
-      ).to.eql(
-        nothing
-      );
-      next();
-    });
-    // ~~~haskell
-    // ((p >>= f) >>= g) = p >>= (¥x -> (f x >>= g))
-    // ~~~
-    //
-    it("flatMap(flatMap(m)(g))(h) == flatMap(m)(¥x => flatMap(g(x))(h))", function(next){
-      var justTwo = some(2);
-      var square = function(n){
-        return some(n * n);
-      };
-      var negate = function(n){
-        return some(- n);
-      };
-      expect(
-        flatMap(flatMap(justTwo)(square))(negate)
-      ).to.eql(
-        some(-4)
-      );
-      expect(
-        flatMap(flatMap(justTwo)(square))(negate)
-      ).to.eql(
-        flatMap(justTwo)(function(x){
-          return flatMap(square(x))(negate);
-        })
-      );
-
-      next();
-    });
-  });
-  it("maybe#map", function(next){
+  it("maybe#map", (next) => {
     expect(
-     Maybe.isEqual(
+     isEqual(
         Maybe.map(Maybe.unit(200))((n) => {
         return n * 2;
       }), Maybe.unit(400))
@@ -276,7 +181,7 @@ describe("'maybe' monad", () => {
       true 
     );
     expect(
-      Maybe.isEqual(
+      isEqual(
           Maybe.map(Maybe.nothing())((n) => {
         return n * 2;
       }), Maybe.nothing())
@@ -284,6 +189,71 @@ describe("'maybe' monad", () => {
       true 
     );
     next();
+  });
+});
+
+describe("'maybe' monad", () => {
+  const some = Maybe.unit;
+  const nothing = Maybe.nothing;
+  const map = Maybe.map;
+
+  describe("monad laws on maybe", function() {
+    // it("flatMap(m)(unit) == m", function(next){
+    //   var justOne = some(1);
+    //   expect(
+    //     flatMap(justOne)(unit)
+    //   ).to.eql(
+    //     justOne
+    //   );
+    //   expect(
+    //     flatMap(nothing)(unit)
+    //   ).to.eql(
+    //     nothing
+    //   );
+    //   next();
+    // });
+    // it("flatMap(unit(v))(f) == f(v)", function(next){
+    //   var square = function(n){
+    //     return some(n * n);
+    //   };
+    //   var nothing = __.monad.maybe.nothing;
+    //   /* Some(1) flatMap { x => func(x)} should equal(Some(1)) */
+    //   expect(
+    //     flatMap(some(2))(square)
+    //   ).to.eql(
+    //     some(4)
+    //   );
+    //   /* None flatMap { x => func(x)} should equal(None) */
+    //   expect(
+    //     flatMap(nothing)(square)
+    //   ).to.eql(
+    //     nothing
+    //   );
+    //   next();
+    // });
+    // it("flatMap(flatMap(m)(g))(h) == flatMap(m)(¥x => flatMap(g(x))(h))", function(next){
+    //   var justTwo = some(2);
+    //   var square = function(n){
+    //     return some(n * n);
+    //   };
+    //   var negate = function(n){
+    //     return some(- n);
+    //   };
+    //   expect(
+    //     flatMap(flatMap(justTwo)(square))(negate)
+    //   ).to.eql(
+    //     some(-4)
+    //   );
+    //   expect(
+    //     flatMap(flatMap(justTwo)(square))(negate)
+    //   ).to.eql(
+    //     flatMap(justTwo)(function(x){
+    //       return flatMap(square(x))(negate);
+    //     })
+    //   );
+
+    //   next();
+    // });
   });
   it("maybe#flatMap", function(next){
     expect(
@@ -351,72 +321,72 @@ describe("'maybe' monad", () => {
     );
     next();
   });
-  it("primes", (next) => {
-    // this.timeout(5000);
-    var primeOrNot = (n) => {
-      if(math.isPrime(n)){
-        return some(n);
-      } else {
-        return nothing;
-      }
-    };
-    var list = List.mkList([1,2,3,4,5,6,7,8,9,10,11,12,13]);
-    var maybePrimes = List.map(list)(primeOrNot);
-    expect(
-      List.toArray(maybePrimes)
-    ).to.eql(
-      [some(1),some(2),some(3),nothing,some(5),nothing,some(7),nothing,nothing,nothing,some(11),nothing,some(13)]
-    );
-    /* doesn't work!!
-       var onlyPrimes = __.list.flatMap.bind(__)(list)(primeOrNot);
-       expect(
-       __.list.toArray.bind(__)(onlyPrimes)
-       ).to.eql(
-       [some(1),some(2),some(3),some(5),some(7),some(11),some(13)]
-       );
-       */
-    next();
-  });
+  // it("primes", (next) => {
+  //   // this.timeout(5000);
+  //   var primeOrNot = (n) => {
+  //     if(math.isPrime(n)){
+  //       return some(n);
+  //     } else {
+  //       return nothing;
+  //     }
+  //   };
+  //   var list = List.mkList([1,2,3,4,5,6,7,8,9,10,11,12,13]);
+  //   var maybePrimes = List.map(list)(primeOrNot);
+  //   expect(
+  //     List.toArray(maybePrimes)
+  //   ).to.eql(
+  //     [some(1),some(2),some(3),nothing,some(5),nothing,some(7),nothing,nothing,nothing,some(11),nothing,some(13)]
+  //   );
+  //   /* doesn't work!!
+  //      var onlyPrimes = __.list.flatMap.bind(__)(list)(primeOrNot);
+  //      expect(
+  //      __.list.toArray.bind(__)(onlyPrimes)
+  //      ).to.eql(
+  //      [some(1),some(2),some(3),some(5),some(7),some(11),some(13)]
+  //      );
+  //      */
+  //   next();
+  // });
 
-  it("practical example of maybe", function(next){
-    var obj = {
-      key: "value"
-    };
-    expect(
-      __.get.bind(__)("key")(obj)
-    ).to.eql(
-      some("value")
-    );
-    expect(
-      __.get.bind(__)("nokey")(obj)
-    ).to.eql(
-      nothing
-    );
-    /*
-       Seq(1,2,3,4) flatMap { x =>
-       if(x % 2 == 0) Some(x) else None
-       } map { x =>
-       x * 2
-       } foreach {
-       println
-       }
-       */
-    // var some = function(n){
-    //    return __.monad.maybe.unit.bind(__)(n);
-    // };
-    // var nothing = __.monad.maybe.nothing;
-    // var list = __.list.mkList.bind(__)([some(2),nothing, some(3), nothing,some(5)]);
-    // expect(
-    //    __.list.reduce.bind(__)(list)(some(0))(function(maybe){
-    //      return function(accumulator){
-    //        return __.monad.maybe.flatMap.bind(__ )(maybe)(function(value){
-    //          return some(value + accumulator.just);
-    //        });
-    //      };
-    //    }).just
-    // ).to.eql(
-    //    1
-    // );
-    next();
-  });
+  // it("practical example of maybe", function(next){
+  //   var obj = {
+  //     key: "value"
+  //   };
+  //   expect(
+  //     __.get.bind(__)("key")(obj)
+  //   ).to.eql(
+  //     some("value")
+  //   );
+  //   expect(
+  //     __.get.bind(__)("nokey")(obj)
+  //   ).to.eql(
+  //     nothing
+  //   );
+  //   /*
+  //      Seq(1,2,3,4) flatMap { x =>
+  //      if(x % 2 == 0) Some(x) else None
+  //      } map { x =>
+  //      x * 2
+  //      } foreach {
+  //      println
+  //      }
+  //      */
+  //   // var some = function(n){
+  //   //    return __.monad.maybe.unit.bind(__)(n);
+  //   // };
+  //   // var nothing = __.monad.maybe.nothing;
+  //   // var list = __.list.mkList.bind(__)([some(2),nothing, some(3), nothing,some(5)]);
+  //   // expect(
+  //   //    __.list.reduce.bind(__)(list)(some(0))(function(maybe){
+  //   //      return function(accumulator){
+  //   //        return __.monad.maybe.flatMap.bind(__ )(maybe)(function(value){
+  //   //          return some(value + accumulator.just);
+  //   //        });
+  //   //      };
+  //   //    }).just
+  //   // ).to.eql(
+  //   //    1
+  //   // );
+  //   next();
+  // });
 });
