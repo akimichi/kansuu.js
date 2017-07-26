@@ -4,6 +4,7 @@ const expect = require('expect.js');
 const list = require('../lib/kansuu-list.js');
 const Pair = require('../lib/kansuu-pair.js');
 const Stream = require('../lib/kansuu-stream.js');
+const Maybe = require('../lib/kansuu-monad.js').maybe;
 
 
 describe("'stream' module", () => {
@@ -73,6 +74,44 @@ describe("'stream' module", () => {
       // })()).to.ok();
       next();
     });
+    describe("stream#unfold", () =>  {
+      it("stream 10, 12, 14, 16...", (next) =>  {
+        var stream = Stream.unfold(5)(n => {
+          if(n < 10) {
+            return Maybe.unit(Pair.cons(n*2, n+1));
+          } else {
+            return Maybe.nothing();
+          }
+        });
+        expect(
+          Stream.head(stream)
+        ).to.eql(
+          10
+        );
+        // expect(((_)=> {
+        //   var taken = __.stream.take.bind(__)(stream)(3);
+        //   return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([10,12,14]));
+        // })()).to.ok();
+        next();
+      });
+      // it("prime stream", function(next) {
+      //    var stream = __.stream.unfold.bind(__)(2)((n) => {
+      //      if(math.isPrime(n)) {
+      //        return __.monad.maybe.unit.bind(__)(__.pair.cons.bind(__)(n)(n+1));
+      //      } else {
+      //        return __.monad.maybe.nothing;
+      //      }
+      //    });
+      //    __.stream.censor(stream);
+      //    expect(((_)=> {
+      //      var list = __.stream.take.bind(__)(stream)(10);
+      //      return __.list.toArray.bind(__)(list);
+      //    })()).to.eql(
+      //      [2,3]
+      //    );
+      //    next();
+      // });
+    });
     // it("take(stream)(n)", function(next) {
     //   var ints = __.stream.next.bind(__)(0)(function (n){
     //    return n + 1;
@@ -81,45 +120,6 @@ describe("'stream' module", () => {
     //    __.stream.take.bind(__)(ints)(3)
     //   ).to.eql([0,1,2]);
     //   next();
-    // });
-    // describe("stream#unfold", function() {
-    //   it("stream 10, 12, 14, 16...", function(next) {
-    //     var stream = __.stream.unfold.bind(__)(5)((n) => {
-    //       if(n < 10) {
-    //         return __.monad.maybe.unit.bind(__)(__.pair.cons.bind(__)(n*2)(n+1));
-    //       } else {
-    //         return __.monad.maybe.nothing;
-    //       }
-    //     });
-    //     __.stream.censor(stream);
-    //     expect(
-    //       stream.value()
-    //     ).to.eql(
-    //       10
-    //     );
-    //     expect(((_)=> {
-    //       var taken = __.stream.take.bind(__)(stream)(3);
-    //       return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([10,12,14]));
-    //     })()).to.ok();
-    //     next();
-    //   });
-    //   // it("prime stream", function(next) {
-    //   //    var stream = __.stream.unfold.bind(__)(2)((n) => {
-    //   //      if(math.isPrime(n)) {
-    //   //        return __.monad.maybe.unit.bind(__)(__.pair.cons.bind(__)(n)(n+1));
-    //   //      } else {
-    //   //        return __.monad.maybe.nothing;
-    //   //      }
-    //   //    });
-    //   //    __.stream.censor(stream);
-    //   //    expect(((_)=> {
-    //   //      var list = __.stream.take.bind(__)(stream)(10);
-    //   //      return __.list.toArray.bind(__)(list);
-    //   //    })()).to.eql(
-    //   //      [2,3]
-    //   //    );
-    //   //    next();
-    //   // });
     // });
     // it("stream#repeat", function(next) {
     //   var ones = __.stream.repeat.bind(__)(1);
