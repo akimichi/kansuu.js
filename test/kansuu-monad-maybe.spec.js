@@ -4,13 +4,14 @@ var util = require('util');
 var expect = require('expect.js');
 var __ = require('../lib/kansuu.js');
 var math = require('../lib/kansuu-math.js');
+const List = require('../lib/kansuu-list.js');
 var seedrandom = require('seedrandom');
 var Random = require("random-js");
 var rng = Random.engines.mt19937();
 const Maybe = require('../lib/kansuu-monad.js').maybe;
 
 describe("'maybeMonad' monad", () => {
-
+    
   it("maybeMonad#unit", (next) => {
     expect(
       Maybe.isEqual(Maybe.unit(1), Maybe.unit(1))
@@ -165,12 +166,10 @@ describe("'maybeMonad' monad", () => {
     });
   });
 });
+
 describe("'maybe' monad", () => {
-  // var some = __.monad.maybe.unit.bind(__);
-  // var nothing = __.monad.maybe.nothing;
-  // var flatMap = __.monad.maybe.flatMap.bind(__);
-  // var unit = __.monad.maybe.unit.bind(__);
-  // var map = __.monad.maybe.map.bind(__);
+  const some = Maybe.unit;
+  const nothing = Maybe.nothing;
 
   describe("functor laws on maybe", function() {
     it("map id == id", function(next){
@@ -268,82 +267,91 @@ describe("'maybe' monad", () => {
   });
   it("maybe#map", function(next){
     expect(
-      __.monad.maybe.map.bind(__)(some(200))((n) => {
+     Maybe.isEqual(
+        Maybe.map(Maybe.unit(200))((n) => {
         return n * 2;
-      })
-    ).to.eql(
-      some(400)
+      }), Maybe.unit(400))
+    ).to.be(
+      true 
     );
     expect(
-      __.monad.maybe.map.bind(__)(nothing)((n) => {
+      Maybe.isEqual(
+          Maybe.map(Maybe.nothing())((n) => {
         return n * 2;
-      })
-    ).to.eql(
-      nothing
+      }), Maybe.nothing())
+    ).to.be(
+      true 
     );
     next();
   });
   it("maybe#flatMap", function(next){
     expect(
-      flatMap(some(200))((n) => {
-        return some(n * 2);
-      })
-    ).to.eql(
-      some(400)
+      Maybe.isEqual(Maybe.flatMap(Maybe.unit(200))((n) => {
+        return Maybe.unit(n * 2);
+      }), Maybe.unit(400))
+    ).to.be(
+      true 
     );
     expect(
-      flatMap(nothing)((n) => {
-        return some(n * 2);
-      })
-    ).to.eql(
-      nothing
+      Maybe.isEqual(Maybe.flatMap(Maybe.nothing())((n) => {
+        return Maybe.unit(n * 2);
+      }), Maybe.nothing())
+    ).to.be(
+      true 
     );
     expect(
-      flatMap(some(200))((n) => {
-        return nothing;
-      })
-    ).to.eql(
-      nothing
+      Maybe.isEqual(Maybe.flatMap(Maybe.unit(200))((n) => {
+        return Maybe.nothing();
+      }), Maybe.nothing())
+    ).to.be(
+      true 
     );
     next();
   });
   it("maybe#getOrElse");
   it("maybe#lift", (next) => {
     expect(
-      __.monad.maybe.lift.bind(__)(parseInt)(some("123"))
-    ).to.eql(
-      some(123)
+      Maybe.isEqual(
+          Maybe.lift(parseInt)(Maybe.unit("123")), Maybe.unit(123)
+      )
+    ).to.be(
+      true 
     );
     expect(
-      __.monad.maybe.lift.bind(__)(parseInt)(nothing)
-    ).to.eql(
-      nothing
+      Maybe.isEqual(
+        Maybe.lift(parseInt)(Maybe.nothing()), Maybe.nothing()
+      )
+    ).to.be(
+      true 
     );
     next();
   });
   it("maybe#flatten", (next) => {
-    var instanceMM = some(some(2));
+    var instanceMM = Maybe.unit(Maybe.unit(2));
     expect(
-      __.monad.maybe.flatten.call(__, instanceMM)
-    ).to.eql(
-      some(2)
+      Maybe.isEqual(
+          Maybe.flatten(instanceMM), Maybe.unit(2))
+    ).to.be(
+      true 
     );
     next();
   });
   it("maybe#ap", (next) => {
-    var justFunction = some(function(n){
+    const justFunction = Maybe.unit(n => {
       return n + 3;
     });
-    var just4 = some(4);
+    var just4 = Maybe.unit(4);
     expect(
-      __.monad.maybe.ap.call(__, justFunction)(just4)
-    ).to.eql(
-      some(7)
+      Maybe.isEqual(
+        Maybe.ap(justFunction)(just4), Maybe.unit(7)
+      )
+    ).to.be(
+      true 
     );
     next();
   });
   it("primes", (next) => {
-    this.timeout(5000);
+    // this.timeout(5000);
     var primeOrNot = (n) => {
       if(math.isPrime(n)){
         return some(n);
@@ -351,10 +359,10 @@ describe("'maybe' monad", () => {
         return nothing;
       }
     };
-    var list = __.list.mkList.bind(__)([1,2,3,4,5,6,7,8,9,10,11,12,13]);
-    var maybePrimes = __.list.map.bind(__)(list)(primeOrNot);
+    var list = List.mkList([1,2,3,4,5,6,7,8,9,10,11,12,13]);
+    var maybePrimes = List.map(list)(primeOrNot);
     expect(
-      __.list.toArray.bind(__)(maybePrimes)
+      List.toArray(maybePrimes)
     ).to.eql(
       [some(1),some(2),some(3),nothing,some(5),nothing,some(7),nothing,nothing,nothing,some(11),nothing,some(13)]
     );
@@ -408,57 +416,6 @@ describe("'maybe' monad", () => {
     // ).to.eql(
     //    1
     // );
-    next();
-  });
-});
-describe("'either' monad", function() {
-  // var unit = __.monad.either.unit.bind(__);
-  it("'either#unit'", function(next) {
-    expect(
-      unit(1)
-    ).to.eql(
-      __.pair.mkPair.call(__,null)(1)
-    );
-    next();
-  });
-  it("'either#flatMap'", function(next) {
-    var flatMap = __.monad.either.flatMap.bind(__);
-    var left = __.monad.either.left.call(__, 2);
-    var right = __.monad.either.unit.call(__, 2);
-    expect(
-      flatMap(left)(function(n){
-        return unit(n + 1);
-      })
-    ).to.eql(
-      left
-    );
-    expect(
-      flatMap(right)(function(n){
-        return unit(n + 1);
-      })
-    ).to.eql(
-      unit(3)
-    );
-    next();
-  });
-  it("'either#bindM'", function(next) {
-    var bindM = __.monad.either.bindM.bind(__);
-    var left = __.monad.either.left.call(__, 2);
-    var right = __.monad.either.unit.call(__, 2);
-    expect(
-      bindM(left)(function(n) {
-        return unit(n + 1);
-      })
-    ).to.eql(
-      left
-    );
-    expect(
-      bindM(right)(function(n) {
-        return unit(n + 1);
-      })
-    ).to.eql(
-      unit(3)
-    );
     next();
   });
 });
