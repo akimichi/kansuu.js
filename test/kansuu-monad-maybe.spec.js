@@ -10,9 +10,9 @@ var Random = require("random-js");
 var rng = Random.engines.mt19937();
 const Maybe = require('../lib/kansuu-monad.js').maybe;
 
-describe("'maybeMonad' monad", () => {
+describe("'maybe' monad", () => {
     
-  it("maybeMonad#unit", (next) => {
+  it("maybe#unit", (next) => {
     expect(
       Maybe.isEqual(Maybe.unit(1), Maybe.unit(1))
     ).to.be(
@@ -25,7 +25,7 @@ describe("'maybeMonad' monad", () => {
     );
     next();
   });
-  it("maybeMonad#getOrElse", (next) => {
+  it("maybe#getOrElse", (next) => {
     expect(
       Maybe.getOrElse(Maybe.unit(1))(null)
     ).to.be(
@@ -46,7 +46,7 @@ describe("'maybeMonad' monad", () => {
     );
     next();
   });
-  describe("maybeMonad#flatMap", () => {
+  describe("maybec#flatMap", () => {
     it("add(maybeMonad)(maybeMonad)", (next) => {
       var add = (maybeA) => {
         return (maybeB) => {
@@ -170,6 +170,7 @@ describe("'maybeMonad' monad", () => {
 describe("'maybe' monad", () => {
   const some = Maybe.unit;
   const nothing = Maybe.nothing;
+  const map = Maybe.map;
 
   describe("functor laws on maybe", function() {
     it("map id == id", function(next){
@@ -416,58 +417,6 @@ describe("'maybe' monad", () => {
     // ).to.eql(
     //    1
     // );
-    next();
-  });
-});
-describe("'random' monad", function() {
-  // var int = __.monad.random.unit.bind(__)(0);
-  // var ns = __.monad.random.flatMap.bind(__)(int)(x => {
-  //   return __.monad.random.flatMap.bind(__)(int)(y => {
-  //  return
-  //   }
-  // })
-  it("random.int", function(next){
-    //var rng = seedrandom("seed");
-    rng.seed("seed");
-    var intRandom = __.monad.random.int.bind(__)(rng);
-    expect(
-      intRandom.left
-    ).to.eql(
-      -1937831252
-    );
-    //var intRandom2 = __.monad.random.int.bind(__)(intRandom.right);
-    expect(
-      __.monad.random.int.bind(__)(intRandom.right).left
-    ).to.eql(
-      -884076225
-    );
-    expect(
-      __.monad.random.int.bind(__)(intRandom.right).left
-    ).to.eql(
-      -505527131
-    );
-    // expect(
-    //     __.monad.random.int.bind(__)(intRandom.right()).left
-    // ).to.eql(
-    //    2
-    //    //4.612568818010603e+306
-    // );
-    next();
-  });
-  it("random.ints", function(next){
-    var rng = Random.engines.mt19937();
-    rng.seed("seed");
-    var ints = __.monad.random.ints.bind(__)(3)(rng);
-    expect(
-      __.list.length.bind(__)(ints.left)
-    ).to.eql(
-      3
-    );
-    expect(
-      __.list.toArray.bind(__)(ints.left)
-    ).to.eql(
-      [ -1937831252, -884076225, -725654408 ]
-    );
     next();
   });
 });
