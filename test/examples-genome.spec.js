@@ -42,12 +42,12 @@ describe("'genome' example", () => {
   describe('translate', () => {
     it('can translate from rna codon to amino', (next) => {
       expect(
-        gn.translate(['G', 'C', 'G'])
+        genome.translate(['G', 'C', 'G'])
       ).to.eql(
         ['ala']
       );
       expect(
-        gn.translate(['A', 'U', 'G'])
+        genome.translate(['A', 'U', 'G'])
       ).to.eql(
         ['met']
       );
@@ -57,12 +57,12 @@ describe("'genome' example", () => {
   describe('transcript', function() {
     it('can transcript from dna sequence to rna sequence', (next) => {
       expect(
-        gn.transcript(["T", "A", "C"])
+        genome.transcript(["T", "A", "C"])
       ).to.eql(
         ['A', 'U', 'G']
       );
       expect(
-        gn.transcript(["C", "G", "C"])
+        genome.transcript(["C", "G", "C"])
       ).to.eql(
         ['G', 'C', 'G']
       );

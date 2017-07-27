@@ -123,6 +123,53 @@ const transcript = (dnacodon) => {
   return Array.map(dnacodon)(__.compose(t2u,complement));
 };
 
+const translate = (rnaCodon) => {
+  var codon, found;
+  expect(__.existy(rnaCodon)).to.ok();
+  expect(rnaCodon).to.an('array');
+  expect(rnaCodon.length).to.eql(3);
+
+  const codonAminoClosures = () => {
+    var amino, closures, codons, fn, ref;
+    closures = [];
+    ref = aminoCodonTable;
+    fn = (amino, codons) => {
+      var closure;
+      closure = (codon) => {
+        if ((codons.indexOf(codon)) >= 0) {
+          return [amino];
+        } else {
+          return [];
+        }
+      };
+      return closures = Array.cons(closure,closures);
+    };
+    for (amino in ref) {
+      if (!hasProp.call(ref, amino)) continue;
+      codons = ref[amino];
+      fn(amino, codons);
+    }
+    return closures;
+  };
+  codon = rnaCodon.join('');
+  const notfoundAmino = (closure) => {
+    if (Array.isEmpty(closure(codon))) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+  found = Array.dropWhile(codonAminoClosures())(notfoundAmino);
+  if (Array.isEmpty(found)) {
+    throw {
+      name: "runtime error in translate",
+      message: "unknown codon of " + rnaCodon
+    };
+  } else {
+    return found[0](codon);
+  }
+};
+
 module.exports = {
   aminoCodonTable: aminoCodonTable,
   aminoWeightTable: aminoWeightTable,
@@ -131,53 +178,6 @@ module.exports = {
   codons: codons,
   frames: frames,
   transcript: transcript,
-  translate: function(rnaCodon) {
-    var codon, codonAminoClosures, found, notfoundAmino;
-	expect(__.existy(rnaCodon)).to.ok();
-	expect(rnaCodon).to.an('array');
-	expect(rnaCodon.length).to.eql(3);
-    //fj.demand([fj.existy(rnaCodon, fj.isArray(rnaCodon, rnaCodon.length === 3))], "the argument " + rnaCodon + " should be a codon");
-    codonAminoClosures = (function(_this) {
-      return function() {
-        var amino, closures, codons, fn, ref;
-        closures = [];
-        ref = _this.aminoCodonTable;
-        fn = function(amino, codons) {
-          var closure;
-          closure = function(codon) {
-            if ((codons.indexOf(codon)) >= 0) {
-              return [amino];
-            } else {
-              return [];
-            }
-          };
-          return closures = __.cons(closure)(closures);
-        };
-        for (amino in ref) {
-          if (!hasProp.call(ref, amino)) continue;
-          codons = ref[amino];
-          fn(amino, codons);
-        }
-        return closures;
-      };
-    })(this);
-    codon = rnaCodon.join('');
-    notfoundAmino = (closure) => {
-      if (__.isEmpty(closure(codon))) {
-        return true;
-      } else {
-        return false;
-      }
-    };
-    found = __.dropWhile(codonAminoClosures())(notfoundAmino);
-    if (__.isEmpty(found)) {
-      throw {
-        name: "runtime error in translate",
-        message: "unknown codon of " + rnaCodon
-      };
-    } else {
-      return found[0](codon);
-    }
-  },
+  translate: translate,
 };
 
