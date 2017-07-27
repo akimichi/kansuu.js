@@ -161,21 +161,21 @@ describe("'list' module", function() {
     );
     next();
   });
-  // it("'list#reverse'", function(next) {
-  //   var alist = list.mkList([0,1,2,3]);
-  //   var result = list.reverse(alist);
-  //   expect(
-  //     list.head(result)
-  //   ).to.eql(
-  //     3
-  //   );
-  //   expect(
-  //     list.length(result)
-  //   ).to.eql(
-  //     4
-  //   );
-  //   next();
-  // });
+  it("'list#reverse'", (next) => {
+    var alist = list.mkList([0,1,2,3]);
+    var result = list.reverse(alist);
+    expect(
+      list.head(result)
+    ).to.eql(
+      3
+    );
+    expect(
+      list.length(result)
+    ).to.eql(
+      4
+    );
+    next();
+  });
   it("'list#concat'", (next) => {
     expect(function(){
       var list1 = list.mkList([0,1]);
