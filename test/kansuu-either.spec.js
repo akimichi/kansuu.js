@@ -8,7 +8,7 @@ var math = require('../lib/kansuu-math.js');
 var seedrandom = require('seedrandom');
 var Random = require("random-js");
 var rng = Random.engines.mt19937();
-const Either = require('../lib/kansuu-monad.js').either;
+const Either = require('../lib/kansuu-either.js');
 
 describe("'either' monad", () => {
   const unit = Either.unit;
