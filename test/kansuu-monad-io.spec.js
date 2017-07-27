@@ -43,7 +43,7 @@ describe("'IO' monad", () => {
   it("IO#flatMap", (next) => {
     var readDecimal = IO.readFile("./test/resource/decimal.txt");
     // console.log(readDecimal.run())
-    console.log(parseInt(readDecimal.run(), 10).toString(16));
+    console.log(parseInt(IO.run(readDecimal), 10).toString(16));
     IO.flatMap(readDecimal)((decimal) => {
       console.log(decimal);
       return IO.print(parseInt(decimal, 10).toString(16));
@@ -61,19 +61,16 @@ describe("'IO' monad", () => {
   describe('IOアクションを合成する', () => {
     /* IO.seq:: IO[a] => IO[b] => IO[b] */
     it("'print'", (next) => {
-      var printer = __.monad.IO.print.call(__,
-        "this is a test");
-      printer.run();
+      var printer = IO.print("this is a test");
+      IO.run(printer);
       var printEven = (n) => {
         if(n % 2 === 0){
-          return __.monad.IO.print.call(__,
-            true);
+          return IO.print("true");
         } else {
-          return __.monad.IO.print.call(__,
-            false);
+          return IO.print("false");
         }
       };
-      printEven(2).run();
+      IO.run(printEven(2));
       // expect(
       //   printEven(2)
       // ).to.eql(
