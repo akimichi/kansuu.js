@@ -116,6 +116,15 @@ describe("'List' module", () => {
     );
     next();
   });
+  it("'list#toString'", (next) => {
+    var alist = List.mkList(['a','b','c']);
+    expect(
+      List.toString(alist)
+    ).to.eql(
+      "abc" 
+    );
+    next();
+  });
   it("'list#last'", (next) => {
     var alist = List.mkList([0,1,2,3]);
     expect(

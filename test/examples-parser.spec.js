@@ -1,14 +1,27 @@
 "use strict";
 
-var expect = require('expect.js');
-var List = require('../lib/kansuu-monad.js').list;
-var Pair = require('../lib/kansuu-pair.js');
+const expect = require('expect.js'),
+ __ = require('../lib/kansuu.js'),
+ ID = require('../lib/kansuu-monad.js').identity,
+ Pair = require('../lib/kansuu-pair.js'),
+ List = require('../lib/kansuu-monad.js').list,
+ Parser = require('../examples/parser.js');
 // var PP = require('../lib/pprinter.js');
-var Parser = require('../examples/parser.js');
 
 describe('パーサーコンビネーター', () => {
   var abc = List.fromString("abc");
   describe("parse", (next) => {
+    it("empty", (next) => {
+      var input = List.fromString("abc");
+      expect(
+        List.isEmpty(
+          Parser.parse(Parser.empty)(input)
+        )
+      ).to.eql(
+        true 
+      );
+      next();
+    });
     it("pure", (next) => {
       expect(
         Pair.left(List.head(
@@ -24,19 +37,27 @@ describe('パーサーコンビネーター', () => {
       // );
       next();
     });
-    // it("item", (next) => {
-    //   expect(
-    //     PP.print(Parser.item(List.empty()))
-    //   ).to.eql(
-    //     '[]'
-    //   );
-    //   expect(
-    //     PP.print(Parser.item(List.fromString("abc")))
-    //   ).to.eql(
-    //     '[(a,[b,c,nil]),nil]'
-    //   );
-    //   next();
-    // });
+    it("item", (next) => {
+      expect(
+        List.isEmpty(
+          Parser.item(List.empty())
+        )
+      ).to.eql(
+        true 
+      );
+      expect(
+        Pair.left(List.head(
+            Parser.item(List.fromString("abc"))))
+      ).to.eql(
+        'a'
+      );
+      // expect(
+      //   PP.print(Parser.item(List.fromString("abc")))
+      // ).to.eql(
+      //   '[(a,[b,c,nil]),nil]'
+      // );
+      next();
+    });
   });
   describe("fmap", (next) => {
     // it("toUpper", (next) => {
@@ -88,39 +109,37 @@ describe('パーサーコンビネーター', () => {
     // });
   });
   describe("alternative", (next) => {
-    // it("empty", (next) => {
-    //   var input = List.fromString("abc");
-    //   expect(
-    //     PP.print(
-    //       Parser.parse(Parser.empty)(input)
-    //     )
-    //   ).to.eql(
-    //     '[]'
-    //   );
-    //   next();
-    // });
-    // it("alt", (next) => {
-    //   var input = List.fromString("abc");
-    //   expect(
-    //     PP.print(
-    //       Parser.parse(
-    //         Parser.alt(Parser.item, Parser.pure("d"))
-    //       )(input)
-    //     )
-    //   ).to.eql(
-    //     '[(a,[b,c,nil]),nil]'
-    //   );
-    //   expect(
-    //     PP.print(
-    //       Parser.parse(
-    //         Parser.alt(Parser.empty, Parser.pure("d"))
-    //       )(input)
-    //     )
-    //   ).to.eql(
-    //     '[(d,[a,b,c,nil]),nil]'
-    //   );
-    //   next();
-    // });
+    it("alt", (next) => {
+      var input = List.fromString("abc");
+      expect(
+        Pair.left(List.head(
+          Parser.parse(
+            Parser.alt(Parser.item, Parser.pure("d"))
+          )(input)
+        ))
+      ).to.eql(
+        'a'
+      );
+      // expect(
+      //   PP.print(
+      //     Parser.parse(
+      //       Parser.alt(Parser.item, Parser.pure("d"))
+      //     )(input)
+      //   )
+      // ).to.eql(
+      //   '[(a,[b,c,nil]),nil]'
+      // );
+      // expect(
+      //   PP.print(
+      //     Parser.parse(
+      //       Parser.alt(Parser.empty, Parser.pure("d"))
+      //     )(input)
+      //   )
+      // ).to.eql(
+      //   '[(d,[a,b,c,nil]),nil]'
+      // );
+      next();
+    });
   });
   describe("派生したパーサー", (next) => {
     it("digit", (next) => {
@@ -146,30 +165,64 @@ describe('パーサーコンビネーター', () => {
       // );
       next();
     });
-    // it("alphanum", (next) => {
-    //   expect(
-    //     PP.print(
-    //       Parser.parse(
-    //         Parser.alphanum()
-    //       )(List.fromString("123"))
-    //     )
-    //   ).to.eql(
-    //     '[(1,[2,3,nil]),nil]'
-    //   );
-
-    //   next();
-    // });
-    it("chars", (next) => {
+    it("alphanum", (next) => {
       expect(
         Pair.left(
           List.head(
+          Parser.parse(
+            Parser.alphanum()
+          )(List.fromString("123"))
+        ))
+      ).to.eql(
+        '1'
+      );
+      // expect(
+      //   PP.print(
+      //     Parser.parse(
+      //       Parser.alphanum()
+      //     )(List.fromString("123"))
+      //   )
+      // ).to.eql(
+      //   '[(1,[2,3,nil]),nil]'
+      // );
+      next();
+    });
+    it("char", (next) => {
+      expect(
+        Pair.left(
+          List.head(
+          Parser.parse(
+            Parser.char("a")
+          )(List.fromString("a"))
+        ))
+      ).to.eql(
+        'a'
+      );
+      next();
+    });
+    it("chars", (next) => {
+      const input = List.fromString("abc");
+      expect(
+        List.toString(Pair.left(
+          List.head(
             Parser.parse(
-              Parser.chars(List.fromString("abc"))
+              Parser.chars(input)
             )(List.fromString("abcdef"))
           )
-        )
+        ))
       ).to.eql(
-        '[(abc,[d,e,f,nil]),nil]'
+        ['a','b','c']
+      );
+      expect(
+        List.toString(Pair.left(
+          List.head(
+            Parser.parse(
+              Parser.chars(List.fromString("#t"))
+            )(List.fromString("#t"))
+          )
+        ))
+      ).to.eql(
+        '#t'
       );
       next();
     });
@@ -400,13 +453,9 @@ describe('パーサーコンビネーター', () => {
           List.head(
             Parser.parse(
               Parser.boolean()
-            )(List.fromString("#f  "))
+            )(List.fromString("  #f  "))
           )
-        )({
-          bool: (value) => {
-            return value;
-          }
-        })
+        )
       ).to.eql(
         false 
       );

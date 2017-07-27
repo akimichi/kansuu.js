@@ -2,22 +2,27 @@
 
 const expect = require('expect.js'),
  __ = require('../lib/kansuu.js'),
+ ID = require('../lib/kansuu-monad.js').identity,
  Pair = require('../lib/kansuu-pair.js'),
- List = require('../lib/kansuu-list.js');
+ List = require('../lib/kansuu-monad.js').list;
 
 // ### 恒等モナド
-const ID = {
-  unit: (value) => {
-    return value;
-  },
-  flatMap: (instance) => {
-    return (transform) => {
-      expect(transform).to.a('function');
-      return transform(instance);
-    };
-  }
-};
+// const ID = {
+//   unit: (value) => {
+//     return value;
+//   },
+//   flatMap: (instance) => {
+//     return (transform) => {
+//       expect(transform).to.a('function');
+//       return transform(instance);
+//     };
+//   }
+// };
 
+// empty :: Parser a
+const empty = (input) => {
+  return List.empty();
+};
 // pure :: a -> Parser a
 const pure = (v) => {
   return (input) => {
@@ -96,10 +101,7 @@ const parse = (parser) => {
   };
 };
 
-// empty :: Parser a
-const empty = (input) => {
-  return List.empty();
-};
+
 // item :: Parser String
 const item = (input) => {
   return List.match(input,{
@@ -107,8 +109,9 @@ const item = (input) => {
       return List.empty();
     },
     cons: (head, tail) => {
-      return List.cons(Pair.cons(head, tail),
-        List.empty()); 
+      return List.cons(
+        Pair.cons(head, tail),List.empty()
+      ); 
     }
   });
 };
@@ -216,6 +219,24 @@ const char = (x) => {
   };
   return sat(isX);
 };
+//
+// chars :: List[Char] -> Parser String 
+const chars = (strAsString) => { 
+  return List.match(strAsString,{
+    empty: () => {
+      return pure(List.empty());
+      // return pure("");
+    },
+    cons: (x,xs) => {
+      return flatMap(char(x))(x => {
+        return flatMap(chars(xs))(xs => {
+          return pure(List.cons(x,xs));
+          // return pure(x + List.toString(xs)); 
+        });
+      });
+    }
+  }); 
+};
 
 const ident = () => {
   return flatMap(lower())((x) => {
@@ -314,33 +335,15 @@ const numeric = () => {
   });
 };
 
-// chars :: List[Char] -> Parser String 
-const chars = (strAsString) => { 
-  return List.match(strAsString,{
-    empty: () => {
-      return pure("");
-      // return pure(List.empty());
-    },
-    cons: (x,xs) => {
-      return flatMap(char(x))(x => {
-        return flatMap(chars(xs))(xs => {
-          return pure(List.toString(List.cons(x,xs)));
-          // return pure(List.cons(x,xs));
-        });
-      });
-    }
-  }); 
-};
+
 const boolean = () => {
   const t = List.fromString("#t");
   const f = List.fromString("#f");
-  return flatMap(token(alt(chars(t), chars(f))))(v => {
-    console.log(v)
-    switch(v) { 
-      case "#t": 
-        return pure(true);
-      case "#f": 
-        return pure(false);
+  return flatMap(token(alt(chars(t), chars(f))))(vs => {
+    if(List.isEqual(vs,t)) {
+      return pure(true);
+    } else if(List.isEqual(vs,f)) {
+      return pure(false);
     }
   });
 };
