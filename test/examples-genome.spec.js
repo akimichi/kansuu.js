@@ -3,24 +3,25 @@
 var expect = require('expect.js');
 var __ = require('../lib/kansuu.js');
 var base = require('../lib/kansuu-base.js');
-var gn = require('../examples/genome.js');
+var Array = require('../lib/kansuu-array.js');
+var genome = require('../examples/genome.js');
 
 describe("'genome' example", () => {
-  var gnBound = base.binds(gn);
+
   describe('complements', function() {
     it('can return its complements', (next) => {
       expect(
-        gn.complements(['G', 'C', 'G'])
+        genome.complements(['G', 'C', 'G'])
       ).to.eql(
         ['C', 'G', 'C']
       );
       expect(
-        __.map([["T", "A", "C"], ["C", "G", "C"]])(gnBound(gn.complements))
+        Array.map([["T", "A", "C"], ["C", "G", "C"]])(genome.complements)
       ).to.eql(
         [['A', 'T', 'G'], ['G', 'C', 'G']]
       );
       expect(
-        __.map([["T", "A", "C"], ["C", "G", "C"]])(gn.complements.bind(gn))
+        Array.map([["T", "A", "C"], ["C", "G", "C"]])(genome.complements)
       ).to.eql(
         [['A', 'T', 'G'], ['G', 'C', 'G']]
       );
@@ -31,7 +32,7 @@ describe("'genome' example", () => {
     it('can transform dna sequence to codons', (next) => {
       var seq = ['A', 'T', 'G', 'C', 'A', 'T', 'G', 'C'];
       expect(
-        gn.codons(seq)
+        genome.codons(seq)
       ).to.eql(
         [['A', 'T', 'G'], ['C', 'A', 'T']]
       );
