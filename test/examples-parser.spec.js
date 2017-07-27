@@ -1,7 +1,7 @@
 "use strict";
 
 var expect = require('expect.js');
-var List = require('../lib/kansuu-list.js');
+var List = require('../lib/kansuu-monad.js').list;
 var Pair = require('../lib/kansuu-pair.js');
 // var PP = require('../lib/pprinter.js');
 var Parser = require('../examples/parser.js');
