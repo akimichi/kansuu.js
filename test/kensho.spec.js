@@ -12,12 +12,9 @@ describe("Kensho module", () => {
     expect(
       Stream.head(ints)
     ).to.eql(1);
-    // expect(
-    //   ints.next().value()
-    // ).to.eql(2);
-    // expect(
-    //   ints.next().next().value()
-    // ).to.eql(3);
+    expect(
+      Stream.head(Stream.tail(ints))
+    ).to.eql(2);
     next();
   });
   it("randoms", function(next) {
@@ -64,23 +61,21 @@ describe("Kensho module", () => {
       });
 	    expect(prop).to.ok();
       next();
-	});
-	// ~~~haskell
-	// prop_RevApp xs ys =
-	//   reverse (xs++ys) == reverse ys++reverse xs
-	// ~~~
-	/*
-	it("reverse (xs++ys) == reverse ys ++ reverse xs", function(next) {
-      var intStream = qc.ints(1);
-      var intUpto10 = __.stream.take.bind(__)(intStream)(10);
-      qc.forAll(intUpto10)(function(n){
-		var list = __.list.mkList.bind(__)([n]);
-		return __.list.reverse.bind(__)(list).isEqual(list);
-      });
-	  this.timeout(4000);
-      next();
-	});
-	*/
+	  });
+	  // ~~~haskell
+	  // prop_RevApp xs ys =
+	  //   reverse (xs++ys) == reverse ys++reverse xs
+	  // ~~~
+    it("reverse (xs++ys) == reverse ys ++ reverse xs", (next) => {
+        var intstream = qc.ints(1);
+        var intupto10 = Stream.take(intstream)(10);
+        const prop = qc.forAll(intupto10)(n => {
+           var alist = List.mkList([n]);
+           return List.isEqual(List.reverse(alist),alist);
+        });
+	      expect(prop).to.ok();
+        next();
+    });
 	// ~~~haskell
 	// prop_RevRev xs =
 	//   reverse (reverse xs) == xs
