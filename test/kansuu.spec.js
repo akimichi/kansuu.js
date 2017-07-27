@@ -378,12 +378,6 @@ describe("Kansuu module", () => {
     //   next();
     // });
   });
-  // describe("logical operators", function() {
-  //    it("'not'", function(next) {
-  //      expect(__.not(__.existy)).to.be(true);
-  //     next();
-  //    });
-  // });
   it("times", (next) => {
     var succ = (n) => {
       return n + 1;
