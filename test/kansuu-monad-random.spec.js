@@ -13,12 +13,6 @@ const RandomJs = require("random-js"),
 var seedrandom = require('seedrandom');
 
 describe("'random' monad", function() {
-  // var int = __.monad.random.unit.bind(__)(0);
-  // var ns = __.monad.random.flatMap.bind(__)(int)(x => {
-  //   return __.monad.random.flatMap.bind(__)(int)(y => {
-  //  return
-  //   }
-  // })
   it("random.int", (next) => {
     //var rng = seedrandom("seed");
     rng.seed("seed");
