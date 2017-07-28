@@ -17,22 +17,22 @@ describe("Kensho module", () => {
     ).to.eql(2);
     next();
   });
-  it("randoms", function(next) {
-	var randomGenerator = qc.randomGen.call(qc,0);
-    var randStream = qc.randoms.call(qc, randomGenerator);
-    expect(
-      Stream.head(randStream)
-    ).to.be(
-      0.000000001682261200
-    );
-    expect(
-      Stream.head(Stream.tail(randStream))
-    ).to.be(
-      0.08624634995353292
-    );
-    next();
-  });
-  it("forAll", function(next) {
+  // it("randoms", (next) => {
+  //   const randomGenerator = qc.randomGen.call(qc,0);
+  //   const randStream = qc.randoms.call(qc, randomGenerator);
+  //   expect(
+  //     Stream.head(randStream)
+  //   ).to.be(
+  //     0.000000001682261200
+  //   );
+  //   expect(
+  //     Stream.head(Stream.tail(randStream))
+  //   ).to.be(
+  //     0.08624634995353292
+  //   );
+  //   next();
+  // });
+  it("forAll", (next) => {
     var intStream = qc.ints(1);
     var intUpto10 = Stream.take(intStream)(10);
     var prop = qc.forAll(intUpto10)(item => {
@@ -41,14 +41,13 @@ describe("Kensho module", () => {
 	expect(prop).to.ok();
     next();
   });
-  
-  describe("Kensho module", function() {
+
+  describe("Kensho module", () => {
 	// ~~~haskell
 	// prop_RevUnit x =
 	//   reverse [x] == [x]
 	// ~~~
-    it("reverse [x] == [x]", function(next) {
-      this.timeout(5000);
+    it("reverse [x] == [x]", (next) => {
       // var prop_RevUnit = function(x){
       // 	var list = __.list.mkList.bind(__)([x]);
       // 	return __.list.reverse.bind(__)(list).isEqual(list);
