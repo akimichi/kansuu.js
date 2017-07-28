@@ -7,6 +7,6 @@ Please note that this module is in very experimental stage and requires node v0.
 ## Docs
 
 ~~~
-node_modules/docco/bin/docco lib/kansuu.js
-open doc/kansuu.html
+$ node_modules/docco/bin/docco lib/kansuu.js
+$ open doc/kansuu.html
 ~~~

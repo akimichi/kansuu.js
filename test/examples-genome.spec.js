@@ -3,24 +3,25 @@
 var expect = require('expect.js');
 var __ = require('../lib/kansuu.js');
 var base = require('../lib/kansuu-base.js');
-var gn = require('../examples/genome.js');
+var Array = require('../lib/kansuu-array.js');
+var genome = require('../examples/genome.js');
 
 describe("'genome' example", () => {
-  var gnBound = base.binds(gn);
+
   describe('complements', function() {
     it('can return its complements', (next) => {
       expect(
-        gn.complements(['G', 'C', 'G'])
+        genome.complements(['G', 'C', 'G'])
       ).to.eql(
         ['C', 'G', 'C']
       );
       expect(
-        __.map([["T", "A", "C"], ["C", "G", "C"]])(gnBound(gn.complements))
+        Array.map([["T", "A", "C"], ["C", "G", "C"]])(genome.complements)
       ).to.eql(
         [['A', 'T', 'G'], ['G', 'C', 'G']]
       );
       expect(
-        __.map([["T", "A", "C"], ["C", "G", "C"]])(gn.complements.bind(gn))
+        Array.map([["T", "A", "C"], ["C", "G", "C"]])(genome.complements)
       ).to.eql(
         [['A', 'T', 'G'], ['G', 'C', 'G']]
       );
@@ -31,7 +32,7 @@ describe("'genome' example", () => {
     it('can transform dna sequence to codons', (next) => {
       var seq = ['A', 'T', 'G', 'C', 'A', 'T', 'G', 'C'];
       expect(
-        gn.codons(seq)
+        genome.codons(seq)
       ).to.eql(
         [['A', 'T', 'G'], ['C', 'A', 'T']]
       );
@@ -41,12 +42,12 @@ describe("'genome' example", () => {
   describe('translate', () => {
     it('can translate from rna codon to amino', (next) => {
       expect(
-        gn.translate(['G', 'C', 'G'])
+        genome.translate(['G', 'C', 'G'])
       ).to.eql(
         ['ala']
       );
       expect(
-        gn.translate(['A', 'U', 'G'])
+        genome.translate(['A', 'U', 'G'])
       ).to.eql(
         ['met']
       );
@@ -56,12 +57,12 @@ describe("'genome' example", () => {
   describe('transcript', function() {
     it('can transcript from dna sequence to rna sequence', (next) => {
       expect(
-        gn.transcript(["T", "A", "C"])
+        genome.transcript(["T", "A", "C"])
       ).to.eql(
         ['A', 'U', 'G']
       );
       expect(
-        gn.transcript(["C", "G", "C"])
+        genome.transcript(["C", "G", "C"])
       ).to.eql(
         ['G', 'C', 'G']
       );
