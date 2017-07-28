@@ -3,6 +3,7 @@
 const expect = require('expect.js'),
   __ = require('../lib/kansuu.js'),
   base = require('../lib/kansuu-base.js'),
+  List = require('../lib/kansuu-monad.js').list,
   Tree = require('../lib/kansuu-tree.js');
 
 
@@ -22,37 +23,32 @@ describe("'bTree' module", () => {
     next();
   });
   it("'btree#size'", (next) => {
-    this.timeout(3000);
-    var btree = __.btree.mkBtree.call(__, __.list.mkList.call(__, [0,1,2,3]));
+    const btree = Tree.mkBtree(List.mkList([0,1,2,3]));
     expect(
-      __.btree.size.call(__,btree)
+      Tree.size(btree)
     ).to.eql(
       4
     );
     next();
   });
-  it("'btree#flatMap'");
-  it("'btree#flatten'", (next) => {
-    this.timeout(3000);
-    var btree = __.btree.mkBtree.call(__, __.list.mkList.call(__, [0,1,2,3]));
+  it("'btree#map'", (next) => {
+    const btree = Tree.mkBtree(List.mkList([0,1,2]));
     expect(
-      __.list.toArray.call(__, __.btree.flatten.call(__,btree))
+      List.toArray(Tree.flatten(Tree.map(btree)(n => {
+        return n * 2;
+      })))
     ).to.eql(
-      [0,1,2,3]
+      [0,2,4]
     );
     next();
   });
-  it("'btree#map'", (next) => {
-    this.timeout(3000);
-    var map = __.btree.map.bind(__);
-    var btree = __.btree.mkBtree.call(__, __.list.mkList.call(__, [0,1,2]));
+  it("'btree#flatMap'");
+  it("'btree#flatten'", (next) => {
+    const btree = Tree.mkBtree(List.mkList([0,1,2,3]));
     expect(
-      __.list.toArray.call(__,
-                           __.btree.flatten.call(__,__.btree.map.call(__,btree)(function(n){
-                             return n * 2;
-                           })))
+      List.toArray(Tree.flatten(btree))
     ).to.eql(
-      [0,2,4]
+      [0,1,2,3]
     );
     next();
   });
