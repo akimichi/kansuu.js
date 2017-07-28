@@ -42,7 +42,6 @@ describe("'bTree' module", () => {
     );
     next();
   });
-  it("'btree#flatMap'");
   it("'btree#flatten'", (next) => {
     const btree = Tree.mkBtree(List.mkList([0,1,2,3]));
     expect(
