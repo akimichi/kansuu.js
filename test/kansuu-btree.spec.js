@@ -4,14 +4,14 @@ const expect = require('expect.js'),
   __ = require('../lib/kansuu.js'),
   base = require('../lib/kansuu-base.js'),
   List = require('../lib/kansuu-monad.js').list,
-  Tree = require('../lib/kansuu-tree.js');
+  BTree = require('../lib/kansuu-btree.js');
 
 
-describe("'bTree' module", () => {
+describe("'BTree' module", () => {
   it("'btree#unit'", (next) => {
-    const btree = Tree.unit(1);
+    const btree = BTree.unit(1);
     console.log(btree);
-    Tree.match(btree,{
+    BTree.match(btree,{
       leaf: (value) => {
         expect(value ).to.eql(1);
 
@@ -23,18 +23,18 @@ describe("'bTree' module", () => {
     next();
   });
   it("'btree#size'", (next) => {
-    const btree = Tree.mkBtree(List.mkList([0,1,2,3]));
+    const btree = BTree.mkBtree(List.mkList([0,1,2,3]));
     expect(
-      Tree.size(btree)
+      BTree.size(btree)
     ).to.eql(
       4
     );
     next();
   });
   it("'btree#map'", (next) => {
-    const btree = Tree.mkBtree(List.mkList([0,1,2]));
+    const btree = BTree.mkBtree(List.mkList([0,1,2]));
     expect(
-      List.toArray(Tree.flatten(Tree.map(btree)(n => {
+      List.toArray(BTree.flatten(BTree.map(btree)(n => {
         return n * 2;
       })))
     ).to.eql(
@@ -43,9 +43,9 @@ describe("'bTree' module", () => {
     next();
   });
   it("'btree#flatten'", (next) => {
-    const btree = Tree.mkBtree(List.mkList([0,1,2,3]));
+    const btree = BTree.mkBtree(List.mkList([0,1,2,3]));
     expect(
-      List.toArray(Tree.flatten(btree))
+      List.toArray(BTree.flatten(btree))
     ).to.eql(
       [0,1,2,3]
     );
