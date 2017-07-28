@@ -42,8 +42,7 @@ describe("'IO' monad", () => {
   });
   it("IO#flatMap", (next) => {
     var readDecimal = IO.readFile("./test/resource/decimal.txt");
-    // console.log(readDecimal.run())
-    console.log(parseInt(IO.run(readDecimal), 10).toString(16));
+    // console.log(parseInt(IO.run(readDecimal), 10).toString(16));
     IO.flatMap(readDecimal)((decimal) => {
       console.log(decimal);
       return IO.print(parseInt(decimal, 10).toString(16));
@@ -51,15 +50,27 @@ describe("'IO' monad", () => {
     next();
   });
   it('run関数の利用法', (next) => {
-    expect(
-      IO.run(IO.println("名前はまだない")) 
-    ).to.eql(
-      null
-    );
+    IO.run(IO.println("名前はまだない")) 
     next();
+  });
+  describe('文字列出力', () => {
+    it('IO#puts', (next) => {
+      IO.run(IO.puts(List.fromString("IO#puts")))
+      // IO.puts(List.fromString("IO#puts"))
+      next();
+    });
+    it('IO#putStrLn', (next) => {
+      IO.run(IO.putStrLn("IO#putStrLn")) 
+      // IO.putStrLn("IO#putStrLn")
+      next();
+    });
   });
   describe('IOアクションを合成する', () => {
     /* IO.seq:: IO[a] => IO[b] => IO[b] */
+    it("IO#seq", (next) => {
+        IO.seq(IO.putc("A"))(IO.putc("B")) 
+      next();
+    });
     it("'print'", (next) => {
       var printer = IO.print("this is a test");
       IO.run(printer);
