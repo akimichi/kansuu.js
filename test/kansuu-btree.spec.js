@@ -1,22 +1,26 @@
 "use strict";
 
-var expect = require('expect.js');
-var __ = require('../lib/kansuu.js');
-var base = require('../lib/kansuu-base.js');
+const expect = require('expect.js'),
+  __ = require('../lib/kansuu.js'),
+  base = require('../lib/kansuu-base.js'),
+  Tree = require('../lib/kansuu-tree.js');
 
 
-describe("'btree' module", () => {
-  // it("'btree#mkBtree'", (next) => {
-  //   var mkBtree = __.btree.mkBtree.bind(__);
-  //   var btree = mkBtree(__.list.mkList.call(__, [0,1,2]));
-  //   console.log(btree);
-  //   expect(
-  //     btree.leaf
-  //   ).to.eql(
-  //     4
-  //   );
-  //   next();
-  // });
+describe("'bTree' module", () => {
+  it("'btree#unit'", (next) => {
+    const btree = Tree.unit(1);
+    console.log(btree);
+    Tree.match(btree,{
+      leaf: (value) => {
+        expect(value ).to.eql(1);
+
+      },
+      fork: (a, b) => {
+        expect().fail() 
+      }
+    });
+    next();
+  });
   it("'btree#size'", (next) => {
     this.timeout(3000);
     var btree = __.btree.mkBtree.call(__, __.list.mkList.call(__, [0,1,2,3]));
