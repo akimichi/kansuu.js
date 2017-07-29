@@ -108,9 +108,6 @@ describe("Kansuu module", () => {
   //     next();
   //   });
   // });
-  describe("'array' module", () => {
-    it("'empty'");
-  });
   describe("combinators", () => {
     var S = __.combinator.S;
     var K = __.combinator.K;
@@ -383,7 +380,7 @@ describe("Kansuu module", () => {
       return n + 1;
     };
     expect(
-      __.times.call(__,3)(succ)(0)
+      __.times(3)(succ)(0)
     ).to.be(
       3
     );
