@@ -37,7 +37,7 @@ describe("combinators", () => {
     expect(succ(1)).to.eql(2);
     next();
   });
-  it('fac', function(next) {
+  it('fac', (next) => {
     // var plus = function(x){
     //    return function(y){
     //      return x + y;
@@ -74,8 +74,8 @@ describe("combinators", () => {
     //      };
     //    };
     // };
-    var averageX = function(x){
-      return C(B(__.div)(__.add(x)))(2);
+    var averageX = (x) => {
+      return C(B(math.div)(math.add(x)))(2);
       //return C(B(__.divide)(__.add(x)))(2);
       //return C(B(divide)(plus(x)))(2);
     };
@@ -95,13 +95,5 @@ describe("combinators", () => {
   //  };
   //  expect(F(1)(0)).to.eql(1);
   // });
-  it("'until'", (next) => {
-    expect(
-      __.until(math.isMoreThan(100))(math.multiply(7))(1)
-    ).to.eql(
-      343
-    );
-    next();
-  });
 });
 
