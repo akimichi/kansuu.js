@@ -22,6 +22,11 @@ kansuu.js$ npm test
 ### prime stream
 
 ~~~js
+const Stream = require('kansuu.js').stream,
+ Pair = require('kansuu.js').pair,
+ Maybe = require('kansuu.js').monad.maybe,
+ List = require('kansuu.js').monad.list;
+
 const primes = Stream.cons(2, (_) => {
   const stream = Stream.unfold(3)(n => {
     return Maybe.just(Pair.cons(n, n+1));

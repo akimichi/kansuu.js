@@ -4,6 +4,7 @@ const expect = require('expect.js');
 const __ = require('../lib/kansuu.js');
 const base = require('../lib/kansuu-base.js');
 const math = require('../lib/kansuu-math.js');
+const List = require('../lib/kansuu-monad.js').list;
 
 describe("math module", () => {
   describe("arithmetic", () => {
@@ -33,7 +34,7 @@ describe("math module", () => {
       true
     );
     expect(
-      math.isPrime.bind(__)(2)
+      math.isPrime(2)
     ).to.eql(
       true
     );
@@ -66,6 +67,19 @@ describe("math module", () => {
     ).to.be(true);
     next();
   });
+  it("'factors'", (next) =>{
+    expect(
+      List.toArray(math.factors(84))
+    ).to.eql(
+      [ 2, 2, 3, 7 ]
+    );
+    expect(
+      List.toArray(math.factors(123))
+    ).to.eql(
+      [3,41]
+    );
+    next();
+  });
   // it("'lower'", function(next) {
   //   expect(math.lower.bind(__)(17.3)).to.be(-1);
   //   next();
@@ -95,19 +109,6 @@ describe("math module", () => {
 //       toArray(__.stream.take.bind(__)(primes)(10))
 //     ).to.eql(
 //       [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 ]
-//     );
-//     next();
-//   });
-//   it("'factors'", function(next) {
-//     expect(
-//       toArray(math.factors.call(math,84))
-//     ).to.eql(
-//       [ 2, 2, 3, 7 ]
-//     );
-//     expect(
-//       toArray(math.factors.call(math,123))
-//     ).to.eql(
-//       [3,41]
 //     );
 //     next();
 //   });
