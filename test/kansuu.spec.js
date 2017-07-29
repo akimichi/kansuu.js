@@ -186,10 +186,10 @@ describe("Kansuu module", () => {
         next();
       });
     });
-    describe("uncurry", function() {
-      it("'uncurry' should curry function", function(next) {
-        var addCurried = function(n1){
-          return function (n2){
+    describe("uncurry", () => {
+      it("'uncurry' should curry function", (next) => {
+        var addCurried = (n1) => {
+          return (n2) => {
             return n1 + n2;
           };
         };

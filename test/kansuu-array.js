@@ -29,10 +29,22 @@ describe("array", () => {
     expect(Array.tail([0,1,2,3])).to.eql([1,2,3]);
     next();
   });
-  it("'concat'", (next) =>  {
+  it("Array#concat", (next) =>  {
     var xs = [0,1];
     var ys = [2,3];
     expect(Array.concat(xs,ys)).to.eql([0,1,2,3]);
+    expect(xs).to.eql([0,1]);
+    expect(ys).to.eql([2,3]);
+    next();
+  });
+  it("Array#append", (next) =>  {
+    var xs = [0,1];
+    var ys = [2,3];
+    expect(
+      Array.append(xs)(ys)
+    ).to.eql(
+      [0,1,2,3]
+    );
     expect(xs).to.eql([0,1]);
     expect(ys).to.eql([2,3]);
     next();
@@ -239,6 +251,15 @@ describe("array", () => {
     expect(Array.zip(listX)(listY)).to.eql([[0,'h'],[1,'a'],[2,'l'],[3,'l'],[4,'o']]);
     next();
   });
+  it("Array#flatten", (next) =>  {
+    expect(
+      Array.flatten([[1]])
+    ).to.eql(
+       [1] 
+    )
+    next();
+  });
+
   describe("folding functions", () => {
     it("'reduce'", (next) => {
       var list = [1,2,3];
