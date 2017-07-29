@@ -1,10 +1,10 @@
 "use strict";
 
-const expect = require('expect.js');
-const __ = require('../lib/kansuu.js');
-const Array = require('../lib/kansuu-array.js');
-const Pair = require('../lib/kansuu-pair.js');
-const math = require('../lib/kansuu-math.js');
+const expect = require('expect.js'),
+  __ = require('../lib/kansuu.js'),
+  Array = require('../lib/kansuu-array.js'),
+  Pair = require('../lib/kansuu-pair.js'),
+  math = require('../lib/kansuu-math.js');
 
 
 describe("array", () => {
@@ -293,5 +293,4 @@ describe("array", () => {
       next();
     });
   });
-
 });
