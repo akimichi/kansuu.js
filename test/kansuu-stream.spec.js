@@ -1,19 +1,16 @@
 "use strict";
 
-const expect = require('expect.js');
-const list = require('../lib/kansuu-list.js');
-const Pair = require('../lib/kansuu-pair.js');
-const Stream = require('../lib/kansuu-stream.js');
-const Maybe = require('../lib/kansuu-monad.js').maybe;
+const expect = require('expect.js'),
+  List = require('../lib/kansuu-monad.js').list,
+  Pair = require('../lib/kansuu-pair.js'),
+  Stream = require('../lib/kansuu-stream.js'),
+  Maybe = require('../lib/kansuu-monad.js').maybe;
 
 
 describe("'stream' module", () => {
   describe("mkStream", () => {
     var intStream = Stream.mkStream([0,1,2,3,4,5]);
     it("can make a stream", (next) => {
-      // var stream = __.stream.mkStream.bind(__)(0)(function (n){
-      //   return n + 1;
-      // });
       expect(
         Stream.head(intStream)
       ).to.eql(0);
@@ -60,18 +57,34 @@ describe("'stream' module", () => {
       ).to.eql(2);
       next();
     });
-    it("stream#take(n)", (next) => {
-      var intStream = Stream.mkStream([0,1,2,3,4,5]);
-      var takenOne = Stream.take(intStream)(1);
+    it("stream#take", (next) => {
+      const intStream = Stream.mkStream([0,1,2,3,4,5]);
+      const takenOne = Stream.take(intStream)(1);
+
       expect(
         Stream.head(takenOne)
       ).to.equal(
         0 
       )
-      // expect(((_)=> {
-      //   var taken = __.stream.take.bind(__)(intStream)(2);
-      //   return __.list.isEqual.bind(__)(taken)(__.list.mkList.bind(__)([0,1]));
-      // })()).to.ok();
+      expect(
+        List.toArray(Stream.take(intStream)(0))
+      ).to.eql(
+        []
+      );
+      expect(
+        List.toArray(Stream.take(intStream)(1))
+      ).to.eql(
+        [0]
+      );
+      expect(
+        List.toArray(Stream.take(intStream)(2))
+      ).to.eql(
+        [0,1]
+      );
+      expect(((_)=> {
+        var taken = Stream.take(intStream)(2);
+        return List.isEqual(taken, List.mkList([0,1]));
+      })()).to.ok();
       next();
     });
     describe("stream#unfold", () =>  {
@@ -112,15 +125,6 @@ describe("'stream' module", () => {
       //    next();
       // });
     });
-    // it("take(stream)(n)", function(next) {
-    //   var ints = __.stream.next.bind(__)(0)(function (n){
-    //    return n + 1;
-    //   });
-    //   expect(
-    //    __.stream.take.bind(__)(ints)(3)
-    //   ).to.eql([0,1,2]);
-    //   next();
-    // });
     // it("stream#repeat", function(next) {
     //   var ones = __.stream.repeat.bind(__)(1);
     //   expect(
