@@ -53,7 +53,11 @@ describe("Kansuu module", () => {
       next();
     });
     it("'falsy'", (next) => {
-      expect(__.falsy.bind(__)(1)).to.be(false);
+      expect(
+        __.falsy(1)
+      ).to.be(
+        false
+      );
       next();
     });
     describe("'isEmpty'", () => {

@@ -48,21 +48,21 @@ describe("math module", () => {
     expect(math.isLessThan(3)(2)).to.be(true);
     next();
   });
-  it("'leq'", function(next) {
+  it("'leq'", (next) => {
     expect(
-      math.leq.bind(__)(0)(0)
+      math.leq(0)(0)
     ).to.be(true);
     expect(
-      math.leq.bind(__)(0)(2)
+      math.leq(0)(2)
     ).to.be(true);
     next();
   });
-  it("'geq'", function(next) {
+  it("'geq'", (next) => {
     expect(
-      math.geq.bind(__)(0)(0)
+      math.geq(0)(0)
     ).to.be(true);
     expect(
-      math.geq.bind(__)(2)(1)
+      math.geq(2)(1)
     ).to.be(true);
     next();
   });

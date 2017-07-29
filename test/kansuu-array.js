@@ -278,40 +278,53 @@ describe("array", () => {
 
   describe("filter", function() {
     it("'単純なフィルター'", (next) =>  {
-      var even = function(n){
+      const even = (n) => {
         return (n % 2) === 0;
       };
-      expect(Array.filter([1,2,3,4,5])(even)).to.eql([ 2, 4]);
-      expect(Array.filter([1,2,3,4,5])(function(n){
-        return n > 3;
-      })).to.eql([4,5]);
-      var odd = function(n){
-        return __.not(even(n));
-        //return Array.not(even)(n);
-      };
-      expect(Array.filter([1,2,3])(odd)).to.eql([1,3]);
-      next();
-    });
-    it('は複雑な条件をフィルターできる', (next) => {
-      var one = function(n){
-        return n === 1;
-      };
-      var two = function(n){
-        return n === 2;
-      };
-      var list = [1,2,3,4,5,6,7,8,9,10,11,12,13];
-      var multipleOf2 = function(n){
-        return 0 === (n % 2);
-      };
-      var multipleOf3 = function(n){
-        return 0 === (n % 3);
-      };
       expect(
-        Array.filter(list)(__.andify(multipleOf2)(multipleOf3))
+        Array.filter([1,2,3,4,5])(even)
       ).to.eql(
-        [6,12]
+        [ 2, 4]
+      );
+      expect(
+        Array.filter([1,2,3,4,5])(function(n){
+          return n > 3;
+        })
+      ).to.eql(
+        [4,5]
+      );
+      const odd = __.not(even);
+      // var odd = (n) => {
+      //   return __.not(even(n));
+      //   //return Array.not(even)(n);
+      // };
+      expect(
+        Array.filter([1,2,3])(odd)
+      ).to.eql(
+        [1,3]
       );
       next();
     });
+    // it('は複雑な条件をフィルターできる', (next) => {
+    //   var one = function(n){
+    //     return n === 1;
+    //   };
+    //   var two = function(n){
+    //     return n === 2;
+    //   };
+    //   var list = [1,2,3,4,5,6,7,8,9,10,11,12,13];
+    //   var multipleOf2 = function(n){
+    //     return 0 === (n % 2);
+    //   };
+    //   var multipleOf3 = function(n){
+    //     return 0 === (n % 3);
+    //   };
+    //   expect(
+    //     Array.filter(list)(__.andify(multipleOf2)(multipleOf3))
+    //   ).to.eql(
+    //     [6,12]
+    //   );
+    //   next();
+    // });
   });
 });

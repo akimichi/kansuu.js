@@ -28,11 +28,11 @@ describe("combinators", () => {
     next();
   });
   it('S add I 7 == 14', function(next) {
-    expect(S(__.add)(I)(7)).to.eql(14);
+    expect(S(math.add)(I)(7)).to.eql(14);
     next();
   });
   it('succ == S(S(K add)(K 1)) I', function(next) {
-    var succ = S(S(K(__.add))(K(1)))(I);
+    var succ = S(S(K(math.add))(K(1)))(I);
     expect(succ(0)).to.eql(1);
     expect(succ(1)).to.eql(2);
     next();
