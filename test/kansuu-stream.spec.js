@@ -1,6 +1,7 @@
 "use strict";
 
 const expect = require('expect.js'),
+  math = require('../lib/kansuu-math.js'),
   List = require('../lib/kansuu-monad.js').list,
   Pair = require('../lib/kansuu-pair.js'),
   Stream = require('../lib/kansuu-stream.js'),
@@ -107,23 +108,20 @@ describe("'stream' module", () => {
         // })()).to.ok();
         next();
       });
-      // it("prime stream", function(next) {
-      //    var stream = __.stream.unfold.bind(__)(2)((n) => {
-      //      if(math.isPrime(n)) {
-      //        return __.monad.maybe.unit.bind(__)(__.pair.cons.bind(__)(n)(n+1));
-      //      } else {
-      //        return __.monad.maybe.nothing;
-      //      }
-      //    });
-      //    __.stream.censor(stream);
-      //    expect(((_)=> {
-      //      var list = __.stream.take.bind(__)(stream)(10);
-      //      return __.list.toArray.bind(__)(list);
-      //    })()).to.eql(
-      //      [2,3]
-      //    );
-      //    next();
-      // });
+      it("prime stream", (next) => {
+        const primes = Stream.cons(2, (_) => {
+          const stream = Stream.unfold(3)(n => {
+            return Maybe.just(Pair.cons(n, n+1));
+          });
+          return Stream.filter(stream)(math.isPrime); 
+        });
+        expect(
+          List.toArray(Stream.take(primes)(20))
+        ).to.eql(
+          [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71]
+        );
+        next();
+      });
     });
     // it("stream#repeat", function(next) {
     //   var ones = __.stream.repeat.bind(__)(1);
