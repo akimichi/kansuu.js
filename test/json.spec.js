@@ -1,7 +1,7 @@
 "use strict";
 
 const expect = require('expect.js');
-const List = require('../lib/kansuu-list.js');
+const List = require('../lib/kansuu-monad.js').list;
 const Pair = require('../lib/kansuu-pair.js');
 const Stream = require('../lib/kansuu-stream.js');
 

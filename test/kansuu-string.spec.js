@@ -2,7 +2,7 @@
 
 var expect = require('expect.js');
 const string = require('../lib/kansuu-string.js');
-const List = require('../lib/kansuu-list.js');
+const List = require('../lib/kansuu-monad.js').list;
 
 describe("'string' module", () => {
   it("'head'", (next) => {

@@ -3,7 +3,7 @@
 var expect = require('expect.js');
 var __ = require('../lib/kansuu.js');
 var qc = require('../lib/kensho.js');
-const List = require('../lib/kansuu-list.js');
+const List = require('../lib/kansuu-monad.js').list;
 const Stream = require('../lib/kansuu-stream.js');
 
 describe("Kensho module", () => {

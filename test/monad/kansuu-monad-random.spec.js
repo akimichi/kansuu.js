@@ -3,7 +3,7 @@
 var util = require('util');
 var expect = require('expect.js');
 
-const List = require('../../lib/kansuu-list.js'),
+const List = require('../../lib/kansuu-monad.js').list,
   __ = require('../../lib/kansuu.js'),
   math = require('../../lib/kansuu-math.js'),
   Maybe = require('../../lib/kansuu-monad.js').maybe,
