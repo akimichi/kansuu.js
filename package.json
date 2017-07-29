@@ -4,7 +4,7 @@
   "description": "Yet another functional programming library for node.js",
   "main": "lib/kansuu.js",
   "scripts": {
-    "test": "mocha -R spec test/*.js"
+    "test": "mocha -R spec --recursive test/*.js"
   },
   "repository": {
     "type": "git",

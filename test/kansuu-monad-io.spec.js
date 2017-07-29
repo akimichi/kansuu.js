@@ -26,23 +26,27 @@ describe("'IO' monad", () => {
   // IOモナドで参照透過性を確保する
   it('IOモナドで参照透過性を確保する', (next) => {
     expect(
-      IO.flatMap(IO.readFile("./test/resource/state.txt"))((content) => {
-        return IO.flatMap(IO.println(content))((_) => {
-          return IO.done(_);
+      IO.run(IO.flatMap(IO.readFile("./test/resource/state.txt"))(fileContent => {
+        return IO.flatMap(IO.println(fileContent))(content => {
+          return IO.done(content);
         });
-      })()
+      })())
     ).to.eql(
-      IO.flatMap(IO.readFile("./test/resource/state.txt"))((content) => {
-        return IO.flatMap(IO.println(content))((_) => {
-          return IO.done(_);
+      IO.run(IO.flatMap(IO.readFile("./test/resource/state.txt"))(fileContent => {
+        return IO.flatMap(IO.println(fileContent))(content => {
+          return IO.done(content);
         });
-      })()
+      })())
+      // IO.flatMap(IO.readFile("./test/resource/state.txt"))((content) => {
+      //   return IO.flatMap(IO.println(content))((_) => {
+      //     return IO.done(_);
+      //   });
+      // })()
     );
     next();
   });
   it("IO#flatMap", (next) => {
     var readDecimal = IO.readFile("./test/resource/decimal.txt");
-    // console.log(parseInt(IO.run(readDecimal), 10).toString(16));
     IO.flatMap(readDecimal)((decimal) => {
       console.log(decimal);
       return IO.print(parseInt(decimal, 10).toString(16));
