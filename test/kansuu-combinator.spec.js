@@ -95,5 +95,13 @@ describe("combinators", () => {
   //  };
   //  expect(F(1)(0)).to.eql(1);
   // });
+  it("'until'", (next) => {
+    expect(
+      __.until(math.isMoreThan(100))(math.multiply(7))(1)
+    ).to.eql(
+      343
+    );
+    next();
+  });
 });
 

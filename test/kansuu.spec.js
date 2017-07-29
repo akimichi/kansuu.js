@@ -145,6 +145,14 @@ describe("Kansuu module", () => {
     });
   });
   describe("higher-order functions", function() {
+    it("'until'", (next) => {
+      expect(
+        __.until(math.isMoreThan(100))(math.multiply(7))(1)
+      ).to.eql(
+        343
+      );
+      next();
+    });
     describe("loop", function() {
       it('can iterate', function(next) {
         var lessThan = function(n){
@@ -199,16 +207,6 @@ describe("Kansuu module", () => {
    curry (uncurry E ) = E
    uncurry (curry E ) = E
    */
-  describe("misc", function() {
-    it("'until'", function(next) {
-      expect(
-        __.until(math.isMoreThan(100))(math.multiply(7))(1)
-      ).to.eql(
-        343
-      );
-      next();
-    });
-  }),
   describe("functional composition", () => {
     describe("'compose'", () => {
       it("'compose one argument functions'", (next) => {
