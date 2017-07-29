@@ -1,5 +1,4 @@
 (function(exports) {
-
   "use strict";
 
   // medical functions
@@ -12,43 +11,43 @@
 
 
   var self = {
-	algebraic: {
+    algebraic: {
       male: (data) => {
-		return (pattern) => {
+        return (pattern) => {
           return pattern.male(data);
-		};
+        };
       },
       female: (data) => {
-		return (pattern) => {
+        return (pattern) => {
           return pattern.female(data);
-		};
+        };
       },
       evaluate: (person) => {
-		return __.algebraic.match(person, {
+        return __.match(person, {
           male: (data) => {
-			return {
-			  BMI: self.BMI(data.weight, data.height),
-			  // total body water
-			  //TBW: data.weight * 0.6,
-			  // @<m>{(0.194786 * height?) + (0.296785 * weight?) - 14.012934}
-			  TBW: (0.194786 * data.height) + (0.296785 * data.weight) - 14.012934,
-			  // estimated blood volume
-			  EBV: 0.168 * Math.pow(data.height,3) + 0.050 * data.weight + 0.444
-			};
+            return {
+              BMI: self.BMI(data.weight, data.height),
+              // total body water
+              //TBW: data.weight * 0.6,
+              // @<m>{(0.194786 * height?) + (0.296785 * weight?) - 14.012934}
+              TBW: (0.194786 * data.height) + (0.296785 * data.weight) - 14.012934,
+              // estimated blood volume
+              EBV: 0.168 * Math.pow(data.height,3) + 0.050 * data.weight + 0.444
+            };
           },
           female: (data) => {
-			return {
-			  BMI: self.BMI(data.weight, data.height),
-			  //TBW: data.weight * 0.5,
-			  TBW: (0.344547 * data.height) + (0.183809 * data.weight) - 35.270121,
-			  // @<m>{(0.344547 * height? + (0.183809 * weight?) - 35.270121}
-			  // estimated blood volume = 0.250 \times height^3 + 0.625 \times weight - 0.662
-			  EBV: 0.250 * Math.pow(data.height,3) + 0.625 * data.weight - 0.662
-			};
+            return {
+              BMI: self.BMI(data.weight, data.height),
+              //TBW: data.weight * 0.5,
+              TBW: (0.344547 * data.height) + (0.183809 * data.weight) - 35.270121,
+              // @<m>{(0.344547 * height? + (0.183809 * weight?) - 35.270121}
+              // estimated blood volume = 0.250 \times height^3 + 0.625 \times weight - 0.662
+              EBV: 0.250 * Math.pow(data.height,3) + 0.625 * data.weight - 0.662
+            };
           },
-		});
+        });
       }
-	},
+    },
 	/* #@range_begin(BMI) */
 	BMI: (weight /* kg */, height /* cm */) => {
 	  var height_in_meter = height / 100.0;
