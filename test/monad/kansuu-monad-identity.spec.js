@@ -1,9 +1,9 @@
 "use strict";
 
-var util = require('util');
-var expect = require('expect.js');
-var __ = require('../lib/kansuu.js');
-const ID = require('../lib/kansuu-monad.js').identity;
+const util = require('util'),
+  expect = require('expect.js'),
+  __ = require('../../lib/kansuu.js'),
+  ID = require('../../lib/kansuu-monad.js').identity;
 // var seedrandom = require('seedrandom');
 // var Random = require("random-js");
 // var rng = Random.engines.mt19937();

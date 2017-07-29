@@ -1,14 +1,14 @@
 "use strict";
 
-const util = require('util');
-const expect = require('expect.js');
-const __ = require('../lib/kansuu.js');
-const math = require('../lib/kansuu-math.js');
-const List = require('../lib/kansuu-list.js');
-const seedrandom = require('seedrandom');
-const Random = require("random-js");
-const rng = Random.engines.mt19937();
-const Maybe = require('../lib/kansuu-monad.js').maybe;
+const util = require('util'),
+  expect = require('expect.js'),
+  __ = require('../../lib/kansuu.js'),
+  math = require('../../lib/kansuu-math.js'),
+  List = require('../../lib/kansuu-list.js'),
+  Maybe = require('../../lib/kansuu-monad.js').maybe,
+  seedrandom = require('seedrandom'),
+  Random = require("random-js"),
+  rng = Random.engines.mt19937();
 
 describe("'maybe' monad", () => {
   const isEqual = Maybe.isEqual;

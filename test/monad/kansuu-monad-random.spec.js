@@ -2,12 +2,13 @@
 
 var util = require('util');
 var expect = require('expect.js');
-var __ = require('../lib/kansuu.js');
-var math = require('../lib/kansuu-math.js');
-const List = require('../lib/kansuu-list.js'),
-  Maybe = require('../lib/kansuu-monad.js').maybe,
-  Pair = require('../lib/kansuu-pair.js'),
-  Random = require('../lib/kansuu-monad.js').random;
+
+const List = require('../../lib/kansuu-list.js'),
+  __ = require('../../lib/kansuu.js'),
+  math = require('../../lib/kansuu-math.js'),
+  Maybe = require('../../lib/kansuu-monad.js').maybe,
+  Pair = require('../../lib/kansuu-pair.js'),
+  Random = require('../../lib/kansuu-monad.js').random;
 const RandomJs = require("random-js"),
  rng = RandomJs.engines.mt19937();
 var seedrandom = require('seedrandom');

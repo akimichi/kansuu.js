@@ -7,10 +7,10 @@ const util = require('util'),
   rng = Random.engines.mt19937(),
   fs = require('fs');
 
-var __ = require('../lib/kansuu.js');
-var math = require('../lib/kansuu-math.js');
-const List = require('../lib/kansuu-monad.js').list,
-  IO = require('../lib/kansuu-monad.js').io;
+const __ = require('../../lib/kansuu.js'),
+  math = require('../../lib/kansuu-math.js'),
+  List = require('../../lib/kansuu-monad.js').list,
+  IO = require('../../lib/kansuu-monad.js').io;
 
 describe("'IO' monad", () => {
   it("IO#unit", (next) => {
