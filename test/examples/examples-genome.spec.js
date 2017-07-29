@@ -1,14 +1,14 @@
 "use strict";
 
-var expect = require('expect.js');
-var __ = require('../lib/kansuu.js');
-var base = require('../lib/kansuu-base.js');
-var Array = require('../lib/kansuu-array.js');
-var genome = require('../examples/genome.js');
+const expect = require('expect.js'),
+  __ = require('../../lib/kansuu.js'),
+  base = require('../../lib/kansuu-base.js'),
+  Array = require('../../lib/kansuu-array.js'),
+  genome = require('../../examples/genome.js');
 
 describe("'genome' example", () => {
 
-  describe('complements', function() {
+  describe('complements', () => {
     it('can return its complements', (next) => {
       expect(
         genome.complements(['G', 'C', 'G'])

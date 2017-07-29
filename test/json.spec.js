@@ -7,19 +7,19 @@ const Stream = require('../lib/kansuu-stream.js');
 
 var __ = require('../lib/kansuu.js');
 
-describe("json test", function() {
-  describe("object json test", function() {
-    var object = require('./json/object.json');
-    it("get property", function(next) {
+describe("json test", () => {
+  describe("object json test", () => {
+    var object = require('./resource/object.json');
+    it("get property", (next) => {
       expect(object["Contents"].length).to.be(13);
       next();
     });
   });
 
   describe("array json test", function() {
-    var array = require('./json/array.json');
+    var array = require('./resource/array.json');
 
-    it("'length''", function(next) {
+    it("'length''", (next) => {
       expect(array.length).to.be(13);
       next();
     });

@@ -1,11 +1,11 @@
 "use strict";
 
 const expect = require('expect.js'),
- __ = require('../lib/kansuu.js'),
- ID = require('../lib/kansuu-monad.js').identity,
- Pair = require('../lib/kansuu-pair.js'),
- List = require('../lib/kansuu-monad.js').list,
- Parser = require('../examples/parser.js');
+ __ = require('../../lib/kansuu.js'),
+ ID = require('../../lib/kansuu-monad.js').identity,
+ Pair = require('../../lib/kansuu-pair.js'),
+ List = require('../../lib/kansuu-monad.js').list,
+ Parser = require('../../examples/parser.js');
 // var PP = require('../lib/pprinter.js');
 
 describe('パーサーコンビネーター', () => {

@@ -1,9 +1,9 @@
 "use strict";
 
-var expect = require('expect.js');
-var __ = require('../lib/kansuu.js');
-var base = require('../lib/kansuu-base.js');
-var med = require('../examples/medical.js');
+const expect = require('expect.js'),
+  __ = require('../../lib/kansuu.js'),
+  base = require('../../lib/kansuu-base.js'),
+  med = require('../../examples/medical.js');
 
 describe("'medical' example", () => {
   it('BMI', (next) => {

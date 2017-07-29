@@ -1,9 +1,9 @@
 "use strict";
 
 var expect = require('expect.js');
-var __ = require('../lib/kansuu.js');
-var base = require('../lib/kansuu-base.js');
-var math = require('../examples/math.js');
+var __ = require('../../lib/kansuu.js');
+var base = require('../../lib/kansuu-base.js');
+var math = require('../../examples/math.js');
 
 describe("'math' example", () => {
   it('multiplyOf', (next) => {
