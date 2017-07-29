@@ -5,6 +5,7 @@ Yet another functional programming library for node.js.
 Please note that this module is in very experimental stage.
 It requires node v8.1 or above.
 
+The 'motto' of this library is 'the same power with less magic'.
 
 ## Usage
 
@@ -19,7 +20,8 @@ kansuu.js$ npm test
 
 ## Examples
 
-### prime stream
+
+### Prime numbers in stream
 
 ~~~js
 const Stream = require('kansuu.js').stream,
@@ -40,7 +42,6 @@ expect(
   [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71]
 );
 ~~~
-
 
 
 ## Docs
