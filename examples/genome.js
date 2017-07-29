@@ -112,7 +112,6 @@ const codons = (seq) => {
 const transcript = (dnacodon) => {
   expect(dnacodon).to.an('array');
   expect(dnacodon.length).to.eql(3);
-  //fj.demand([fj.existy(dnacodon, fj.isArray(dnacodon, dnacodon.length === 3))], "the argument " + dnacodon + " should be a codon");
   const t2u = (base) => {
     if (base === "T") {
       return "U";
