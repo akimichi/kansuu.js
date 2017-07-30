@@ -89,9 +89,9 @@ const Plain = {
         return pattern.lambda(variable, exp);
       };
     },
-    app: (rator,rand) => {
+    apply: (rator,rand) => {
       return (pattern) => {
-        return pattern.app(rator, rand);
+        return pattern.apply(rator, rand);
       };
     }
   },
@@ -138,20 +138,23 @@ const Plain = {
             });
           });
         },
-        lambda: (identifier, bodyExp) => {
-          /* クロージャーを返す */
-          return (actualArg) => {
-            return match(identifier,{ 
-              variable: (name) => {
-                return Plain.evaluate(bodyExp)(Env.extend(Pair.cons(name, actualArg),environment));
-              }
-            });
-          };
+        lambda: (variable, bodyExp) => {
+          return match(variable,{ 
+            variable: (name) => {
+              /* クロージャーを返す */
+              return ID.unit(Maybe.just(
+                (actualArg) => {
+                  const newEnv = Env.extend(Pair.cons(name, actualArg),environment);
+                  return Plain.evaluate(bodyExp)(newEnv);
+                }
+              ));
+            }
+          });
         },
-        app: (exp, arg) => {
-          return ID.flatMap(Plain.evaluate(exp)(environment))(rator => {
-            return ID.flatMap(Plain.evaluate(arg)(environment))(rand => {
-              return ID.unit(Maybe.just(rator(rand)));
+        apply: (lambdaExp, arg) => {
+          return Maybe.flatMap(Plain.evaluate(lambdaExp)(environment))(closure => {
+            return Maybe.flatMap(Plain.evaluate(arg)(environment))(actualArg => {
+              return ID.unit(Maybe.just(closure(actualArg)));
             });
           });
         }

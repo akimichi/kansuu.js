@@ -146,6 +146,25 @@ describe("'interpreter' example", () => {
       });
       next();
     });
+    it('can evaluate lambda expression', (next) => {
+      // ~~~js
+      // ((x) => {
+      //   return x; 
+      // })(1)
+      // ~~~
+      const lambdaExp = I.exp.lambda(I.exp.variable("x"), I.exp.variable("x"));
+      Maybe.match(I.evaluate(lambdaExp)(Env.empty),{
+        nothing: (_) => {
+          expect().fail()
+        },
+        just: (closure) => {
+          Maybe.flatMap(closure(3))(answer => {
+            expect(answer).to.eql(ID.unit(3));
+          });
+        }
+      });
+      next();
+    });
   });
 });
 //     describe("evaluate", () => {
