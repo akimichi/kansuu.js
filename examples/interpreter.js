@@ -10,9 +10,9 @@
 
 const __ = require('../lib/kansuu.js'),
   ID = require('../lib/kansuu.js').monad.identity,
-  expect = require('expect.js'),
-  hasProp = {}.hasOwnProperty;
-
+  Pair = require('../lib/kansuu.js').pair,
+  Maybe = require('../lib/kansuu.js').monad.maybe,
+  expect = require('expect.js');
 
 const match = (exp, pattern) => {
   return exp(pattern);
@@ -22,44 +22,28 @@ const match = (exp, pattern) => {
 // ~~~haskell
 // type Environment = List[(Name, Value)]
 // ~~~
-// env: {
-//   empty: __.list.empty,
-//   extend: (pair, oldenv) => {
-//     __.pair.censor.call(__,pair);
-//     __.list.censor.call(__,oldenv);
-//     return __.list.cons.call(__, pair)(oldenv);
-//   },
-//   lookup: (name, env) => {
-//     var self = this;
-//     return __.list.foldr.call(__,env)(self.ordinary.unit.call(self,undefined))((item) => {
-//       return (accumulator) => {
-//         if(item.left === name) {
-//           return self.ordinary.unit.call(self,item.right);
-//         } else {
-//           return accumulator;
-//         }
-//       };
-//     });
-//   }
-// }
 const Env = {
-  // ## 環境
-  emptyEnv: (variable) => {
-    return undefined;
+  // ## 空の環境
+  empty: (variable) => {
+    return Maybe.nothing;
   },
   /* 変数名に対応する値を環境から取りだす */
-  lookupEnv: (identifier, env) => {
+  lookup: (identifier, env) => {
+    expect(identifier).to.a('string');
     return env(identifier);
   },
   /* 環境を拡張する */
-  extendEnv: (identifier, value, oldenv) => {
+  // extend:: Pair[String,Any] => FUN[]
+  extend: (pair, oldEnv) => {
+    const identifier = Pair.left(pair);
+    const value = Pair.right(pair);
     expect(identifier).to.a('string');
     return (queryIdentifier) => {
       expect(queryIdentifier).to.a('string');
       if(identifier === queryIdentifier) {
-        return value;
+        return Maybe.just(value);
       } else {
-        return lookupEnv(queryIdentifier,oldenv);
+        return Env.lookup(queryIdentifier,oldEnv);
       }
     };
   }

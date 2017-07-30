@@ -1,20 +1,66 @@
 "use strict";
 
-var expect = require('expect.js');
-var __ = require('../../lib/kansuu.js');
-var base = require('../../lib/kansuu-base.js');
-var Ordinary = require('../../examples/interpreter.js').ordinary;
-var Env = require('../../examples/interpreter.js').env;
+const expect = require('expect.js'),
+  __ = require('../../lib/kansuu.js'),
+  base = require('../../lib/kansuu-base.js'),
+  I = require('../../examples/interpreter.js').ordinary,
+  Env = require('../../examples/interpreter.js').env,
+  Maybe = require('../../lib/kansuu.js').monad.maybe,
+  Pair = require('../../lib/kansuu.js').pair;
 
 describe("'interpreter' example", () => {
   describe("environment", () => {
+    it('can lookup empty env', (next) => {
+      Maybe.match(Env.lookup("a", Env.empty),{
+        nothing: (_) => {
+          expect().to.be.ok()
+        },
+        just: (value) => {
+          expect().to.fail()
+        }
+      });
+      next();
+    });
     it('can lookup env', (next) => {
-      const env = Env.extendEnv("a",1, Env.emptyEnv);
-      expect(
-        Env.lookupEnv("a", env)
-      ).to.eql(
-        1
-      );
+      const env = Env.extend(Pair.cons("a",1), Env.empty);
+      Maybe.match(Env.lookup("a", env),{
+        nothing: (_) => {
+          expect().to.fail()
+        },
+        just: (value) => {
+          expect(value).to.eql(1);
+        }
+      });
+      next();
+    });
+    it('can extend and lookup env', (next) => {
+      const env = Env.extend(Pair.cons("a",1), Env.empty);
+      Maybe.match(Env.lookup("a", env),{
+        nothing: (_) => {
+          expect().to.fail()
+        },
+        just: (value) => {
+          expect(value).to.eql(1);
+        }
+      });
+
+      const newEnv = Env.extend(Pair.cons("a",2), env);
+      Maybe.match(Env.lookup("a", newEnv),{
+        nothing: (_) => {
+          expect().to.fail()
+        },
+        just: (value) => {
+          expect(value).to.eql(2);
+        }
+      });
+      Maybe.match(Env.lookup("b", newEnv),{
+        nothing: (_) => {
+          expect().to.be.ok()
+        },
+        just: (value) => {
+          expect().to.fail()
+        }
+      });
       next();
     });
   });
