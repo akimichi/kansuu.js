@@ -150,7 +150,8 @@ describe("'interpreter' example", () => {
       // ~~~js
       // ((x) => {
       //   return x; 
-      // })(1)
+      // })(3)
+      // => 3
       // ~~~
       const lambdaExp = I.exp.lambda(I.exp.variable("x"), I.exp.variable("x"));
       Maybe.match(I.evaluate(lambdaExp)(Env.empty),{
@@ -162,6 +163,22 @@ describe("'interpreter' example", () => {
             expect(answer).to.eql(ID.unit(3));
           });
         }
+      });
+      next();
+    });
+    it('can evaluate function application', (next) => {
+      // ~~~js
+      // ((x) => {
+      //   return x; 
+      // })(3)
+      // => 3
+      // ~~~
+      const lambdaExp = I.exp.lambda(I.exp.variable("x"), I.exp.variable("x"));
+      const appExp = I.exp.apply(lambdaExp, I.exp.number(7));  
+      Maybe.flatMap(I.evaluate(appExp)(Env.empty))(maybeAnswer => {
+        Maybe.flatMap(maybeAnswer)(answer => {
+          expect(answer).to.eql(ID.unit(7));
+        });
       });
       next();
     });

@@ -44,6 +44,101 @@ expect(
 ~~~
 
 
+### Lambda calculus interpreter
+
+
+
+~~~js
+const Env = {
+  empty: (variable) => {
+    return Maybe.nothing(variable);
+  },
+  lookup: (identifier, env) => {
+    return env(identifier);
+  },
+  // extend:: Pair[String,Any] => FUN[]
+  extend: (pair, oldEnv) => {
+    const identifier = Pair.left(pair);
+    const value = Pair.right(pair);
+    return (queryIdentifier) => {
+      if(identifier === queryIdentifier) {
+        return Maybe.just(value);
+      } else {
+        return Env.lookup(queryIdentifier,oldEnv);
+      }
+    };
+  }
+};
+~~~
+
+
+~~~js
+const match = (exp, pattern) => {
+  return exp(pattern);
+};
+
+const exp = {
+  number: (n) => {
+    return (pattern) => {
+      return pattern.number(n);
+    };
+  },
+  variable: (name) => {
+    return (pattern) => {
+      return pattern.variable(name);
+    };
+  },
+  lambda: (variable, exp) => {
+    expect(variable).to.a('function');
+    return (pattern) => {
+      return pattern.lambda(variable, exp);
+    };
+  },
+  apply: (rator,rand) => {
+    return (pattern) => {
+      return pattern.apply(rator, rand);
+    };
+  }
+};
+~~~
+
+~~~js
+const evaluate = (exp) => {
+  return (environment) => {
+    return match(exp, {
+      variable: (name) => {
+        return Env.lookup(name, environment);
+      },
+      number: (n) => {
+        return Maybe.just(n);
+      },
+      lambda: (variable, bodyExp) => {
+        return match(variable,{ 
+          variable: (name) => {
+            return Maybe.just(
+              (actualArg) => {
+                const newEnv = Env.extend(Pair.cons(name, actualArg),environment);
+                return evaluate(bodyExp)(newEnv);
+              }
+            );
+          }
+        });
+      },
+      apply: (lambdaExp, arg) => {
+        return Maybe.flatMap(evaluate(lambdaExp)(environment))(closure => {
+          return Maybe.flatMap(evaluate(arg)(environment))(actualArg => {
+            return Maybe.just(closure(actualArg));
+          });
+        });
+      }
+    });
+  };
+};
+~~~
+
+
+
+
 ## Docs
 
 ~~~
