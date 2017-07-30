@@ -68,6 +68,11 @@ const Plain = {
         return pattern.variable(name);
       };
     },
+    succ: (n) => {
+      return (pattern) => {
+        return pattern.succ(n);
+      };
+    },
     add: (n, m) => {
       return (pattern) => {
         return pattern.add(n,m);
@@ -118,9 +123,14 @@ const Plain = {
           expect(n).to.a('number');
           return ID.unit(Maybe.just(n));
         },
+        succ: (exp)=> {
+          return Maybe.flatMap(Plain.evaluate(exp)(environment))(n => {
+            return ID.unit(Maybe.just(n + 1));
+          });
+        },
         add: (expN,expM)=> {
-          return ID.flatMap(Plain.evaluate(expN)(environment))(n => {
-            return ID.flatMap(Plain.evaluate(expM)(environment))(m => {
+          return Maybe.flatMap(Plain.evaluate(expN)(environment))(n => {
+            return Maybe.flatMap(Plain.evaluate(expM)(environment))(m => {
               return ID.unit(Maybe.just(n + m));
             });
           });

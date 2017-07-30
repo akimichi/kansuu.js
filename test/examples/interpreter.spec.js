@@ -92,20 +92,36 @@ describe("'interpreter' example", () => {
       });
       next();
     });
+    it('can evaluate succ', (next) => {
+      var n = I.exp.number(2);
+      var succExp = I.exp.succ(n);
+      Maybe.match(I.evaluate(succExp)(Env.empty),{
+        nothing: (_) => {
+          expect().fail()
+        },
+        just: (value) => {
+          expect(value).to.eql(ID.unit(3));
+        }
+      });
+      next();
+    });
+    it('can evaluate add', (next) => {
+      var one = I.exp.number(1);
+      var two = I.exp.number(2);
+      var addExp = I.exp.add(one, two);
+      Maybe.match(I.evaluate(addExp)(Env.empty),{
+        nothing: (_) => {
+          expect().fail()
+        },
+        just: (value) => {
+          expect(value).to.eql(ID.unit(3));
+        }
+      });
+      next();
+    });
   });
 });
 //     describe("evaluate", () => {
-//       it('can evaluate add', (next) => {
-//         var n = intp.ordinary.exp.number(2);
-//         var m = intp.ordinary.exp.number(3);
-//         var add = intp.ordinary.exp.add(n,m);
-//         expect(
-//           intp.ordinary.evaluate.call(intp,add)(intp.env.emptyEnv)
-//         ).to.eql(
-//           intp.ordinary.unit.call(intp,5)
-//         );
-//         next();
-//       });
 //       it('can evaluate identity function', (next) => {
 //         var n = intp.ordinary.exp.number(2);
 // 		var x = intp.ordinary.exp.variable("x");
