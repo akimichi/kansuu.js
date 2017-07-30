@@ -336,6 +336,10 @@ const numeric = () => {
 };
 
 
+const symbol = (xs) => {
+  return token(chars(xs));
+};
+
 const boolean = () => {
   const t = List.fromString("#t");
   const f = List.fromString("#f");
@@ -377,9 +381,6 @@ const string = () => {
   );
 };
 
-const symbol = (xs) => {
-  return token(chars(xs));
-};
 
 
 
