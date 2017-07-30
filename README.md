@@ -5,7 +5,7 @@ Yet another functional programming library for node.js.
 Please note that this module is in very experimental stage.
 It requires node v8.1 or above.
 
-The 'motto' of this library is 'the same power with less magic'.
+The 'motto' of this library is to have 'enough power with less magic'.
 
 ## Usage
 
@@ -24,7 +24,8 @@ kansuu.js$ npm test
 ### Prime numbers in stream
 
 ~~~js
-const Stream = require('kansuu.js').stream,
+const math = require('kansuu.js').math,
+ Stream = require('kansuu.js').stream,
  Pair = require('kansuu.js').pair,
  Maybe = require('kansuu.js').monad.maybe,
  List = require('kansuu.js').monad.list;
@@ -80,7 +81,7 @@ const match = (exp, pattern) => {
   return exp(pattern);
 };
 
-const exp = {
+const Exp = {
   number: (n) => {
     return (pattern) => {
       return pattern.number(n);
@@ -105,9 +106,9 @@ const exp = {
 ~~~
 
 ~~~js
-const evaluate = (exp) => {
+const evaluate = (expression) => {
   return (environment) => {
-    return match(exp, {
+    return match(expression, {
       variable: (name) => {
         return Env.lookup(name, environment);
       },
@@ -139,8 +140,8 @@ const evaluate = (exp) => {
 ~~~
 
 ~~~js
-const lambdaExp = exp.lambda(exp.variable("x"), exp.variable("x")),
-  appExp = exp.apply(lambdaExp, exp.number(7));  
+const lambdaExp = Exp.lambda(Exp.variable("x"), Exp.variable("x")),
+  appExp = Exp.apply(lambdaExp, Exp.number(7));  
 
 Maybe.flatMap(evaluate(appExp)(Env.empty))(answer => {
   expect(

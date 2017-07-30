@@ -13,11 +13,11 @@ const expect = require('expect.js'),
 describe("Monadic Parser", () => {
   var abc = List.fromString("abc");
   describe("parse", (next) => {
-    it("empty", (next) => {
+    it("Parser#zero", (next) => {
       var input = List.fromString("abc");
       expect(
         List.isEmpty(
-          Parser.parse(Parser.empty)(input)
+          Parser.parse(Parser.zero)(input)
         )
       ).to.eql(
         true 
@@ -167,6 +167,38 @@ describe("Monadic Parser", () => {
       // );
       next();
     });
+    it("letter", (next) => {
+      expect(
+        Pair.left(
+          List.head(
+          Parser.parse(
+            Parser.letter()
+          )(List.fromString("abc"))
+        ))
+      ).to.eql(
+        'a'
+      );
+      expect(
+        Pair.left(
+          List.head(
+          Parser.parse(
+            Parser.letter()
+          )(List.fromString("ABC"))
+        ))
+      ).to.eql(
+        'A'
+      );
+      // expect(
+      //   PP.print(
+      //     Parser.parse(
+      //       Parser.alphanum()
+      //     )(List.fromString("123"))
+      //   )
+      // ).to.eql(
+      //   '[(1,[2,3,nil]),nil]'
+      // );
+      next();
+    });
     it("alphanum", (next) => {
       expect(
         Pair.left(
@@ -226,6 +258,24 @@ describe("Monadic Parser", () => {
       ).to.eql(
         '#t'
       );
+      next();
+    });
+    it("word", (next) => {
+      const input = List.fromString("Yes!");
+      expect(
+        List.length(Parser.parse(Parser.word())(input))
+      ).to.eql(
+        4 
+      );
+      // expect(
+      //   List.toString(Pair.left(
+      //     List.head(
+      //       Parser.parse(Parser.word())(input)
+      //     )
+      //   ))
+      // ).to.eql(
+      //   ['a','b','c']
+      // );
       next();
     });
   });
@@ -438,6 +488,40 @@ describe("Monadic Parser", () => {
       // );
       next();
     });
+    // it("boolean", (next) => {
+    //   expect(
+    //     Pair.left(
+    //       List.head(
+    //         Parser.parse(
+    //           Parser.boolean()
+    //         )(List.fromString("  #t  "))
+    //       )
+    //     )
+    //   ).to.eql(
+    //     true 
+    //   );
+    //   expect(
+    //     Pair.left(
+    //       List.head(
+    //         Parser.parse(
+    //           Parser.boolean()
+    //         )(List.fromString("  #f  "))
+    //       )
+    //     )
+    //   ).to.eql(
+    //     false 
+    //   );
+    //   // expect(
+    //   //   PP.print(
+    //   //     Parser.parse(
+    //   //       Parser.boolean()
+    //   //     )(List.fromString("  #t  "))
+    //   //   )
+    //   // ).to.eql(
+    //   //   '[(true,[]),nil]'
+    //   // );
+    //   next();
+    // });
     // it("symbol", (next) => {
     //   expect(
     //     PP.print(
