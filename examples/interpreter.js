@@ -161,7 +161,7 @@ const Plain = {
         apply: (lambdaExp, arg) => {
           return Maybe.flatMap(Plain.evaluate(lambdaExp)(environment))(closure => {
             return Maybe.flatMap(Plain.evaluate(arg)(environment))(actualArg => {
-              return ID.unit(Maybe.just(closure(actualArg)));
+              return ID.unit(closure(actualArg));
             });
           });
         }

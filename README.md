@@ -129,7 +129,7 @@ const evaluate = (exp) => {
       apply: (lambdaExp, arg) => {
         return Maybe.flatMap(evaluate(lambdaExp)(environment))(closure => {
           return Maybe.flatMap(evaluate(arg)(environment))(actualArg => {
-            return Maybe.just(closure(actualArg));
+            return closure(actualArg);
           });
         });
       }
@@ -142,14 +142,12 @@ const evaluate = (exp) => {
 const lambdaExp = exp.lambda(exp.variable("x"), exp.variable("x")),
   appExp = exp.apply(lambdaExp, exp.number(7));  
 
-Maybe.flatMap(evaluate(appExp)(Env.empty))(maybeAnswer => {
-  Maybe.flatMap(maybeAnswer)(answer => {
-    expect(
-      answer
-    ).to.eql(
-      7
-    );
-  });
+Maybe.flatMap(evaluate(appExp)(Env.empty))(answer => {
+  expect(
+    answer
+  ).to.eql(
+    7
+  );
 });
 ~~~
 

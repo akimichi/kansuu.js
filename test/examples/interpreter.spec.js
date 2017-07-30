@@ -175,10 +175,8 @@ describe("'interpreter' example", () => {
       // ~~~
       const lambdaExp = I.exp.lambda(I.exp.variable("x"), I.exp.variable("x"));
       const appExp = I.exp.apply(lambdaExp, I.exp.number(7));  
-      Maybe.flatMap(I.evaluate(appExp)(Env.empty))(maybeAnswer => {
-        Maybe.flatMap(maybeAnswer)(answer => {
-          expect(answer).to.eql(ID.unit(7));
-        });
+      Maybe.flatMap(I.evaluate(appExp)(Env.empty))(answer => {
+        expect(answer).to.eql(ID.unit(7));
       });
       next();
     });
