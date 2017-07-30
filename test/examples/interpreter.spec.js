@@ -105,16 +105,43 @@ describe("'interpreter' example", () => {
       });
       next();
     });
+    it("can't evaluate succ with boolean", (next) => {
+      var f = I.exp.bool(false);
+      var succExp = I.exp.succ(f);
+      Maybe.match(I.evaluate(succExp)(Env.empty),{
+        nothing: (_) => {
+          expect(true).to.be.ok()
+        },
+        just: (value) => {
+          expect().fail()
+        }
+      });
+      next();
+    });
     it('can evaluate add', (next) => {
-      var one = I.exp.number(1);
-      var two = I.exp.number(2);
-      var addExp = I.exp.add(one, two);
+      const one = I.exp.number(1),
+        two = I.exp.number(2),
+        addExp = I.exp.add(one, two);
       Maybe.match(I.evaluate(addExp)(Env.empty),{
         nothing: (_) => {
           expect().fail()
         },
         just: (value) => {
           expect(value).to.eql(ID.unit(3));
+        }
+      });
+      next();
+    });
+    it('can evaluate nested add', (next) => {
+      const one = I.exp.number(1),
+        two = I.exp.number(2),
+        addExp = I.exp.add(one, I.exp.add(one, two));
+      Maybe.match(I.evaluate(addExp)(Env.empty),{
+        nothing: (_) => {
+          expect().fail()
+        },
+        just: (value) => {
+          expect(value).to.eql(ID.unit(4));
         }
       });
       next();

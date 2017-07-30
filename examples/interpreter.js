@@ -63,6 +63,11 @@ const Plain = {
         return pattern.number(n);
       };
     },
+    bool: (value) => {
+      return (pattern) => {
+        return pattern.bool(value);
+      };
+    },
     variable: (name) => {
       return (pattern) => {
         return pattern.variable(name);
@@ -99,16 +104,6 @@ const Plain = {
       }
     };
   },
-  // add: (n) => {
-  //   var self = this;
-  //   return (m) => {
-  //     if(__.isNumber(m) && __.isNumber(n)) {
-  //       return self.ordinary.unit.call(self,m + n);
-  //     } else {
-  //       return self.ordinary.unit.call(self,undefined);
-  //     }
-  //   };
-  // },
   // ### plain#evaluate
   evaluate: (exp) => {
     return (environment) => {
@@ -123,9 +118,17 @@ const Plain = {
           expect(n).to.a('number');
           return ID.unit(Maybe.just(n));
         },
+        bool: (value) => {
+          expect(value).to.a('boolean');
+          return ID.unit(Maybe.just(value));
+        },
         succ: (exp)=> {
           return Maybe.flatMap(Plain.evaluate(exp)(environment))(n => {
-            return ID.unit(Maybe.just(n + 1));
+            if(__.typeOf(n) === 'number') {
+              return ID.unit(Maybe.just(n + 1));
+            } else {
+              return ID.unit(Maybe.nothing(n));
+            }
           });
         },
         add: (expN,expM)=> {
@@ -138,9 +141,9 @@ const Plain = {
         lambda: (identifier, bodyExp) => {
           /* クロージャーを返す */
           return (actualArg) => {
-            return match(identifier,{ // maybeを返すべきか？
+            return match(identifier,{ 
               variable: (name) => {
-                return Plain.evaluate(bodyExp)(Env.extendEnv(name, actualArg ,environment));
+                return Plain.evaluate(bodyExp)(Env.extend(Pair.cons(name, actualArg),environment));
               }
             });
           };

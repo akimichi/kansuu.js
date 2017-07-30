@@ -18,6 +18,11 @@ describe("Kansuu module", () => {
       'number'
     );
     expect(
+      __.typeOf(true)
+    ).to.equal(
+      'boolean'
+    );
+    expect(
       __.typeOf(null)
     ).to.equal(
       'null'
