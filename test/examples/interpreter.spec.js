@@ -1,23 +1,24 @@
 "use strict";
 
-// var expect = require('expect.js');
-// var __ = require('../lib/kansuu.js');
-// var base = require('../lib/kansuu-base.js');
-// var intp = require('../examples/interpreter.js');
+var expect = require('expect.js');
+var __ = require('../../lib/kansuu.js');
+var base = require('../../lib/kansuu-base.js');
+var Ordinary = require('../../examples/interpreter.js').ordinary;
+var Env = require('../../examples/interpreter.js').env;
 
-// describe("'interpreter' example", () => {
-//   describe("environment", () => {
-//     it('can lookup env', (next) => {
-//       var env = intp.env.extendEnv.call(intp,
-// 										"a",1,intp.env.emptyEnv);
-//       expect(
-//         intp.env.lookupEnv.call(intp,"a", env)
-//       ).to.eql(
-// 		1
-//       );
-//       next();
-//     });
-//   });
+describe("'interpreter' example", () => {
+  describe("environment", () => {
+    it('can lookup env', (next) => {
+      const env = Env.extendEnv("a",1, Env.emptyEnv);
+      expect(
+        Env.lookupEnv("a", env)
+      ).to.eql(
+        1
+      );
+      next();
+    });
+  });
+});
 //   describe("ordinary", () => {
 //     describe("evaluate", () => {
 //       it('can evaluate variable', (next) => {
@@ -354,4 +355,3 @@
 //   //     });
 //   //   });
 //   // });
-// });

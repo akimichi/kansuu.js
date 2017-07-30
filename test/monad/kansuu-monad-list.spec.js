@@ -291,7 +291,7 @@ describe("'List' module", () => {
   //   );
   //   next();
   // });
-  it("'list.zip' should zip two lists",function(next){
+  it("'list.zip' should zip two lists", (next) => {
     var keys = List.mkList(["a","b","c"]);
     var values = List.mkList([1,2,3]);
     var zipped = List.zip(keys)(values);
@@ -305,6 +305,18 @@ describe("'List' module", () => {
     // ).to.eql(
     //   []
     // );
+    next();
+  });
+  it("'list#pairs'", (next) => {
+    // > pairs [1, 2, 3, 4]
+    // [(1, 2), (2, 3), (3, 4)]
+    const alist = List.mkList([1,2,3,4]);
+    const pairs = List.pairs(alist);
+    expect(
+      List.length(pairs)
+    ).to.eql(
+      3 
+    );
     next();
   });
   // it("'list.zipWith' should zip two lists",(next) => {
@@ -447,19 +459,6 @@ describe("'List' module", () => {
       next();
     });
   });
-  // it("'list#pairs'", function(next) {
-  //   // > pairs [1, 2, 3, 4]
-  //   // [(1, 2), (2, 3), (3, 4)]
-  //   var list = __.list.mkList.bind(__)([1,2,3,4]);
-  //   expect(
-  //     toArray(__.list.pairs.bind(__)(list))
-  //   ).to.eql(
-  //     [ { type: 'pair', left: 1, right: 2 },
-  //       { type: 'pair', left: 2, right: 3 },
-  //       { type: 'pair', left: 3, right: 4 } ]
-  //   );
-  //   next();
-  // });
   // it("'list#and'", function(next) {
   //   expect(function(){
   //     var list = __.list.mkList.bind(__)([true,true]);
