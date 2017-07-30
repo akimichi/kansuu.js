@@ -3,8 +3,8 @@
 const expect = require('expect.js'),
   __ = require('../../lib/kansuu.js'),
   base = require('../../lib/kansuu-base.js'),
-  I = require('../../examples/interpreter.js').ordinary,
   Env = require('../../examples/interpreter.js').env,
+  ID = require('../../lib/kansuu.js').monad.identity,
   Maybe = require('../../lib/kansuu.js').monad.maybe,
   Pair = require('../../lib/kansuu.js').pair;
 
@@ -13,10 +13,10 @@ describe("'interpreter' example", () => {
     it('can lookup empty env', (next) => {
       Maybe.match(Env.lookup("a", Env.empty),{
         nothing: (_) => {
-          expect().to.be.ok()
+          expect(true).to.be.ok()
         },
         just: (value) => {
-          expect().to.fail()
+          expect().fail()
         }
       });
       next();
@@ -25,7 +25,7 @@ describe("'interpreter' example", () => {
       const env = Env.extend(Pair.cons("a",1), Env.empty);
       Maybe.match(Env.lookup("a", env),{
         nothing: (_) => {
-          expect().to.fail()
+          expect().fail()
         },
         just: (value) => {
           expect(value).to.eql(1);
@@ -37,7 +37,7 @@ describe("'interpreter' example", () => {
       const env = Env.extend(Pair.cons("a",1), Env.empty);
       Maybe.match(Env.lookup("a", env),{
         nothing: (_) => {
-          expect().to.fail()
+          expect().fail()
         },
         just: (value) => {
           expect(value).to.eql(1);
@@ -47,7 +47,7 @@ describe("'interpreter' example", () => {
       const newEnv = Env.extend(Pair.cons("a",2), env);
       Maybe.match(Env.lookup("a", newEnv),{
         nothing: (_) => {
-          expect().to.fail()
+          expect().fail()
         },
         just: (value) => {
           expect(value).to.eql(2);
@@ -55,39 +55,46 @@ describe("'interpreter' example", () => {
       });
       Maybe.match(Env.lookup("b", newEnv),{
         nothing: (_) => {
-          expect().to.be.ok()
+          expect(true).to.be.ok()
         },
         just: (value) => {
-          expect().to.fail()
+          expect().fail()
+        }
+      });
+      next();
+    });
+  });
+  describe("Plain interpreter", () => {
+    const I = require('../../examples/interpreter.js').plain;
+
+    it('can evaluate number', (next) => {
+      var exp = I.exp.number(2);
+      Maybe.match(I.evaluate(exp)(Env.empty),{
+        nothing: (_) => {
+          expect().fail()
+        },
+        just: (value) => {
+          expect(value).to.eql(ID.unit(2));
+        }
+      });
+      next();
+    });
+    it('can evaluate variable', (next) => {
+      var exp = I.exp.variable("a");
+      var env = Env.extend(Pair.cons("a",1), Env.empty);
+      Maybe.match(I.evaluate(exp)(env),{
+        nothing: (_) => {
+          expect().fail()
+        },
+        just: (value) => {
+          expect(value).to.eql(ID.unit(1));
         }
       });
       next();
     });
   });
 });
-//   describe("ordinary", () => {
 //     describe("evaluate", () => {
-//       it('can evaluate variable', (next) => {
-//         var exp = intp.ordinary.exp.variable("a");
-//         var env = intp.env.extendEnv.call(intp,
-// 										  "a",1, intp.env.emptyEnv);
-//         expect(
-//           intp.ordinary.evaluate.call(intp,
-// 									  exp)(env)
-//         ).to.eql(
-//           intp.ordinary.unit.call(intp,1)
-//         );
-//         next();
-//       });
-//       it('can evaluate number', (next) => {
-//         var exp = intp.ordinary.exp.number(2);
-//         expect(
-//           intp.ordinary.evaluate.call(intp,exp)(intp.env.emptyEnv)
-//         ).to.eql(
-//           intp.ordinary.unit.call(intp,2)
-//         );
-//         next();
-//       });
 //       it('can evaluate add', (next) => {
 //         var n = intp.ordinary.exp.number(2);
 //         var m = intp.ordinary.exp.number(3);
@@ -400,4 +407,3 @@ describe("'interpreter' example", () => {
 //   //       next();
 //   //     });
 //   //   });
-//   // });

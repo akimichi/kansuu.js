@@ -25,7 +25,7 @@ const match = (exp, pattern) => {
 const Env = {
   // ## 空の環境
   empty: (variable) => {
-    return Maybe.nothing;
+    return Maybe.nothing(variable);
   },
   /* 変数名に対応する値を環境から取りだす */
   lookup: (identifier, env) => {
@@ -49,8 +49,8 @@ const Env = {
   }
 };
 
-// ## 'ordinary' interpreter
-const Ordinary = {
+// ## 'Plain' interpreter
+const Plain = {
   // ### expression
   exp: {
     fail: (_) => {
@@ -104,24 +104,24 @@ const Ordinary = {
   //     }
   //   };
   // },
-  // ### ordinary#evaluate
+  // ### plain#evaluate
   evaluate: (exp) => {
     return (environment) => {
       return match(exp, {
         fail: (_) => {
-          return ID.unit(undefined);
+          return ID.unit(Maybe.nothing());
         },
         variable: (name) => {
-          return ID.unit(Env.lookupEnv(name, environment));
+          return ID.unit(Env.lookup(name, environment));
         },
         number: (n) => {
           expect(n).to.a('number');
-          return ID.unit(n);
+          return ID.unit(Maybe.just(n));
         },
         add: (expN,expM)=> {
-          return ID.flatMap(Ordinary.evaluate(expN)(environment))(n => {
-            return ID.flatMap(Ordinary.evaluate(expM)(environment))(m => {
-              return ID.unit(n + m);
+          return ID.flatMap(Plain.evaluate(expN)(environment))(n => {
+            return ID.flatMap(Plain.evaluate(expM)(environment))(m => {
+              return ID.unit(Maybe.just(n + m));
             });
           });
         },
@@ -130,15 +130,15 @@ const Ordinary = {
           return (actualArg) => {
             return match(identifier,{ // maybeを返すべきか？
               variable: (name) => {
-                return Ordinary.evaluate(bodyExp)(Env.extendEnv(name, actualArg ,environment));
+                return Plain.evaluate(bodyExp)(Env.extendEnv(name, actualArg ,environment));
               }
             });
           };
         },
         app: (exp, arg) => {
-          return ID.flatMap(Ordinary.evaluate(exp)(environment))(rator => {
-            return ID.flatMap(Ordinary.evaluate(arg)(environment))(rand => {
-              return ID.unit(rator(rand));
+          return ID.flatMap(Plain.evaluate(exp)(environment))(rator => {
+            return ID.flatMap(Plain.evaluate(arg)(environment))(rand => {
+              return ID.unit(Maybe.just(rator(rand)));
             });
           });
         }
@@ -401,7 +401,7 @@ const ambiguous = {
           return self.ambiguous.zero();
         },
         variable: (name) => {
-          return self.ambiguous.unit(self.env.lookupEnv(name, environment));
+          return self.ambiguous.unit(self.env.lookup(name, environment));
         },
         number: (n) => {
           expect(n).to.a('number');
@@ -680,8 +680,7 @@ const lazy = {
           return self.lazy.zero();
         },
         variable: (name) => {
-          return self.lazy.unit(self.env.lookupEnv.call(self,
-            name, environment));
+          return self.lazy.unit(self.env.lookup(name, environment));
         },
         number: (n) => {
           expect(n).to.a('number');
@@ -1155,7 +1154,7 @@ const callcc = {
 
 module.exports = {
   env: Env,
-  ordinary: Ordinary  
+  plain: Plain  
 };
 
 
