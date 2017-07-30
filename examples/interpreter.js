@@ -35,17 +35,24 @@ const Env = {
   /* 環境を拡張する */
   // extend:: Pair[String,Any] => FUN[]
   extend: (pair, oldEnv) => {
-    const identifier = Pair.left(pair);
-    const value = Pair.right(pair);
-    expect(identifier).to.a('string');
-    return (queryIdentifier) => {
-      expect(queryIdentifier).to.a('string');
-      if(identifier === queryIdentifier) {
-        return Maybe.just(value);
-      } else {
-        return Env.lookup(queryIdentifier,oldEnv);
+    return Pair.match(pair,{
+      empty: (_) => {
+        return Maybe.nothing(_);
+      },
+      cons: (identifier, value) => {
+        expect(identifier).to.a('string');
+        return (queryIdentifier) => {
+          expect(queryIdentifier).to.a('string');
+          if(identifier === queryIdentifier) {
+            return Maybe.just(value);
+          } else {
+            return Env.lookup(queryIdentifier,oldEnv);
+          }
+        };
       }
-    };
+    });
+    // const identifier = Pair.left(pair);
+    // const value = Pair.right(pair);
   }
 };
 

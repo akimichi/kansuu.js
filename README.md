@@ -47,7 +47,6 @@ expect(
 ### Lambda calculus interpreter
 
 
-
 ~~~js
 const Env = {
   empty: (variable) => {
@@ -56,17 +55,21 @@ const Env = {
   lookup: (identifier, env) => {
     return env(identifier);
   },
-  // extend:: Pair[String,Any] => FUN[]
   extend: (pair, oldEnv) => {
-    const identifier = Pair.left(pair);
-    const value = Pair.right(pair);
-    return (queryIdentifier) => {
-      if(identifier === queryIdentifier) {
-        return Maybe.just(value);
-      } else {
-        return Env.lookup(queryIdentifier,oldEnv);
+    return Pair.match(pair,{
+      empty: (_) => {
+        return Maybe.nothing(_);
+      },
+      cons: (identifier, value) => {
+        return (queryIdentifier) => {
+          if(identifier === queryIdentifier) {
+            return Maybe.just(value);
+          } else {
+            return Env.lookup(queryIdentifier,oldEnv);
+          }
+        };
       }
-    };
+    });
   }
 };
 ~~~
@@ -136,6 +139,15 @@ const evaluate = (exp) => {
 };
 ~~~
 
+~~~js
+const lambdaExp = exp.lambda(I.exp.variable("x"), exp.variable("x"));
+const appExp = exp.apply(lambdaExp, I.exp.number(7));  
+Maybe.flatMap(I.evaluate(appExp)(Env.empty))(maybeAnswer => {
+  Maybe.flatMap(maybeAnswer)(answer => {
+    expect(answer).to.eql(ID.unit(7));
+  });
+});
+~~~
 
 
 
