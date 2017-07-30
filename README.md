@@ -92,7 +92,6 @@ const exp = {
     };
   },
   lambda: (variable, exp) => {
-    expect(variable).to.a('function');
     return (pattern) => {
       return pattern.lambda(variable, exp);
     };
@@ -140,11 +139,16 @@ const evaluate = (exp) => {
 ~~~
 
 ~~~js
-const lambdaExp = exp.lambda(I.exp.variable("x"), exp.variable("x"));
-const appExp = exp.apply(lambdaExp, I.exp.number(7));  
-Maybe.flatMap(I.evaluate(appExp)(Env.empty))(maybeAnswer => {
+const lambdaExp = exp.lambda(exp.variable("x"), exp.variable("x")),
+  appExp = exp.apply(lambdaExp, exp.number(7));  
+
+Maybe.flatMap(evaluate(appExp)(Env.empty))(maybeAnswer => {
   Maybe.flatMap(maybeAnswer)(answer => {
-    expect(answer).to.eql(ID.unit(7));
+    expect(
+      answer
+    ).to.eql(
+      7
+    );
   });
 });
 ~~~
