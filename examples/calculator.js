@@ -9,6 +9,7 @@ const __ = require('../lib/kansuu.js'),
   ID = require('../lib/kansuu.js').monad.identity,
   Pair = require('../lib/kansuu.js').pair,
   Maybe = require('../lib/kansuu.js').monad.maybe,
+  List = require('../lib/kansuu.js').monad.list,
   Parser = require('../lib/kansuu.js').monad.parser,
   math = require('../lib/kansuu.js').math,
   expect = require('expect.js');
@@ -38,6 +39,30 @@ const addop = () => {
     })
   );
 };
+
+// // ~~~haskell
+// // ops :: [(Parser a, b)] -> Parser b
+// // ops xs = foldr1 (++) [[op | _ <- p] | (p,op) <- xs]
+// // ~~~
+// const ops = (xs) => {
+//   return List.foldr1(Parser.flatMap(xs)(pair => {
+//     return Pair.match(pair, {
+//       cons: (p, op) => {
+//         return Parser.flatMap(p)(_ => {
+//           return Parser.unit(op);
+//         });
+//       }
+//     })
+//   })(Parser.append));
+// };
+// // addop = ops [(char ’+’, (+)), (char ’-’, (-))]
+// const addop = () => {
+//   return ops(List.cons(Pair.cons(Parser.char('+'),math.add),
+//               List.cons(
+//                 List.cons(Pair.cons(Parser.char('-'),math.subtract), 
+//                   List.empty()))));
+// };
+
 
 const factor = () => {
   return Parser.append(

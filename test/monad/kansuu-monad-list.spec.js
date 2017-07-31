@@ -1,6 +1,7 @@
 "use strict";
 
 const expect = require('expect.js'),
+  math = require('../../lib/kansuu.js').math,
   List = require('../../lib/kansuu-monad.js').list,
   Pair = require('../../lib/kansuu-pair.js');
 
@@ -429,6 +430,22 @@ describe("'List' module", () => {
         })
       ).to.eql(
         6
+      );
+      next();
+    });
+    it("'list#foldr1'", (next) => {
+      // foldr1 g [a,b,c,d] = a ‘g‘ (b ‘g‘ (c ‘g‘ d))
+      // foldr1 (+) [1,2,3,4] === 10
+      expect(
+        List.foldr1(List.mkList([1,2,3,4]))(math.add)
+      ).to.eql(
+        10 
+      );
+      // foldr1 (/) [12] === 12.0
+      expect(
+        List.foldr1(List.mkList([12]))(math.div)
+      ).to.eql(
+        12 
       );
       next();
     });
