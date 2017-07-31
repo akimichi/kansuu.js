@@ -335,38 +335,37 @@ describe("Monadic Parser", () => {
     // });
   });
   describe("chainパーサ", (next) => {
-    // it("chainl1", (next) => {
-    //   // nat :: Parser Int
-    //   // nat = chainl1 [ord x - ord ’0’ | x <digit] op
-    //   //         where
-    //   //            op m n = 10*m + n
-    //   const nat = () => {
-    //     const _op = () => {
-    //       return Parser.unit(
-    //         (m) => {
-    //           return (n) => {
-    //             return 10 * m + n
-    //           };
-    //         }
-    //       );
-    //     };
-    //     const _digit = () => {
-    //       Parser.flatMap(Parser.digit())(n => {
-    //         return Parser.unit(parseInt(n,10)); 
-    //       })
-    //     };
-    //     return Parser.chainl1(_digit, _op);
-    //   };
-    //   expect(
-    //     Pair.left(List.head(
-    //       Parser.parse(nat())(List.fromString("123"))
-    //     ))
-    //   ).to.eql(
-    //     123
-    //     // '[(123,[]),nil]'
-    //   );
-    //   next();
-    // });
+    it("chainl1", (next) => {
+      // nat :: Parser Int
+      // nat = chainl1 [ord x - ord ’0’ | x <digit] op
+      //         where
+      //            op m n = 10*m + n
+      const nat = () => {
+        const _op = () => {
+          return Parser.unit(
+            (m) => {
+              return (n) => {
+                return 10 * m + n
+              };
+            });
+        };
+        const _digit = () => {
+          return Parser.flatMap(Parser.digit())(n => {
+            return Parser.unit(parseInt(n,10)); 
+          })
+        };
+        return Parser.chainl1(_digit, _op);
+      };
+      expect(
+        Pair.left(List.head(
+          Parser.parse(nat())(List.fromString("123"))
+        ))
+      ).to.eql(
+        123
+        // '[(123,[]),nil]'
+      );
+      next();
+    });
   });
   describe("sep parser", (next) => {
     it("sepby1", (next) => {
