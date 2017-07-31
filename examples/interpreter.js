@@ -323,29 +323,6 @@ const logging = {
       }
     };
   },
-  // ### environment
-  // ~~~haskell
-  // type Environment = List[(Name, Value)]
-  // ~~~
-  // env: {
-  //   empty: __.list.empty,
-  //   extend: (pair, oldenv) => {
-  //     __.pair.censor.call(__,pair);
-  //     __.list.censor.call(__,oldenv);
-  //     return __.list.cons.call(__, pair)(oldenv);
-  //   },
-  //   lookup: (name, env) => {
-  //     return __.list.foldr.call(__,env)(self.logging.unit(undefined))((item) => {
-  //       return (accumulator) => {
-  //         if(item.left === name) {
-  //           return self.logging.unit(item.right);
-  //         } else {
-  //           return accumulator;
-  //         }
-  //       };
-  //     });
-  //   }
-  // }
 };
 
 // ## ambiguous interpreter
