@@ -235,17 +235,16 @@ describe("Monadic Parser", () => {
       next();
     });
     it("chars", (next) => {
-      const input = List.fromString("abc");
       expect(
         List.toString(Pair.left(
           List.head(
             Parser.parse(
-              Parser.chars(input)
+              Parser.chars(List.fromString("abc"))
             )(List.fromString("abcdef"))
           )
         ))
       ).to.eql(
-        ['a','b','c']
+        "abc"
       );
       expect(
         List.toString(Pair.left(
@@ -258,6 +257,17 @@ describe("Monadic Parser", () => {
       ).to.eql(
         '#t'
       );
+      expect(
+        List.toString(Pair.left(
+          List.head(
+            Parser.parse(
+              Parser.chars(List.fromString("hello"))
+            )(List.fromString("hello there"))
+          )
+        ))
+      ).to.eql(
+        'hello'
+      );
       next();
     });
     it("word", (next) => {
@@ -267,40 +277,41 @@ describe("Monadic Parser", () => {
       ).to.eql(
         4 
       );
-      // expect(
-      //   List.toString(Pair.left(
-      //     List.head(
-      //       Parser.parse(Parser.word())(input)
-      //     )
-      //   ))
-      // ).to.eql(
-      //   ['a','b','c']
-      // );
+      expect(
+        List.toString(Pair.left(
+          List.head(
+            Parser.parse(Parser.word())(input)
+          )
+        ))
+      ).to.eql(
+        'Yes' 
+      );
       next();
     });
   });
   describe("manyパーサ", (next) => {
-    // it("many digit", (next) => {
-    //   expect(
-    //     PP.print(
-    //       Parser.parse(
-    //         Parser.many(Parser.digit())
-    //       )(List.fromString("123abc"))
-    //     )
-    //   ).to.eql(
-    //     '[([1,2,3,nil],[a,b,c,nil]),nil]'
-    //   );
-    //   expect(
-    //     PP.print(
-    //       Parser.parse(
-    //         Parser.many(Parser.digit())
-    //       )(List.fromString("abc"))
-    //     )
-    //   ).to.eql(
-    //     '[([],[a,b,c,nil]),nil]'
-    //   );
-    //   next();
-    // });
+    it("many digit", (next) => {
+      expect(
+        List.toString(Pair.left(List.head(
+          Parser.parse(
+            Parser.many(Parser.digit())
+          )(List.fromString("123abc"))
+        )))
+      ).to.eql(
+        '123'
+        // '[([1,2,3,nil],[a,b,c,nil]),nil]'
+      );
+      // expect(
+      //   PP.print(
+      //     Parser.parse(
+      //       Parser.many(Parser.digit())
+      //     )(List.fromString("abc"))
+      //   )
+      // ).to.eql(
+      //   '[([],[a,b,c,nil]),nil]'
+      // );
+      next();
+    });
     // it("some digit", (next) => {
     //   expect(
     //     PP.print(
