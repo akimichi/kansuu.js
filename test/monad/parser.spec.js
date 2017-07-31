@@ -211,6 +211,15 @@ describe("Monadic Parser", () => {
         '1'
       );
       // expect(
+      //   List.toString(Pair.left(List.head(
+      //     Parser.parse(
+      //       Parser.alphanum()
+      //     )(List.fromString(" def"))
+      //   )))
+      // ).to.eql(
+      //   '1'
+      // );
+      // expect(
       //   PP.print(
       //     Parser.parse(
       //       Parser.alphanum()
@@ -301,15 +310,15 @@ describe("Monadic Parser", () => {
         '123'
         // '[([1,2,3,nil],[a,b,c,nil]),nil]'
       );
-      // expect(
-      //   PP.print(
-      //     Parser.parse(
-      //       Parser.many(Parser.digit())
-      //     )(List.fromString("abc"))
-      //   )
-      // ).to.eql(
-      //   '[([],[a,b,c,nil]),nil]'
-      // );
+      expect(
+        List.toString(Pair.left(List.head(
+          Parser.parse(
+            Parser.many(Parser.digit())
+          )(List.fromString("abc"))
+        )))
+      ).to.eql(
+        ''
+      );
       next();
     });
     // it("some digit", (next) => {
@@ -325,30 +334,99 @@ describe("Monadic Parser", () => {
     //   next();
     // });
   });
-  // it("ident", (next) => {
-  //   expect(
-  //     PP.print(
-  //       Parser.parse(
-  //         Parser.ident()
-  //       )(List.fromString("abc def"))
-  //     )
-  //   ).to.eql(
-  //     '[(Symbol(abc),[ ,d,e,f,nil]),nil]'
-  //   );
-  //   next();
-  // });
-  // it("nat", (next) => {
-  //   expect(
-  //     PP.print(
-  //       Parser.parse(
-  //         Parser.nat()
-  //       )(List.fromString("123"))
-  //     )
-  //   ).to.eql(
-  //     '[(123,[]),nil]'
-  //   );
-  //   next();
-  // });
+  describe("sep parser", (next) => {
+    it("sepby1", (next) => {
+      //  parseTest (sepBy word (char ',')) "abc,def,ghi" 
+      //              where word = many1 letter
+      // ["abc","def","ghi"]
+      const sep = Parser.char(","); 
+      const word = Parser.many1(Parser.letter());
+      const words = Pair.left(List.head(
+        Parser.parse(
+          Parser.sepBy1(word)(sep)
+        )(List.fromString("abc,def,ghi"))
+      ));
+      expect(
+        List.toString(List.head(words))
+      ).to.eql(
+        "abc"
+      );
+      expect(
+        List.toString(List.head(List.tail(words)))
+      ).to.eql(
+        "def"
+      );
+      expect(
+        List.toString(List.head(List.tail(List.tail(words))))
+      ).to.eql(
+        "ghi"
+      );
+      next();
+    });
+    it("bracket", (next) => {
+      const open = Parser.char("("); 
+      const close = Parser.char(")"); 
+      expect(
+        List.toString(Pair.left(List.head(
+          Parser.parse(
+            Parser.bracket(open,Parser.ident(), close)
+          )(List.fromString("(identifier)"))
+        )))
+      ).to.eql(
+        "identifier"
+      );
+      next();
+    });
+  });
+  it("ident", (next) => {
+    expect(
+      List.toString(Pair.left(List.head(
+        Parser.parse(
+          Parser.ident()
+        )(List.fromString("abc def"))
+      )))
+    ).to.eql(
+      "abc"
+      // '[(Symbol(abc),[ ,d,e,f,nil]),nil]'
+    );
+    next();
+  });
+  it("nat", (next) => {
+    expect(
+      Pair.left(List.head(
+        Parser.parse(
+          Parser.nat()
+        )(List.fromString("123"))
+      ))
+    ).to.eql(
+      123
+      // '[(123,[]),nil]'
+    );
+    next();
+  });
+  it("int", (next) => {
+    expect(
+      Pair.left(List.head(
+        Parser.parse(
+          Parser.int.call(Parser)
+        )(List.fromString("-123 abc"))
+      ))
+    ).to.eql(
+      -123
+      // '[(-123,[a,b,c,nil]),nil]'
+    );
+    expect(
+      Pair.left(List.head(
+        Parser.parse(
+          Parser.int.call(Parser)
+        )(List.fromString("123 abc"))
+      ))
+    ).to.eql(
+      123
+      // '[(123,[a,b,c,nil]),nil]'
+    );
+    next();
+  });
   // it("space", (next) => {
   //   expect(
   //     PP.print(
@@ -358,27 +436,6 @@ describe("Monadic Parser", () => {
   //     )
   //   ).to.eql(
   //     '[((),[a,b,c,nil]),nil]'
-  //   );
-  //   next();
-  // });
-  // it("int", (next) => {
-  //   expect(
-  //     PP.print(
-  //       Parser.parse(
-  //         Parser.int.call(Parser)
-  //       )(List.fromString("-123 abc"))
-  //     )
-  //   ).to.eql(
-  //     '[(-123,[a,b,c,nil]),nil]'
-  //   );
-  //   expect(
-  //     PP.print(
-  //       Parser.parse(
-  //         Parser.int.call(Parser)
-  //       )(List.fromString("123 abc"))
-  //     )
-  //   ).to.eql(
-  //     '[(123,[a,b,c,nil]),nil]'
   //   );
   //   next();
   // });
