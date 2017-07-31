@@ -45,7 +45,10 @@ expect(
 ~~~
 
 
-### A monadic parser exampla: simple calculator 
+### A monadic parser example: simple calculator 
+
+See [Monadic Parser Combinators](https://www.google.co.jp/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&uact=8&ved=0ahUKEwi84u348bPVAhWIVbwKHcSzAp4QFggnMAA&url=http%3A%2F%2Fwww.itu.dk%2Fpeople%2Fcarsten%2Fcourses%2Ff02%2Fhandouts%2FMonadicParserCombinators.pdf&usg=AFQjCNFLtHTuF5zfipayUsiLoSoWZMsM_w) for more details.
+
 
 ~~~js
 const math = require('kansuu.js').math,
