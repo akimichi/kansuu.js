@@ -45,6 +45,58 @@ expect(
 ~~~
 
 
+### A monadic parser exampla: simple calculator 
+
+~~~js
+const math = require('kansuu.js').math,
+  List = require('kansuu.js').monad.list,
+  Pair = require('kansuu.js').pair,
+  Parser = require('kansuu.js').monad.parser;
+
+const expr = (_) => {
+  return Parser.chainl1(factor, operator);
+};
+
+const operator = (_) => {
+  return Parser.append(
+    Parser.flatMap(Parser.char('+'))(_ => {
+      return Parser.unit(math.add);
+    })
+  )(
+    Parser.flatMap(Parser.char('-'))(_ => {
+      return Parser.unit(math.subtract);
+    })
+  );
+};
+
+const factor = (_) => {
+  return Parser.append(
+    Parser.nat()
+  )(
+    Parser.bracket(Parser.char("("), expr, Parser.char(")"))
+  );
+};
+
+const calculator = (input) => {
+  return Pair.left(List.head(
+    Parser.parse(expr())(List.fromString(input))
+  ))
+};
+~~~
+
+~~~js
+describe("calculator", () => {
+  it('can calculate an expression', (next) => {
+    expect(
+       calculator("(1+2)-3")
+    ).to.eql(
+      0 
+    );
+    next();
+  });
+~~~
+
+
 ### Lambda calculus interpreter
 
 

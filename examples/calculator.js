@@ -24,7 +24,7 @@ const __ = require('../lib/kansuu.js'),
 // ~~~
 
 const expr = () => {
-  return Parser.chainl1(factor(), addop());
+  return Parser.chainl1(factor, addop);
 };
 
 const addop = () => {
@@ -43,7 +43,7 @@ const factor = () => {
   return Parser.append(
     Parser.nat()
   )(
-    Parser.bracket(Parser.char("("), expr(), Parser.char(")"))
+    Parser.bracket(Parser.char("("), expr, Parser.char(")"))
   );
 };
 

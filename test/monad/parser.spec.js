@@ -335,33 +335,38 @@ describe("Monadic Parser", () => {
     // });
   });
   describe("chainパーサ", (next) => {
-    it("chainl1", (next) => {
-      // nat :: Parser Int
-      // nat = chainl1 [ord x - ord ’0’ | x <digit] op
-      //         where
-      //            op m n = 10*m + n
-      const nat = () => {
-        const op = Parser.unit(
-          (m) => {
-            return (n) => {
-              return 10 * m + n
-            };
-          }
-        );
-        return Parser.chainl1(Parser.flatMap(Parser.digit())(n => {
-          return Parser.unit(parseInt(n,10)); 
-        }), op)
-      };
-      expect(
-        Pair.left(List.head(
-          Parser.parse(nat())(List.fromString("123"))
-        ))
-      ).to.eql(
-        123
-        // '[(123,[]),nil]'
-      );
-      next();
-    });
+    // it("chainl1", (next) => {
+    //   // nat :: Parser Int
+    //   // nat = chainl1 [ord x - ord ’0’ | x <digit] op
+    //   //         where
+    //   //            op m n = 10*m + n
+    //   const nat = () => {
+    //     const _op = () => {
+    //       return Parser.unit(
+    //         (m) => {
+    //           return (n) => {
+    //             return 10 * m + n
+    //           };
+    //         }
+    //       );
+    //     };
+    //     const _digit = () => {
+    //       Parser.flatMap(Parser.digit())(n => {
+    //         return Parser.unit(parseInt(n,10)); 
+    //       })
+    //     };
+    //     return Parser.chainl1(_digit, _op);
+    //   };
+    //   expect(
+    //     Pair.left(List.head(
+    //       Parser.parse(nat())(List.fromString("123"))
+    //     ))
+    //   ).to.eql(
+    //     123
+    //     // '[(123,[]),nil]'
+    //   );
+    //   next();
+    // });
   });
   describe("sep parser", (next) => {
     it("sepby1", (next) => {
@@ -398,7 +403,7 @@ describe("Monadic Parser", () => {
       expect(
         List.toString(Pair.left(List.head(
           Parser.parse(
-            Parser.bracket(open,Parser.ident(), close)
+            Parser.bracket(open,Parser.ident, close)
           )(List.fromString("(identifier)"))
         )))
       ).to.eql(
