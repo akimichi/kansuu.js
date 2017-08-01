@@ -298,6 +298,47 @@ describe("Monadic Parser", () => {
       );
       next();
     });
+    it("string", (next) => {
+      expect(
+        Pair.left(
+          List.head(
+            Parser.parse(
+              Parser.string()
+            )(List.fromString("\"abc\""))
+          )
+        )
+      ).to.eql(
+        "abc" 
+      );
+      // expect(
+      //   PP.print(
+      //     Parser.parse(
+      //       Parser.string()
+      //     )(List.fromString("\"abc\""))
+      //   )
+      // ).to.eql(
+      //   '[(abc,[]),nil]'
+      // );
+      // expect(
+      //   PP.print(
+      //     Parser.parse(
+      //       Parser.string()
+      //     )(List.fromString("  \"abc\"  "))
+      //   )
+      // ).to.eql(
+      //   '[(abc,[]),nil]'
+      // );
+      // expect(
+      //   PP.print(
+      //     Parser.parse(
+      //       Parser.string()
+      //     )(List.fromString("  \"  abc  \"  "))
+      //   )
+      // ).to.eql(
+      //   '[(  abc  ,[]),nil]'
+      // );
+      next();
+    });
   });
   describe("manyパーサ", (next) => {
     it("many digit", (next) => {
@@ -524,19 +565,7 @@ describe("Monadic Parser", () => {
     );
     next();
   });
-  describe("トークン", (next) => {
-    // it("identifier", (next) => {
-    //   expect(
-    //     PP.print(
-    //       Parser.parse(
-    //         Parser.identifier()
-    //       )(List.fromString("   abc"))
-    //     )
-    //   ).to.eql(
-    //     '[(Symbol(abc),[]),nil]'
-    //   );
-    //   next();
-    // });
+  describe("token parser", (next) => {
     it("natural", (next) => {
       expect(
         Pair.left(List.head(
@@ -620,58 +649,58 @@ describe("Monadic Parser", () => {
     //   // );
     //   next();
     // });
-    // it("symbol", (next) => {
+    it("symbol", (next) => {
+      expect(
+        List.toString(Pair.left(
+          List.head(
+            Parser.parse(
+              Parser.symbol(List.fromString("+"))
+            )(List.fromString("  +  "))
+          )))
+      ).to.eql(
+        '+'
+        // '[(+,[]),nil]'
+      );
+      next();
+    });
+    it("identifier", (next) => {
+      expect(
+        List.toString(Pair.left(
+          List.head(
+            Parser.parse(
+              Parser.identifier([])
+            )(List.fromString("   abc"))
+          )))
+      ).to.eql(
+        'abc'
+        // '[(Symbol(abc),[]),nil]'
+      );
+      expect(
+        List.toString(Pair.left(
+          List.head(
+            Parser.parse(
+              Parser.identifier(["lambda"])
+            )(List.fromString("anonymous function"))
+          )))
+      ).to.eql(
+        'anonymous'
+        // '[(+,[]),nil]'
+      );
+      next();
+    });
+    // it("identifier", (next) => {
     //   expect(
-    //     PP.print(
-    //       Parser.parse(
-    //         Parser.symbol(List.fromString("+"))
-    //       )(List.fromString("  +  "))
-    //     )
+    //     List.toString(Pair.left(
+    //       List.head(
+    //         Parser.parse(
+    //           Parser.identifier(["lambda"])(List.fromString("anonymous function"))
+    //         )(List.fromString("  +  "))
+    //       )))
     //   ).to.eql(
-    //     '[(+,[]),nil]'
+    //     '+'
+    //     // '[(+,[]),nil]'
     //   );
     //   next();
     // });
-    it("string", (next) => {
-      expect(
-        Pair.left(
-          List.head(
-            Parser.parse(
-              Parser.string()
-            )(List.fromString("\"abc\""))
-          )
-        )
-      ).to.eql(
-        "abc" 
-      );
-      // expect(
-      //   PP.print(
-      //     Parser.parse(
-      //       Parser.string()
-      //     )(List.fromString("\"abc\""))
-      //   )
-      // ).to.eql(
-      //   '[(abc,[]),nil]'
-      // );
-      // expect(
-      //   PP.print(
-      //     Parser.parse(
-      //       Parser.string()
-      //     )(List.fromString("  \"abc\"  "))
-      //   )
-      // ).to.eql(
-      //   '[(abc,[]),nil]'
-      // );
-      // expect(
-      //   PP.print(
-      //     Parser.parse(
-      //       Parser.string()
-      //     )(List.fromString("  \"  abc  \"  "))
-      //   )
-      // ).to.eql(
-      //   '[(  abc  ,[]),nil]'
-      // );
-      next();
-    });
   });
 });

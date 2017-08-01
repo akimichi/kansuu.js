@@ -1,7 +1,7 @@
 "use strict";
 
 const expect = require('expect.js'),
-  __ = require('../lib/kansuu.js'),
+  // __ = require('../lib/kansuu.js'),
   Array = require('../lib/kansuu-array.js'),
   Pair = require('../lib/kansuu-pair.js'),
   math = require('../lib/kansuu-math.js');
@@ -46,11 +46,11 @@ describe("array", () => {
     ).to.eql(false);
     next();
   });
-  it("Array#append", (next) =>  {
+  it("Array#concat", (next) =>  {
     var xs = [0,1];
     var ys = [2,3];
     expect(
-      Array.append(xs)(ys)
+      Array.concat(xs,ys)
     ).to.eql(
       [0,1,2,3]
     );
@@ -111,6 +111,7 @@ describe("array", () => {
       next();
     });
     it("'map id == id'", (next) =>  {
+      const __ = require('../lib/kansuu.js');
       var sequence = [0,1,2];
       expect(
         Array.map(sequence)(__.id)
@@ -285,8 +286,10 @@ describe("array", () => {
     });
   });
 
-  describe("filter", function() {
+  describe("filter", () => {
     it("'単純なフィルター'", (next) =>  {
+      const __ = require('../lib/kansuu.js');
+
       const even = (n) => {
         return (n % 2) === 0;
       };
