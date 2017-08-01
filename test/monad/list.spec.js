@@ -447,6 +447,13 @@ describe("'List' module", () => {
       ).to.eql(
         12 
       );
+      // > foldr1 (-) [1, 2, 3, 4] :: Int
+      // -2 
+      expect(
+        List.foldr1(List.mkList([1,2,3,4]))(math.subtract)
+      ).to.eql(
+        -2 
+      );
       next();
     });
     it("'list#foldl'", (next) => {

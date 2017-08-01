@@ -284,7 +284,8 @@ describe("Monadic Parser", () => {
       expect(
         List.length(Parser.parse(Parser.word())(input))
       ).to.eql(
-        4 
+        1 
+        // 4 
       );
       expect(
         List.toString(Pair.left(
@@ -441,7 +442,7 @@ describe("Monadic Parser", () => {
     expect(
       Pair.left(List.head(
         Parser.parse(
-          Parser.int.call(Parser)
+          Parser.int(Parser)
         )(List.fromString("-123 abc"))
       ))
     ).to.eql(
@@ -451,7 +452,7 @@ describe("Monadic Parser", () => {
     expect(
       Pair.left(List.head(
         Parser.parse(
-          Parser.int.call(Parser)
+          Parser.int(Parser)
         )(List.fromString("123 abc"))
       ))
     ).to.eql(
@@ -460,18 +461,6 @@ describe("Monadic Parser", () => {
     );
     next();
   });
-  // it("space", (next) => {
-  //   expect(
-  //     PP.print(
-  //       Parser.parse(
-  //         Parser.space()
-  //       )(List.fromString("   abc"))
-  //     )
-  //   ).to.eql(
-  //     '[((),[a,b,c,nil]),nil]'
-  //   );
-  //   next();
-  // });
   // it("float", (next) => {
   //   expect(
   //     PP.print(
@@ -511,6 +500,30 @@ describe("Monadic Parser", () => {
   //   );
   //   next();
   // });
+  it("spaces", (next) => {
+    expect(
+      Pair.isEmpty(Pair.left(List.head(
+        Parser.parse(
+          Parser.spaces()
+        )(List.fromString("  abc"))
+      )))
+    ).to.eql(
+      true
+    );
+    next();
+  });
+  it("lineComment", (next) => {
+    expect(
+      Pair.isEmpty(Pair.left(List.head(
+        Parser.parse(
+          Parser.lineComment("//")
+        )(List.fromString("// this is line comment"))
+      )))
+    ).to.eql(
+      true 
+    );
+    next();
+  });
   describe("トークン", (next) => {
     // it("identifier", (next) => {
     //   expect(
@@ -569,24 +582,6 @@ describe("Monadic Parser", () => {
       ).to.eql(
         0.123
       );
-      // expect(
-      //   PP.print(
-      //     Parser.parse(
-      //       Parser.numeric()
-      //     )(List.fromString("   -123   "))
-      //   )
-      // ).to.eql(
-      //   '[(-123,[]),nil]'
-      // );
-      // expect(
-      //   PP.print(
-      //     Parser.parse(
-      //       Parser.numeric()
-      //     )(List.fromString("   0.123   "))
-      //   )
-      // ).to.eql(
-      //   '[(0.123,[]),nil]'
-      // );
       next();
     });
     // it("boolean", (next) => {

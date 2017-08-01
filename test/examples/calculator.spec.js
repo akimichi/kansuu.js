@@ -21,9 +21,29 @@ describe("'calculator' example", () => {
     ).to.eql(
       0 
     );
+    expect(
+       calculator("(1+2)")
+    ).to.eql(
+      3 
+    );
+    // expect(
+    //    calculator("((1+2)^3)")
+    // ).to.eql(
+    //   0 
+    // );
     next();
   });
 
+  // it('can calculate exponential', (next) => {
+  //   expect(
+  //     List.isEmpty(
+  //       Parser.parse(expr())(List.fromString("((1+2)^3)"))
+  //     )
+  //   ).to.eql(
+  //     false 
+  //   );
+  //   next();
+  // });
   it('can calculate number', (next) => {
     expect(
       Pair.left(List.head(
