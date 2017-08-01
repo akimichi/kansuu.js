@@ -710,19 +710,5 @@ describe("Monadic Parser", () => {
       );
       next();
     });
-    // it("identifier", (next) => {
-    //   expect(
-    //     List.toString(Pair.left(
-    //       List.head(
-    //         Parser.parse(
-    //           Parser.identifier(["lambda"])(List.fromString("anonymous function"))
-    //         )(List.fromString("  +  "))
-    //       )))
-    //   ).to.eql(
-    //     '+'
-    //     // '[(+,[]),nil]'
-    //   );
-    //   next();
-    // });
   });
 });

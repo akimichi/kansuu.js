@@ -29,14 +29,6 @@ describe("array", () => {
     expect(Array.tail([0,1,2,3])).to.eql([1,2,3]);
     next();
   });
-  it("Array#concat", (next) =>  {
-    var xs = [0,1];
-    var ys = [2,3];
-    expect(Array.concat(xs,ys)).to.eql([0,1,2,3]);
-    expect(xs).to.eql([0,1]);
-    expect(ys).to.eql([2,3]);
-    next();
-  });
   it("Array#elem", (next) =>  {
     expect(
       Array.elem([1,2,3])(1)
@@ -96,7 +88,7 @@ describe("array", () => {
     expect(array).to.eql([0,1,2]);
     next();
   });
-  describe("'map'", function() {
+  describe("'map'", () => {
     it("'map [number] double'", (next) =>  {
       var array = [0,1,2];
       var double = function(n){
@@ -281,6 +273,76 @@ describe("array", () => {
         })
       ).to.be(
         6
+      );
+      next();
+    });
+    it("'and'", (next) => {
+      expect(
+        Array.and([true]) 
+      ).to.eql(
+        true 
+      );
+      expect(
+        Array.and([false]) 
+      ).to.eql(
+        false 
+      );
+      expect(
+        Array.and([true,false]) 
+      ).to.eql(
+        false 
+      );
+      next();
+    });
+    it("'or'", (next) => {
+      expect(
+        Array.or([true]) 
+      ).to.eql(
+        true 
+      );
+      expect(
+        Array.or([false]) 
+      ).to.eql(
+        false 
+      );
+      expect(
+        Array.or([true,false]) 
+      ).to.eql(
+        true 
+      );
+      next();
+    });
+    it("'all'", (next) => {
+      expect(
+        Array.all([1,2,3])(n => {
+          return n > 0;
+        })
+      ).to.eql(
+        true 
+      );
+      expect(
+        Array.all([1,2,-3])(n => {
+          return n > 0;
+        })
+      ).to.eql(
+        false 
+      );
+      next();
+    });
+    it("'any'", (next) => {
+      expect(
+        Array.any([-1,-2,3])(n => {
+          return n > 0;
+        })
+      ).to.eql(
+        true 
+      );
+      expect(
+        Array.all([1,2,3])(n => {
+          return n < 0;
+        })
+      ).to.eql(
+        false 
       );
       next();
     });
