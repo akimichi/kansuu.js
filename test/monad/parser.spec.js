@@ -686,6 +686,28 @@ describe("Monadic Parser", () => {
         'anonymous'
         // '[(+,[]),nil]'
       );
+      expect(
+        List.toString(Pair.left(
+          List.head(
+            Parser.parse(
+              Parser.identifier(["lambda"])
+            )(List.fromString("lambda function"))
+          )))
+      ).to.eql(
+        ''
+        // '[(+,[]),nil]'
+      );
+      expect(
+        List.toString(Pair.left(
+          List.head(
+            Parser.parse(
+              Parser.identifier(["lambda"])
+            )(List.fromString("lam "))
+          )))
+      ).to.eql(
+        'lam'
+        // '[(+,[]),nil]'
+      );
       next();
     });
     // it("identifier", (next) => {
