@@ -37,6 +37,15 @@ describe("array", () => {
     expect(ys).to.eql([2,3]);
     next();
   });
+  it("Array#elem", (next) =>  {
+    expect(
+      Array.elem([1,2,3])(1)
+    ).to.eql(true);
+    expect(
+      Array.elem([1,2,3])(0)
+    ).to.eql(false);
+    next();
+  });
   it("Array#append", (next) =>  {
     var xs = [0,1];
     var ys = [2,3];
