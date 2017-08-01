@@ -537,30 +537,32 @@ describe("Monadic Parser", () => {
     //   );
     //   next();
     // });
-    // it("natural", (next) => {
-    //   expect(
-    //     PP.print(
-    //       Parser.parse(
-    //         Parser.natural()
-    //       )(List.fromString("   123   "))
-    //     )
-    //   ).to.eql(
-    //     '[(123,[]),nil]'
-    //   );
-    //   next();
-    // });
-    // it("integer", (next) => {
-    //   expect(
-    //     PP.print(
-    //       Parser.parse(
-    //         Parser.integer()
-    //       )(List.fromString("   -123   "))
-    //     )
-    //   ).to.eql(
-    //     '[(-123,[]),nil]'
-    //   );
-    //   next();
-    // });
+    it("natural", (next) => {
+      expect(
+        Pair.left(List.head(
+          Parser.parse(
+            Parser.natural()
+          )(List.fromString("   123   "))
+        ))
+      ).to.eql(
+        123
+        // '[(123,[]),nil]'
+      );
+      next();
+    });
+    it("integer", (next) => {
+      expect(
+        Pair.left(List.head(
+          Parser.parse(
+            Parser.integer()
+          )(List.fromString("   -123   "))
+        ))
+      ).to.eql(
+        -123
+        // '[(-123,[]),nil]'
+      );
+      next();
+    });
     it("numeric", (next) => {
       expect(
         Pair.left(

@@ -108,6 +108,20 @@ describe("'List' module", () => {
     );
     next();
   });
+  it("'list#elem' ", (next) => {
+    const alist = List.mkList([0,1,2,3]);
+    expect(
+      List.elem(alist)(3)
+    ).to.eql(
+      true 
+    );
+    expect(
+      List.elem(alist)(-1)
+    ).to.eql(
+      false 
+    );
+    next();
+  });
   it("'list#toArray'", (next) => {
     var alist = List.mkList([0,1,2,3]);
     expect(
