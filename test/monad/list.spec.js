@@ -2,7 +2,7 @@
 
 const expect = require('expect.js'),
   math = require('../../lib/kansuu.js').math,
-  List = require('../../lib/kansuu-monad.js').list,
+  List = require('../../lib/kansuu.js').monad.list,
   Pair = require('../../lib/kansuu-pair.js');
 
 describe("'List' module", () => {
