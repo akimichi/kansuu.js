@@ -13,6 +13,19 @@ const expect = require('expect.js'),
 describe("Monadic Parser", () => {
   var abc = List.fromString("abc");
   describe("parse", (next) => {
+    it("Parser#item", (next) => {
+      expect(
+        Parser.item("")
+      ).to.eql(
+        [] 
+      );
+      expect(
+        Parser.item("abc")
+      ).to.eql(
+        [{value:'a', remaining: 'bc'}]
+      );
+      next();
+    });
     it("Parser#zero", (next) => {
       var input = List.fromString("abc");
       expect(
@@ -39,26 +52,102 @@ describe("Monadic Parser", () => {
       // );
       next();
     });
-    it("item", (next) => {
-      expect(
-        List.isEmpty(
-          Parser.item(List.empty())
-        )
-      ).to.eql(
-        true 
-      );
-      expect(
-        Pair.left(List.head(
-            Parser.item(List.fromString("abc"))))
-      ).to.eql(
-        'a'
-      );
-      // expect(
-      //   PP.print(Parser.item(List.fromString("abc")))
-      // ).to.eql(
-      //   '[(a,[b,c,nil]),nil]'
-      // );
-      next();
+    describe("Parser#append", () => {
+      it("Parser#letter", (next) => {
+        expect(
+          Parser.parse(Parser.letter())("letter")
+        ).to.eql(
+          [{value:'l', remaining: 'etter'}]
+        );
+        expect(
+          Parser.letter()("ABC")
+        ).to.eql(
+          [{value:'A', remaining: 'BC'}]
+        );
+        next();
+      });
+      it("alphanum", (next) => {
+        expect(
+          Parser.alphanum()("123")
+        ).to.eql(
+          [{value:'1', remaining: '23'}]
+        );
+        // expect(
+        //   List.toString(Pair.left(List.head(
+        //     Parser.parse(
+        //       Parser.alphanum()
+        //     )(List.fromString(" def"))
+        //   )))
+        // ).to.eql(
+        //   '1'
+        // );
+        // expect(
+        //   PP.print(
+        //     Parser.parse(
+        //       Parser.alphanum()
+        //     )(List.fromString("123"))
+        //   )
+        // ).to.eql(
+        //   '[(1,[2,3,nil]),nil]'
+        // );
+        next();
+      });
+    });
+    describe("Parser#sat", () => {
+      it("char", (next) => {
+        expect(
+          Parser.char("a")("a")
+        ).to.eql(
+          [{value:'a', remaining: ''}]
+        );
+        next();
+      });
+      it("chars", (next) => {
+        expect(
+          Parser.chars("abc")("abcdef")
+        ).to.eql(
+          [{value:"abc", remaining: 'def'}]
+        );
+        // expect(
+        //   List.toString(Pair.left(
+        //     List.head(
+        //       Parser.parse(
+        //         Parser.chars(List.fromString("#t"))
+        //       )(List.fromString("#t"))
+        //     )
+        //   ))
+        // ).to.eql(
+        //   '#t'
+        // );
+        // expect(
+        //   List.toString(Pair.left(
+        //     List.head(
+        //       Parser.parse(
+        //         Parser.chars(List.fromString("hello"))
+        //       )(List.fromString("hello there"))
+        //     )
+        //   ))
+        // ).to.eql(
+        //   'hello'
+        // );
+        next();
+      });
+      it("lower", (next) => {
+        expect(
+          Parser.lower("a")("a")
+        ).to.eql(
+          [{value:'a', remaining: ''}]
+        );
+        next();
+      });
+      it("Parser#upper", (next) => {
+        expect(
+          Parser.upper("a")("a")
+        ).to.eql(
+          []
+        );
+        next();
+      });
     });
   });
   describe("fmap", (next) => {
@@ -165,118 +254,6 @@ describe("Monadic Parser", () => {
       // ).to.eql(
       //   '[(1,[2,3,nil]),nil]'
       // );
-      next();
-    });
-    it("letter", (next) => {
-      expect(
-        Pair.left(
-          List.head(
-          Parser.parse(
-            Parser.letter()
-          )(List.fromString("abc"))
-        ))
-      ).to.eql(
-        'a'
-      );
-      expect(
-        Pair.left(
-          List.head(
-          Parser.parse(
-            Parser.letter()
-          )(List.fromString("ABC"))
-        ))
-      ).to.eql(
-        'A'
-      );
-      // expect(
-      //   PP.print(
-      //     Parser.parse(
-      //       Parser.alphanum()
-      //     )(List.fromString("123"))
-      //   )
-      // ).to.eql(
-      //   '[(1,[2,3,nil]),nil]'
-      // );
-      next();
-    });
-    it("alphanum", (next) => {
-      expect(
-        Pair.left(
-          List.head(
-          Parser.parse(
-            Parser.alphanum()
-          )(List.fromString("123"))
-        ))
-      ).to.eql(
-        '1'
-      );
-      // expect(
-      //   List.toString(Pair.left(List.head(
-      //     Parser.parse(
-      //       Parser.alphanum()
-      //     )(List.fromString(" def"))
-      //   )))
-      // ).to.eql(
-      //   '1'
-      // );
-      // expect(
-      //   PP.print(
-      //     Parser.parse(
-      //       Parser.alphanum()
-      //     )(List.fromString("123"))
-      //   )
-      // ).to.eql(
-      //   '[(1,[2,3,nil]),nil]'
-      // );
-      next();
-    });
-    it("char", (next) => {
-      expect(
-        Pair.left(
-          List.head(
-          Parser.parse(
-            Parser.char("a")
-          )(List.fromString("a"))
-        ))
-      ).to.eql(
-        'a'
-      );
-      next();
-    });
-    it("chars", (next) => {
-      expect(
-        List.toString(Pair.left(
-          List.head(
-            Parser.parse(
-              Parser.chars(List.fromString("abc"))
-            )(List.fromString("abcdef"))
-          )
-        ))
-      ).to.eql(
-        "abc"
-      );
-      expect(
-        List.toString(Pair.left(
-          List.head(
-            Parser.parse(
-              Parser.chars(List.fromString("#t"))
-            )(List.fromString("#t"))
-          )
-        ))
-      ).to.eql(
-        '#t'
-      );
-      expect(
-        List.toString(Pair.left(
-          List.head(
-            Parser.parse(
-              Parser.chars(List.fromString("hello"))
-            )(List.fromString("hello there"))
-          )
-        ))
-      ).to.eql(
-        'hello'
-      );
       next();
     });
     it("word", (next) => {

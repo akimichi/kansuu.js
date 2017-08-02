@@ -50,6 +50,14 @@ describe("array", () => {
     expect(ys).to.eql([2,3]);
     next();
   });
+  it("Array#join", (next) =>  {
+    expect(
+      Array.join([[1]])
+    ).to.eql(
+      [1]
+    );
+    next();
+  });
   it("'reverse' is immutable", (next) =>  {
     var array = [0,1,2];
     expect(Array.reverse(array)).to.eql([2,1,0]);
