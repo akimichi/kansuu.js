@@ -55,6 +55,11 @@ describe("Monadic Parser", () => {
         ).to.eql(
           [{value:'A', remaining: 'BC'}]
         );
+        // expect(
+        //   Parser.letter()("ab,c")
+        // ).to.eql(
+        //   [{value:'A', remaining: 'BC'}]
+        // );
         next();
       });
       it("alphanum", (next) => {
@@ -218,6 +223,11 @@ describe("Monadic Parser", () => {
       ).to.eql(
         [{value:"Yes", remaining: '!'}]
       );
+      expect(
+        Parser.parse(Parser.word())("ab,c")
+      ).to.eql(
+        [{value:"ab", remaining: ',c'}]
+      );
       next();
     });
     it("ident", (next) => {
@@ -263,7 +273,6 @@ describe("Monadic Parser", () => {
         )("123abc")
       ).to.eql(
         [{value:"123", remaining: 'abc'}]
-        // '[([1,2,3,nil],[a,b,c,nil]),nil]'
       );
       expect(
         Parser.parse(
@@ -331,26 +340,12 @@ describe("Monadic Parser", () => {
       //              where word = many1 letter
       // ["abc","def","ghi"]
       const sep = Parser.char(","); 
-      const word = Parser.many1(Parser.letter());
-      const words = Pair.left(List.head(
+      expect(
         Parser.parse(
-          Parser.sepBy1(word)(sep)
-        )(List.fromString("abc,def,ghi"))
-      ));
-      expect(
-        List.toString(List.head(words))
+          Parser.sepBy1(Parser.word())(sep)
+        )("abc,def,ghi")
       ).to.eql(
-        "abc"
-      );
-      expect(
-        List.toString(List.head(List.tail(words)))
-      ).to.eql(
-        "def"
-      );
-      expect(
-        List.toString(List.head(List.tail(List.tail(words))))
-      ).to.eql(
-        "ghi"
+        [{value:["abc","def","ghi"], remaining: ''}]
       );
       next();
     });
@@ -358,13 +353,11 @@ describe("Monadic Parser", () => {
       const open = Parser.char("("); 
       const close = Parser.char(")"); 
       expect(
-        List.toString(Pair.left(List.head(
-          Parser.parse(
-            Parser.bracket(open,Parser.ident, close)
-          )(List.fromString("(identifier)"))
-        )))
+        Parser.parse(
+          Parser.bracket(open,Parser.ident, close)
+        )("(identifier)")
       ).to.eql(
-        "identifier"
+        [{value:"identifier", remaining: ''}]
       );
       next();
     });
