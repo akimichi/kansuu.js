@@ -77,7 +77,12 @@ const Syntax = {
       Syntax.atom()
     )(
       Parser.append(
-        Parser.bracket(Parser.char("("), Syntax.s_exp, Parser.char(")"))
+        Parser.bracket(
+          Parser.char("("), 
+          Parser.flatMap(Syntax.s_exp)(sexp => {
+            return Parser.unit(sexp);
+          }),
+          Parser.char(")"))
       )(
         Syntax.list() 
       )
@@ -86,7 +91,11 @@ const Syntax = {
   list: () => {
     return Parser.bracket(
       Parser.char("("), 
-      Parser.many1(Syntax.s_exp), 
+      Parser.flatMap(Parser.many(Syntax.s_exp))(sexps => {
+         return Parser.unit(sexps);
+        // return Parser.unit(List.join(sexps));
+        // return Parser.unit(List.toArray(sexps));
+      }),
       Parser.char(")")
     )
   },

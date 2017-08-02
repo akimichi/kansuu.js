@@ -14,6 +14,56 @@ const expect = require('expect.js'),
 
 describe("'interpreter' example", () => {
   describe("syntax", () => {
+    // it('list', (next) => {
+    //   expect(
+    //     Pair.left(List.head(
+    //       Parser.parse(
+    //         Syntax.list() 
+    //       )(List.fromString("( 1 )"))
+    //     ))
+    //   ).to.eql(
+    //     true 
+    //   );
+    // });
+    it('atom', (next) => {
+      expect(
+        List.head(Pair.left(List.head(
+          Parser.parse(
+            Syntax.atom() 
+          )(List.fromString("#t"))
+        )))
+      ).to.eql(
+        true 
+      );
+      expect(
+        Pair.left(List.head(
+          Parser.parse(
+            Syntax.atom() 
+          )(List.fromString("identifier"))
+        ))
+      ).to.eql(
+        "identifier"
+      );
+      expect(
+        Pair.left(List.head(
+          Parser.parse(
+            Syntax.atom() 
+          )(List.fromString("12345"))
+        ))
+      ).to.eql(
+        12345 
+      );
+      expect(
+        Pair.left(List.head(
+          Parser.parse(
+            Syntax.atom() 
+          )(List.fromString('"this is a string"'))
+        ))
+      ).to.eql(
+        "this is a string" 
+      );
+      next();
+    }) 
     it('bool', (next) => {
       expect(
         List.head(Pair.left(List.head(
@@ -32,6 +82,15 @@ describe("'interpreter' example", () => {
         )))
       ).to.eql(
         false 
+      );
+      expect(
+        List.toArray(
+          Parser.parse(
+            Syntax.bool() 
+          )(List.fromString("  true"))
+        )
+      ).to.eql(
+       []  
       );
       next();
     }) 
