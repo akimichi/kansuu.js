@@ -412,22 +412,20 @@ describe("Monadic Parser", () => {
   it("spaces", (next) => {
     expect(
       Parser.parse(
-        Parser.spaces()("  abc")
-      )
+        Parser.spaces()
+      )("  abc")
     ).to.eql(
-      true
+      [{value:undefined, remaining: 'abc'}]
     );
     next();
   });
   it("lineComment", (next) => {
     expect(
-      Pair.isEmpty(Pair.left(List.head(
-        Parser.parse(
-          Parser.lineComment("//")
-        )(List.fromString("// this is line comment"))
-      )))
+      Parser.parse(
+        Parser.lineComment("//")
+      )("// this is line comment")
     ).to.eql(
-      true 
+      [{value:undefined, remaining: ''}]
     );
     next();
   });
