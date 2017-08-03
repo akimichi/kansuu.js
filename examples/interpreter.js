@@ -131,8 +131,7 @@ const Syntax = {
   },
   operator: () => {
     const isOperator = (x) => {
-      // if(x.match(/[+\-*\/]/)){
-      if(buildinOperators[x]){
+      if(buildin.operators[x]){
         return true;
       } else {
         return false;
@@ -169,24 +168,6 @@ const buildin = {
     "numberp": (arg) => {
       return (__.typeOf(arg) === 'number');
     }
-  }
-};
-
-const buildinOperators = {
-  "+": math.add, 
-  "-": math.subtract, 
-  "*": math.multiply, 
-  "/": math.divide 
-};
-
-const buildinFunctions = {
-  "add": math.add, 
-  "subtract": math.subtract, 
-  "multiply": math.multiply, 
-  "divide": math.divide, 
-  "not": __.not(__.id),
-  "numberp": (arg) => {
-    return (__.typeOf(arg) === 'number');
   }
 };
 
