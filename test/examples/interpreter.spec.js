@@ -38,7 +38,7 @@ describe("'interpreter' example", () => {
   });
   describe("syntax", () => {
     it('s_exp', function(next) {
-      this.timeout(5000);
+      this.timeout(8000);
       expect(
         Parser.parse(
           Syntax.s_exp() 
@@ -52,6 +52,17 @@ describe("'interpreter' example", () => {
         )("(+ 2 3)")
       ).to.eql(
         [{value:['+', 2, 3], remaining: ''}]
+      );
+      next();
+    });
+    it('buildin functions', function(next) {
+      this.timeout(8000);
+      expect(
+        Parser.parse(
+          Syntax.s_exp() 
+        )("(not #t)")
+      ).to.eql(
+        [{value:['not', true], remaining: ''}]
       );
       next();
     });

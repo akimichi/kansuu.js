@@ -10,6 +10,7 @@
 
 const expect = require('expect.js'),
   __ = require('../lib/kansuu.js'),
+  math = require('../lib/kansuu-math.js'),
   Array = require('../lib/kansuu-array.js'),
   ID = require('../lib/kansuu.js').monad.identity,
   String = require('../lib/kansuu-string.js'),
@@ -57,7 +58,6 @@ const Env = {
   }
 };
 
-const operators = /[+\-*\/]/;
 
 // Syntax
 // s-expression : atom
@@ -132,7 +132,7 @@ const Syntax = {
   operator: () => {
     const isOperator = (x) => {
       // if(x.match(/[+\-*\/]/)){
-      if(x.match(operators)){
+      if(buildinOperators[x]){
         return true;
       } else {
         return false;
@@ -153,32 +153,34 @@ const Syntax = {
   }
 };
 
+// const buildinOperators = /[+\-*\/]/;
+const buildinOperators = {
+  "+": math.add, 
+  "-": math.subtract, 
+  "*": math.multiply, 
+  "/": math.divide 
+};
+
+const buildinFunctions = {
+  "add": math.add, 
+  "subtract": math.subtract, 
+  "multiply": math.multiply, 
+  "divide": math.divide, 
+  "not": __.not(__.id),
+  "numberp": (arg) => {
+    return (__.typeOf(arg) === 'number');
+  }
+};
 
 // ## Evaluator
 const Evaluator = {
   applyOperator: (op,args) => {
     return (environment) => {
       const ops = {
-        "+": (n) => {
-          return (m) => {
-            return n + m;
-          };
-        },
-        "-": (n) => {
-          return (m) => {
-            return n - m;
-          };
-        },
-        "*": (n) => {
-          return (m) => {
-            return n * m;
-          };
-        },
-        "/": (n) => {
-          return (m) => {
-            return n / m;
-          };
-        }
+        "+": math.add, 
+        "-": math.subtract, 
+        "*": math.multiply, 
+        "/": math.divide 
       };
       const operator = ops[op];
       return Array.foldl1(args)(N => {
@@ -198,18 +200,24 @@ const Evaluator = {
       if(__.typeOf(exp) === 'array') {
         // operator application
         if(Array.isEmpty(exp) === true) {
-          return ID.unit(Maybe.just([]));
+          return ID.unit(Maybe.nothing());
+          // return ID.unit(Maybe.just([]));
         } else {
           const head = Array.head(exp),
             tail = Array.tail(exp);
-          if(head.match(operators)){
+          if(buildinOperators[head]){
             const actualArgs = Array.map(tail)(__.flip(Evaluator.evaluate)(environment));
             return ID.unit(
               Evaluator.applyOperator(head, actualArgs)(environment)
             );
-          } else {
-            return ID.unit(Maybe.nothing());
           } 
+          if(buildinFunctions[head]){
+            const actualArgs = Array.map(tail)(__.flip(Evaluator.evaluate)(environment));
+            return ID.unit(
+              Evaluator.applyFunction(head, actualArgs)(environment)
+            );
+          } 
+          return ID.unit(Maybe.nothing());
         }
         return ID.unit(Maybe.just(exp));
       } else {
