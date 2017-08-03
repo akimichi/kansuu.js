@@ -55,9 +55,7 @@ const Env = {
   }
 };
 
-
-const AST = {
-};
+const operators = /[+\-*\/]/;
 
 // Syntax
 // s-expression : atom
@@ -138,7 +136,8 @@ const Syntax = {
   },
   operator: () => {
     const isOperator = (x) => {
-      if(x.match(/[+\-*\/]/)){
+      // if(x.match(/[+\-*\/]/)){
+      if(x.match(operators)){
         return true;
       } else {
         return false;
@@ -159,10 +158,124 @@ const Syntax = {
   }
 };
 
+
+// ## Evaluator
+const Evaluator = {
+  applyOperator: (op,args) => {
+    return (environment) => {
+      const ops = {
+        "+": (n) => {
+          return (m) => {
+            return n + m;
+          };
+        },
+        "-": (n) => {
+          return (m) => {
+            return n - m;
+          };
+        },
+        "*": (n) => {
+          return (m) => {
+            return n * m;
+          };
+        },
+        "/": (n) => {
+          return (m) => {
+            return n / m;
+          };
+        }
+      };
+      const operator = ops[op];
+      // return operator( 
+    };
+  },
+  // ### Evaluator#evaluate
+  evaluate: (exp) => {
+    return (environment) => {
+      if(__.typeOf(exp) === 'array') {
+        // operator application
+        if(Array.isEmpty(exp) === true) {
+          return ID.unit(Maybe.just([]));
+        } else {
+          const head = Array.head(exp),
+            tail = Array.tail(exp);
+          if(head.match(operators)){
+            return Evaluator.applyOperator(head, 
+                Array.map(tail)(Evaluator.evaluate))(environment);
+          } else {
+            return ID.unit(Maybe.nothing());
+          } 
+        }
+        return ID.unit(Maybe.just(exp));
+      } else {
+        return ID.unit(Maybe.just(exp));
+      }
+      // return Exp.match(exp, {
+      //   fail: (_) => {
+      //     return ID.unit(Maybe.nothing());
+      //   },
+      //   variable: (name) => {
+      //     return ID.unit(Env.lookup(name, environment));
+      //   },
+      //   number: (n) => {
+      //     expect(n).to.a('number');
+      //     return ID.unit(Maybe.just(n));
+      //   },
+      //   bool: (value) => {
+      //     expect(value).to.a('boolean');
+      //     return ID.unit(Maybe.just(value));
+      //   },
+      //   succ: (exp)=> {
+      //     return Maybe.flatMap(Evaluator.evaluate(exp)(environment))(n => {
+      //       if(__.typeOf(n) === 'number') {
+      //         return ID.unit(Maybe.just(n + 1));
+      //       } else {
+      //         return ID.unit(Maybe.nothing(n));
+      //       }
+      //     });
+      //   },
+      //   add: (expN,expM)=> {
+      //     return Maybe.flatMap(Evaluator.evaluate(expN)(environment))(n => {
+      //       return Maybe.flatMap(Evaluator.evaluate(expM)(environment))(m => {
+      //         return ID.unit(Maybe.just(n + m));
+      //       });
+      //     });
+      //   },
+      //   lambda: (variable, bodyExp) => {
+      //     return Exp.match(variable,{ 
+      //       variable: (name) => {
+      //         /* クロージャーを返す */
+      //         return ID.unit(Maybe.just(
+      //           (actualArg) => {
+      //             const newEnv = Env.extend(Pair.cons(name, actualArg),environment);
+      //             return Evaluator.evaluate(bodyExp)(newEnv);
+      //           }
+      //         ));
+      //       }
+      //     });
+      //   },
+      //   apply: (lambdaExp, arg) => {
+      //     return Maybe.flatMap(Evaluator.evaluate(lambdaExp)(environment))(closure => {
+      //       return Maybe.flatMap(Evaluator.evaluate(arg)(environment))(actualArg => {
+      //         return ID.unit(closure(actualArg));
+      //       });
+      //     });
+      //   }
+      // });
+    };
+  },
+};
+
+
 // ## Exp
 const Exp = {
   match : (exp, pattern) => {
     return exp(pattern);
+  },
+  add: (n, m) => {
+    return (pattern) => {
+      return pattern.add(n,m);
+    };
   },
   fail: (_) => {
     return (pattern) => {
@@ -204,11 +317,6 @@ const Exp = {
       return pattern.succ(n);
     };
   },
-  add: (n, m) => {
-    return (pattern) => {
-      return pattern.add(n,m);
-    };
-  },
   lambda: (variable, exp) => {
     expect(variable).to.a('function');
     return (pattern) => {
@@ -221,69 +329,6 @@ const Exp = {
     };
   }
 };
-
-// ## Evaluator
-const Evaluator = {
-  // ### plain#evaluate
-  evaluate: (exp) => {
-    return (environment) => {
-      return Exp.match(exp, {
-        fail: (_) => {
-          return ID.unit(Maybe.nothing());
-        },
-        variable: (name) => {
-          return ID.unit(Env.lookup(name, environment));
-        },
-        number: (n) => {
-          expect(n).to.a('number');
-          return ID.unit(Maybe.just(n));
-        },
-        bool: (value) => {
-          expect(value).to.a('boolean');
-          return ID.unit(Maybe.just(value));
-        },
-        succ: (exp)=> {
-          return Maybe.flatMap(Evaluator.evaluate(exp)(environment))(n => {
-            if(__.typeOf(n) === 'number') {
-              return ID.unit(Maybe.just(n + 1));
-            } else {
-              return ID.unit(Maybe.nothing(n));
-            }
-          });
-        },
-        add: (expN,expM)=> {
-          return Maybe.flatMap(Evaluator.evaluate(expN)(environment))(n => {
-            return Maybe.flatMap(Evaluator.evaluate(expM)(environment))(m => {
-              return ID.unit(Maybe.just(n + m));
-            });
-          });
-        },
-        lambda: (variable, bodyExp) => {
-          return Exp.match(variable,{ 
-            variable: (name) => {
-              /* クロージャーを返す */
-              return ID.unit(Maybe.just(
-                (actualArg) => {
-                  const newEnv = Env.extend(Pair.cons(name, actualArg),environment);
-                  return Evaluator.evaluate(bodyExp)(newEnv);
-                }
-              ));
-            }
-          });
-        },
-        apply: (lambdaExp, arg) => {
-          return Maybe.flatMap(Evaluator.evaluate(lambdaExp)(environment))(closure => {
-            return Maybe.flatMap(Evaluator.evaluate(arg)(environment))(actualArg => {
-              return ID.unit(closure(actualArg));
-            });
-          });
-        }
-      });
-    };
-  },
-};
-
-
 module.exports = {
   env: Env,
   evaluator: Evaluator, 

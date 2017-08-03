@@ -483,6 +483,24 @@ describe("'List' module", () => {
       );
       next();
     });
+    it("'list#foldl1'", (next) => {
+      // last :: [a] -> a
+      // last = foldl1 (\_ x -> x)
+      const last = (alist) => {
+        return List.foldl1(alist)(item => {
+          return (accumulator) => {
+            return item; 
+          };
+        });
+      }; 
+      var alist = List.mkList([0,1,2,3]);
+      expect(
+        List.last(alist)
+      ).to.eql(
+        last(alist) 
+      );
+      next();
+    });
     it("'list#reduce'", (next) => {
       var alist = List.mkList([0,1,2,3]);
       expect(
