@@ -3,6 +3,7 @@
 const expect = require('expect.js'),
   __ = require('../../lib/kansuu.js'),
   base = require('../../lib/kansuu-base.js'),
+  Array = require('../../lib/kansuu-array.js'),
   Env = require('../../examples/interpreter.js').env,
   Exp = require('../../examples/interpreter.js').exp,
   Syntax = require('../../examples/interpreter.js').syntax,
@@ -27,71 +28,57 @@ describe("'interpreter' example", () => {
     // });
     it('atom', (next) => {
       expect(
-        List.head(Pair.left(List.head(
-          Parser.parse(
-            Syntax.atom() 
-          )(List.fromString("#t"))
-        )))
+        Array.head(Parser.parse(
+          Syntax.atom() 
+        )("#t")).value
       ).to.eql(
         true 
       );
       expect(
-        Pair.left(List.head(
-          Parser.parse(
-            Syntax.atom() 
-          )(List.fromString("identifier"))
-        ))
+        Parser.parse(
+          Syntax.atom() 
+        )("12345")
+      ).to.eql(
+        [{value:12345, remaining: ''}]
+      );
+      expect(
+        Parser.parse(
+          Syntax.atom() 
+        )(" identifier ")
       ).to.eql(
         "identifier"
       );
       expect(
-        Pair.left(List.head(
-          Parser.parse(
-            Syntax.atom() 
-          )(List.fromString("12345"))
-        ))
+        Parser.parse(
+          Syntax.atom() 
+        )("this is a string")
       ).to.eql(
-        12345 
-      );
-      expect(
-        Pair.left(List.head(
-          Parser.parse(
-            Syntax.atom() 
-          )(List.fromString('"this is a string"'))
-        ))
-      ).to.eql(
-        "this is a string" 
+        null 
       );
       next();
     }) 
     it('bool', (next) => {
       expect(
-        List.head(Pair.left(List.head(
-          Parser.parse(
-            Syntax.bool() 
-          )(List.fromString("#t"))
-        )))
+        Array.head(Parser.parse(
+          Syntax.bool() 
+        )("#t")).value
       ).to.eql(
         true 
       );
-      expect(
-        List.head(Pair.left(List.head(
-          Parser.parse(
-            Syntax.bool() 
-          )(List.fromString("  #f"))
-        )))
-      ).to.eql(
-        false 
-      );
-      expect(
-        List.toArray(
-          Parser.parse(
-            Syntax.bool() 
-          )(List.fromString("  true"))
-        )
-      ).to.eql(
-       []  
-      );
+      // expect(
+      //   Parser.parse(
+      //     Syntax.bool() 
+      //   )("  #f")
+      // ).to.eql(
+      //   false 
+      // );
+      // expect(
+      //   Parser.parse(
+      //     Syntax.bool() 
+      //   )("  true")
+      // ).to.eql(
+      //  []  
+      // );
       next();
     }) 
   });

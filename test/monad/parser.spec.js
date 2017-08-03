@@ -230,7 +230,7 @@ describe("Monadic Parser", () => {
       );
       next();
     });
-    it("ident", (next) => {
+    it("Parser#ident", (next) => {
       expect(
         Parser.parse(Parser.ident())("abc def")
       ).to.eql(

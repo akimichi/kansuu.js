@@ -91,35 +91,35 @@ const Syntax = {
   list: () => {
     return Parser.bracket(
       Parser.char("("), 
-      Parser.flatMap(Parser.many(Syntax.s_exp))(sexps => {
-         return Parser.unit(sexps);
-        // return Parser.unit(List.join(sexps));
-        // return Parser.unit(List.toArray(sexps));
-      }),
+      Parser.many(Syntax.s_exp),
+      // Parser.flatMap(Parser.many(Syntax.s_exp))(sexps => {
+      //    return Parser.unit(sexps);
+      // }),
       Parser.char(")")
     )
   },
   atom: () => {
-    // identifier
-    return Parser.append(
-      Parser.token(Parser.flatMap(Parser.ident())(ident => {
-        return Parser.unit(List.toString(ident));
-      }))
-    )( // numeric
-      Parser.append(
-        Parser.token(Parser.flatMap(Parser.numeric())(numeric => {
-          return Parser.unit(numeric);
-        }))
-      )( // string
-        Parser.append(
-          Parser.token(Parser.flatMap(Parser.string())(string => {
-            return Parser.unit(string);
-          }))
-        )( 
-          Syntax.bool()
-        )
-      )
-    );
+    return Parser.alt(
+      Parser.token(Parser.ident()),
+      Parser.alt(
+        Parser.token(Parser.numeric()),
+          Syntax.bool()));
+    // // identifier
+    // return Parser.append(
+    //   Parser.token(Parser.ident())
+    // )( // numeric
+    //   Parser.append(
+    //     Parser.token(Parser.numeric())
+    //   )( // string
+    //     Parser.append(
+    //       Parser.token(Parser.flatMap(Parser.string())(string => {
+    //         return Parser.unit(string);
+    //       }))
+    //     )( 
+    //       Syntax.bool()
+    //     )
+    //   )
+    // );
     // return Parser.flatMap(Parser.letter())(c => {
     //   return Parser.flatMap(Syntax.atom_part())(part => {
     //     const letter = List.toString(c);
@@ -128,15 +128,13 @@ const Syntax = {
     // })
   },
   bool: () => {
-    const trueLiteral = List.fromString("#t");
-    const falseLiteral = List.fromString("#f");
     return Parser.append(
-      Parser.token(Parser.flatMap(Parser.chars(trueLiteral))(_ => {
-        return Parser.unit(List.unit(true));
+      Parser.token(Parser.flatMap(Parser.chars("#t"))(_ => {
+        return Parser.unit(true);
       }))
     )(
-      Parser.token(Parser.flatMap(Parser.chars(falseLiteral))(_ => {
-        return Parser.unit(List.unit(false));
+      Parser.token(Parser.flatMap(Parser.chars("#f"))(_ => {
+        return Parser.unit(false);
       }))
     );
   }

@@ -6,14 +6,13 @@ const expect = require('expect.js'),
   List = require('../../lib/kansuu.js').monad.list,
   Parser = require('../../lib/kansuu.js').monad.parser,
   Pair = require('../../lib/kansuu.js').pair,
+  Array = require('../../lib/kansuu-array.js'),
   expr = require('../../examples/calculator.js');
 
 describe("'calculator' example", () => {
 
   const calculator = (input) => {
-    return Pair.left(List.head(
-      Parser.parse(expr())(List.fromString(input))
-    ))
+    return Array.head(Parser.parse(expr())(input)).value;
   };
   it('can calculate an expression via calculator', (next) => {
     expect(
@@ -36,38 +35,30 @@ describe("'calculator' example", () => {
 
   // it('can calculate exponential', (next) => {
   //   expect(
-  //     List.isEmpty(
-  //       Parser.parse(expr())(List.fromString("((1+2)^3)"))
-  //     )
+  //     Parser.parse(expr())("(1+2)^3")
   //   ).to.eql(
-  //     false 
+  //     [] 
   //   );
   //   next();
   // });
   it('can calculate number', (next) => {
     expect(
-      Pair.left(List.head(
-        Parser.parse(expr())(List.fromString("123"))
-      ))
+      Parser.parse(expr())("123")
     ).to.eql(
-      123 
+      [{value:123, remaining: ''}]
     );
     next();
   });
   it('can calculate an expression', (next) => {
     expect(
-      Pair.left(List.head(
-        Parser.parse(expr())(List.fromString("1+2"))
-      ))
+      Parser.parse(expr())("1+2")
     ).to.eql(
-      3 
+      [{value:3, remaining: ''}]
     );
     expect(
-      Pair.left(List.head(
-        Parser.parse(expr())(List.fromString("(1+2)-3"))
-      ))
+      Parser.parse(expr())("(1+2)-3")
     ).to.eql(
-      0 
+      [{value:0, remaining: ''}]
     );
     next();
   });

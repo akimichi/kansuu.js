@@ -241,7 +241,7 @@ const chars = (strAsString) => {
 const ident = () => {
   return flatMap(lower())((x) => {
     return flatMap(many(alphanum()))((xs) => {
-      return pure(List.cons(x,xs));
+      return pure(Parser.cons(x,xs));
       // return pure(Symbol(List.toString(List.cons(x,xs))));
     });
   });
