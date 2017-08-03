@@ -419,7 +419,8 @@ describe("Monadic Parser", () => {
     );
     next();
   });
-  it("lineComment", (next) => {
+  it("lineComment", function(next){
+    this.timeout(5000);
     expect(
       Parser.parse(
         Parser.lineComment("//")
@@ -450,7 +451,8 @@ describe("Monadic Parser", () => {
       );
       next();
     });
-    it("numeric", (next) => {
+    it("numeric", function(next) {
+      this.timeout(9000);
       expect(
         Parser.parse(Parser.numeric())("   -123   ")
       ).to.eql(

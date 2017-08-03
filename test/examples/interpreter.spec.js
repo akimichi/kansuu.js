@@ -7,6 +7,7 @@ const expect = require('expect.js'),
   Env = require('../../examples/interpreter.js').env,
   Exp = require('../../examples/interpreter.js').exp,
   Syntax = require('../../examples/interpreter.js').syntax,
+  Interpreter = require('../../examples/interpreter.js').interpreter,
   ID = require('../../lib/kansuu.js').monad.identity,
   Maybe = require('../../lib/kansuu.js').monad.maybe,
   List = require('../../lib/kansuu.js').monad.list,
@@ -14,7 +15,46 @@ const expect = require('expect.js'),
   Pair = require('../../lib/kansuu.js').pair;
 
 describe("'interpreter' example", () => {
+  describe("interpret", () => {
+    it('number', function(next) {
+      this.timeout(9000);
+      expect(
+        Interpreter.interpret("1")
+      ).to.eql(
+        '1' 
+      );
+      next();
+    });
+    it('operator', function(next) {
+      this.timeout(9000);
+      expect(
+        Interpreter.interpret("(+ 2 3)")
+      ).to.eql(
+        '5' 
+      );
+      next();
+    });
+  
+  });
   describe("syntax", () => {
+    it('s_exp', function(next) {
+      this.timeout(5000);
+      expect(
+        Parser.parse(
+          Syntax.s_exp() 
+        )("12345")
+      ).to.eql(
+        [{value:12345, remaining: ''}]
+      );
+      expect(
+        Parser.parse(
+          Syntax.s_exp() 
+        )("(+ 2 3)")
+      ).to.eql(
+        [{value:['+', 2, 3], remaining: ''}]
+      );
+      next();
+    });
     it('list', function(next) {
       this.timeout(9000);
       expect(
@@ -91,61 +131,6 @@ describe("'interpreter' example", () => {
       next();
     }) 
   });
-  describe("environment", () => {
-    it('can lookup empty env', (next) => {
-      Maybe.match(Env.lookup("a", Env.empty),{
-        nothing: (_) => {
-          expect(true).to.be.ok()
-        },
-        just: (value) => {
-          expect().fail()
-        }
-      });
-      next();
-    });
-    it('can lookup env', (next) => {
-      const env = Env.extend(Pair.cons("a",1), Env.empty);
-      Maybe.match(Env.lookup("a", env),{
-        nothing: (_) => {
-          expect().fail()
-        },
-        just: (value) => {
-          expect(value).to.eql(1);
-        }
-      });
-      next();
-    });
-    it('can extend and lookup env', (next) => {
-      const env = Env.extend(Pair.cons("a",1), Env.empty);
-      Maybe.match(Env.lookup("a", env),{
-        nothing: (_) => {
-          expect().fail()
-        },
-        just: (value) => {
-          expect(value).to.eql(1);
-        }
-      });
-
-      const newEnv = Env.extend(Pair.cons("a",2), env);
-      Maybe.match(Env.lookup("a", newEnv),{
-        nothing: (_) => {
-          expect().fail()
-        },
-        just: (value) => {
-          expect(value).to.eql(2);
-        }
-      });
-      Maybe.match(Env.lookup("b", newEnv),{
-        nothing: (_) => {
-          expect(true).to.be.ok()
-        },
-        just: (value) => {
-          expect().fail()
-        }
-      });
-      next();
-    });
-  });
 
   describe("evaluator", () => {
     const I = require('../../examples/interpreter.js').evaluator;
@@ -161,18 +146,25 @@ describe("'interpreter' example", () => {
       });
       next();
     });
-    // it('can evaluate number', (next) => {
-    //   var exp = Exp.number(2);
-    //   Maybe.match(I.evaluate(exp)(Env.empty),{
-    //     nothing: (_) => {
-    //       expect().fail()
-    //     },
-    //     just: (value) => {
-    //       expect(value).to.eql(ID.unit(2));
-    //     }
-    //   });
-    //   next();
-    // });
+    it('can evaluate operator', (next) => {
+      Maybe.match(I.evaluate(['+', 1, 2])(Env.empty),{
+        nothing: (_) => {
+          expect().fail()
+        },
+        just: (value) => {
+          expect(value).to.eql(ID.unit(3));
+        }
+      });
+      Maybe.match(I.evaluate(['+', 1, ["*", 2, 3]])(Env.empty),{
+        nothing: (_) => {
+          expect().fail()
+        },
+        just: (value) => {
+          expect(value).to.eql(ID.unit(7));
+        }
+      });
+      next();
+    });
     // it('can evaluate variable', (next) => {
     //   var exp = Exp.variable("a");
     //   var env = Env.extend(Pair.cons("a",1), Env.empty);
@@ -274,5 +266,60 @@ describe("'interpreter' example", () => {
     //   });
     //   next();
     // });
+  });
+  describe("environment", () => {
+    it('can lookup empty env', (next) => {
+      Maybe.match(Env.lookup("a", Env.empty),{
+        nothing: (_) => {
+          expect(true).to.be.ok()
+        },
+        just: (value) => {
+          expect().fail()
+        }
+      });
+      next();
+    });
+    it('can lookup env', (next) => {
+      const env = Env.extend(Pair.cons("a",1), Env.empty);
+      Maybe.match(Env.lookup("a", env),{
+        nothing: (_) => {
+          expect().fail()
+        },
+        just: (value) => {
+          expect(value).to.eql(1);
+        }
+      });
+      next();
+    });
+    it('can extend and lookup env', (next) => {
+      const env = Env.extend(Pair.cons("a",1), Env.empty);
+      Maybe.match(Env.lookup("a", env),{
+        nothing: (_) => {
+          expect().fail()
+        },
+        just: (value) => {
+          expect(value).to.eql(1);
+        }
+      });
+
+      const newEnv = Env.extend(Pair.cons("a",2), env);
+      Maybe.match(Env.lookup("a", newEnv),{
+        nothing: (_) => {
+          expect().fail()
+        },
+        just: (value) => {
+          expect(value).to.eql(2);
+        }
+      });
+      Maybe.match(Env.lookup("b", newEnv),{
+        nothing: (_) => {
+          expect(true).to.be.ok()
+        },
+        just: (value) => {
+          expect().fail()
+        }
+      });
+      next();
+    });
   });
 });

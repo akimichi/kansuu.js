@@ -14,7 +14,8 @@ describe("'calculator' example", () => {
   const calculator = (input) => {
     return Array.head(Parser.parse(expr())(input)).value;
   };
-  it('can calculate an expression via calculator', (next) => {
+  it('can calculate an expression via calculator', function (next) {
+    this.timeout(9000);
     expect(
        calculator("(1+2)-3")
     ).to.eql(
@@ -41,7 +42,8 @@ describe("'calculator' example", () => {
   //   );
   //   next();
   // });
-  it('can calculate number', (next) => {
+  it('can calculate number', function(next) {
+    this.timeout(5000);
     expect(
       Parser.parse(expr())("123")
     ).to.eql(

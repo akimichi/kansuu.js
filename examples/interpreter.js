@@ -10,7 +10,9 @@
 
 const expect = require('expect.js'),
   __ = require('../lib/kansuu.js'),
+  Array = require('../lib/kansuu-array.js'),
   ID = require('../lib/kansuu.js').monad.identity,
+  String = require('../lib/kansuu-string.js'),
   Pair = require('../lib/kansuu.js').pair,
   Maybe = require('../lib/kansuu.js').monad.maybe,
   List = require('../lib/kansuu.js').monad.list,
@@ -77,8 +79,8 @@ const Syntax = {
       Parser.append(
         Parser.bracket(
           Parser.char("("), 
-          Parser.flatMap(Syntax.s_exp)(sexp => {
-            return Parser.unit(sexp);
+          (() => {
+            return Syntax.s_exp();
           }),
           Parser.char(")"))
       )(
@@ -92,17 +94,10 @@ const Syntax = {
       () => {
         return Parser.many(Syntax.s_exp());
       },
-      // () => {
-      //   return Parser.flatMap(Parser.many(Syntax.s_exp()))(sexps => {
-      //     return Parser.unit(sexps);
-      //   });
-      // },
       Parser.char(")")
     )
   },
   atom: () => {
-    // return Parser.alt(
-    //   Parser.token(Parser.ident()),
     return Parser.token(Parser.alt(
       Parser.numeric(),
       Parser.alt(
@@ -186,7 +181,15 @@ const Evaluator = {
         }
       };
       const operator = ops[op];
-      // return operator( 
+      return Array.foldl1(args)(N => {
+        return (M) => {
+          return Maybe.flatMap(M)(m => {
+            return Maybe.flatMap(N)(n => {
+              return Maybe.just(operator(n)(m));
+            });
+          });
+        };
+      });
     };
   },
   // ### Evaluator#evaluate
@@ -200,8 +203,10 @@ const Evaluator = {
           const head = Array.head(exp),
             tail = Array.tail(exp);
           if(head.match(operators)){
-            return Evaluator.applyOperator(head, 
-                Array.map(tail)(Evaluator.evaluate))(environment);
+            const actualArgs = Array.map(tail)(__.flip(Evaluator.evaluate)(environment));
+            return ID.unit(
+              Evaluator.applyOperator(head, actualArgs)(environment)
+            );
           } else {
             return ID.unit(Maybe.nothing());
           } 
@@ -329,11 +334,39 @@ const Exp = {
     };
   }
 };
+
+const Interpreter = {
+  // interpret :: String => Maybe[Any]
+  interpret: (source) => {
+    const parseResults = Parser.parse(Syntax.s_exp())(source);
+    if(Array.isEmpty(parseResults) === true) {
+      return Maybe.nothing();
+    }
+    const result =  Array.head(parseResults),
+      remaining = result.remaining,
+      exp = result.value;
+
+    if(String.isEmpty(remaining) === false) {
+      return Maybe.nothing();
+    }
+    const answer = Evaluator.evaluate(exp)(Env.empty);
+    return Maybe.match(answer, {
+      nothing: (_) => {
+        return "";
+      },
+      just: (value) => {
+        return `${value}`;
+      }
+    });
+  }
+};
+
 module.exports = {
   env: Env,
   evaluator: Evaluator, 
   exp: Exp, 
-  syntax: Syntax
+  syntax: Syntax,
+  interpreter: Interpreter
 };
 
 
