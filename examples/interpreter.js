@@ -153,7 +153,25 @@ const Syntax = {
   }
 };
 
-// const buildinOperators = /[+\-*\/]/;
+const buildin = {
+  operators: {
+    "+": math.add, 
+    "-": math.subtract, 
+    "*": math.multiply, 
+    "/": math.divide 
+  },
+  functions: {
+    "add": math.add, 
+    "subtract": math.subtract, 
+    "multiply": math.multiply, 
+    "divide": math.divide, 
+    "not": __.not(__.id),
+    "numberp": (arg) => {
+      return (__.typeOf(arg) === 'number');
+    }
+  }
+};
+
 const buildinOperators = {
   "+": math.add, 
   "-": math.subtract, 
@@ -205,13 +223,13 @@ const Evaluator = {
         } else {
           const head = Array.head(exp),
             tail = Array.tail(exp);
-          if(buildinOperators[head]){
+          if(buildin.operators[head]){
             const actualArgs = Array.map(tail)(__.flip(Evaluator.evaluate)(environment));
             return ID.unit(
               Evaluator.applyOperator(head, actualArgs)(environment)
             );
           } 
-          if(buildinFunctions[head]){
+          if(buildin.functions[head]){
             const actualArgs = Array.map(tail)(__.flip(Evaluator.evaluate)(environment));
             return ID.unit(
               Evaluator.applyFunction(head, actualArgs)(environment)
