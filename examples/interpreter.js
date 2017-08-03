@@ -99,12 +99,15 @@ const Syntax = {
     )
   },
   atom: () => {
-    return Parser.alt(
-      Parser.token(Parser.ident()),
+    // return Parser.alt(
+    //   Parser.token(Parser.ident()),
+    return Parser.token(Parser.alt(
+      Parser.numeric(),
       Parser.alt(
-        Parser.token(Parser.numeric()),
-          Syntax.bool()));
-    // // identifier
+        Syntax.bool(),
+        Parser.alt(
+          Parser.ident(),
+          Parser.string()))));
     // return Parser.append(
     //   Parser.token(Parser.ident())
     // )( // numeric

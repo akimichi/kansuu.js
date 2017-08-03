@@ -43,18 +43,19 @@ describe("'interpreter' example", () => {
       );
       expect(
         Parser.parse(
-          Syntax.atom() 
-        )(" identifier ")
+          Parser.ident()
+          // Syntax.atom() 
+        )("abc def")
       ).to.eql(
-        "identifier"
+        [{value:"abc", remaining: ' def'}]
       );
-      expect(
-        Parser.parse(
-          Syntax.atom() 
-        )("this is a string")
-      ).to.eql(
-        null 
-      );
+      // expect(
+      //   Parser.parse(
+      //     Syntax.atom() 
+      //   )("this is a string")
+      // ).to.eql(
+      //   [{value:"this", remaining: 'is a string'}]
+      // );
       next();
     }) 
     it('bool', (next) => {

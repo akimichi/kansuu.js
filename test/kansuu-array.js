@@ -56,6 +56,11 @@ describe("array", () => {
     ).to.eql(
       [1]
     );
+    expect(
+      Array.join(["a","b","c"])
+    ).to.eql(
+      "abc" 
+    );
     next();
   });
   it("'reverse' is immutable", (next) =>  {
