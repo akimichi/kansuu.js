@@ -15,18 +15,33 @@ const expect = require('expect.js'),
 
 describe("'interpreter' example", () => {
   describe("syntax", () => {
-    // it('list', (next) => {
-    //   expect(
-    //     Pair.left(List.head(
-    //       Parser.parse(
-    //         Syntax.list() 
-    //       )(List.fromString("( 1 )"))
-    //     ))
-    //   ).to.eql(
-    //     true 
-    //   );
-    // });
-    it('atom', (next) => {
+    it('list', function(next) {
+      this.timeout(9000);
+      expect(
+        Parser.parse(
+          Syntax.list() 
+        )("( 1 )")
+      ).to.eql(
+        [{value:[1], remaining: ''}]
+      );
+      expect(
+        Parser.parse(
+          Syntax.list() 
+        )("( identifier )")
+      ).to.eql(
+        [{value:[ "identifier" ], remaining: ''}]
+      );
+      expect(
+        Parser.parse(
+          Syntax.list() 
+        )("(+ 1 2)")
+      ).to.eql(
+        [{value:["+", 1, 2], remaining: ''}]
+      );
+      next();
+    });
+    it('atom', function(next){
+      this.timeout(5000);
       expect(
         Array.head(Parser.parse(
           Syntax.atom() 
@@ -66,20 +81,13 @@ describe("'interpreter' example", () => {
       ).to.eql(
         true 
       );
-      // expect(
-      //   Parser.parse(
-      //     Syntax.bool() 
-      //   )("  #f")
-      // ).to.eql(
-      //   false 
-      // );
-      // expect(
-      //   Parser.parse(
-      //     Syntax.bool() 
-      //   )("  true")
-      // ).to.eql(
-      //  []  
-      // );
+      expect(
+        Parser.parse(
+          Syntax.bool() 
+        )("  #f")
+      ).to.eql(
+        [{value:false, remaining: ''}]
+      );
       next();
     }) 
   });

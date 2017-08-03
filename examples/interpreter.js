@@ -91,10 +91,14 @@ const Syntax = {
   list: () => {
     return Parser.bracket(
       Parser.char("("), 
-      Parser.many(Syntax.s_exp),
-      // Parser.flatMap(Parser.many(Syntax.s_exp))(sexps => {
-      //    return Parser.unit(sexps);
-      // }),
+      () => {
+        return Parser.many(Syntax.s_exp());
+      },
+      // () => {
+      //   return Parser.flatMap(Parser.many(Syntax.s_exp()))(sexps => {
+      //     return Parser.unit(sexps);
+      //   });
+      // },
       Parser.char(")")
     )
   },
@@ -107,7 +111,9 @@ const Syntax = {
         Syntax.bool(),
         Parser.alt(
           Parser.ident(),
-          Parser.string()))));
+          Parser.alt(
+            Syntax.operator(),
+            Parser.string())))));
     // return Parser.append(
     //   Parser.token(Parser.ident())
     // )( // numeric
@@ -129,6 +135,16 @@ const Syntax = {
     //     return Parser.unit(c + part);
     //   })
     // })
+  },
+  operator: () => {
+    const isOperator = (x) => {
+      if(x.match(/[+\-*\/]/)){
+        return true;
+      } else {
+        return false;
+      } 
+    };
+    return Parser.sat(isOperator);
   },
   bool: () => {
     return Parser.append(
