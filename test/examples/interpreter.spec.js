@@ -38,16 +38,24 @@ describe("'interpreter' example", () => {
   });
   describe("syntax", () => {
     describe('s_exp', (next) => {
-      // it('lambda as s_exp', function(next) {
-      //   expect(
-      //     Parser.parse(
-      //       Syntax.s_exp() 
-      //     )("(lambda (x) (+ x x))")
-      //   ).to.eql(
-      //     [{value:12345, remaining: ''}]
-      //   );
-      //   next();
-      // });
+      it('lambda as s_exp', function(next) {
+        this.timeout(12000);
+        expect(
+          Parser.parse(
+            Syntax.s_exp() 
+          )("(lambda (x) (+ x x))")
+        ).to.eql(
+          [{value:["lambda", ["x"], ["+", "x", "x"]], remaining: ''}]
+        );
+        // expect(
+        //   Parser.parse(
+        //     Syntax.s_exp() 
+        //   )("(lambda (x) (x))")
+        // ).to.eql(
+        //   [{value:["lambda", ["x"], ["x"]], remaining: ''}]
+        // );
+        next();
+      });
       it('simple s_exp', function(next) {
         this.timeout(20000);
         expect(
@@ -108,13 +116,6 @@ describe("'interpreter' example", () => {
     });
     it('list', function(next) {
       this.timeout(12000);
-      expect(
-        Parser.parse(
-          Syntax.list() 
-        )("(lambda (x) (x))")
-      ).to.eql(
-        [{value:["lambda", ["x"], ["x"]], remaining: ''}]
-      );
       expect(
         Parser.parse(
           Syntax.list() 
