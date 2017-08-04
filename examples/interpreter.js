@@ -143,7 +143,7 @@ const Syntax = {
   },
   operator: () => {
     const isOperator = (x) => {
-      if(buildin.operators[x]){
+      if(buildin[x]){
         return true;
       } else {
         return false;
@@ -164,14 +164,16 @@ const Syntax = {
   }
 };
 
+const keywords = ["lambda"]; 
+
 const buildin = {
-  operators: {
+  // operators: {
     "+": math.add, 
     "-": math.subtract, 
     "*": math.multiply, 
-    "/": math.divide 
-  },
-  functions: {
+    "/": math.divide,
+  // },
+  // functions: {
     "add": math.add, 
     "subtract": math.subtract, 
     "multiply": math.multiply, 
@@ -180,25 +182,25 @@ const buildin = {
     "numberp": (arg) => {
       return (__.typeOf(arg) === 'number');
     }
-  }
+  // },
 };
 
 // ## Evaluator
 const Evaluator = {
-  applyOperator: (op,args) => {
+  apply: (fun,args) => {
     return (environment) => {
-      const ops = {
-        "+": math.add, 
-        "-": math.subtract, 
-        "*": math.multiply, 
-        "/": math.divide 
-      };
-      const operator = ops[op];
+      // const ops = {
+      //   "+": math.add, 
+      //   "-": math.subtract, 
+      //   "*": math.multiply, 
+      //   "/": math.divide 
+      // };
+      // const operator = ops[op];
       return Array.foldl1(args)(N => {
         return (M) => {
           return Maybe.flatMap(M)(m => {
             return Maybe.flatMap(N)(n => {
-              return Maybe.just(operator(n)(m));
+              return Maybe.just(fun(n)(m));
             });
           });
         };
@@ -209,29 +211,30 @@ const Evaluator = {
   evaluate: (exp) => {
     return (environment) => {
       if(__.typeOf(exp) === 'array') {
-        // operator application
+        // application
         if(Array.isEmpty(exp) === true) {
           return ID.unit(Maybe.nothing());
-          // return ID.unit(Maybe.just([]));
         } else {
           const head = Array.head(exp),
             tail = Array.tail(exp);
-          if(buildin.operators[head]){
+          const fun = buildin[head];
+          if(fun){
             const actualArgs = Array.map(tail)(__.flip(Evaluator.evaluate)(environment));
             return ID.unit(
-              Evaluator.applyOperator(head, actualArgs)(environment)
+              Evaluator.apply(fun, actualArgs)(environment)
             );
           } 
-          if(buildin.functions[head]){
-            const actualArgs = Array.map(tail)(__.flip(Evaluator.evaluate)(environment));
-            return ID.unit(
-              Evaluator.applyFunction(head, actualArgs)(environment)
-            );
-          } 
+          // if(buildin.functions[head]){
+          //   const actualArgs = Array.map(tail)(__.flip(Evaluator.evaluate)(environment));
+          //   return ID.unit(
+          //     Evaluator.apply(head, actualArgs)(environment)
+          //   );
+          // } 
           return ID.unit(Maybe.nothing());
         }
         return ID.unit(Maybe.just(exp));
       } else {
+        // primitive values
         return ID.unit(Maybe.just(exp));
       }
       // return Exp.match(exp, {
