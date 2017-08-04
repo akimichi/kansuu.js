@@ -80,7 +80,10 @@ const Syntax = {
         Parser.bracket(
           Parser.char("("), 
           (() => {
-            return Syntax.s_exp();
+            return Parser.flatMap(Syntax.s_exp())(sexp => {
+              console.log("s_exp:" + sexp);
+              return Parser.unit([sexp])
+            });
           }),
           Parser.char(")"))
       )(
@@ -90,11 +93,20 @@ const Syntax = {
   },
   list: () => {
     return Parser.bracket(
-      Parser.char("("), 
+      Parser.token(Parser.char("(")), 
       () => {
-        return Parser.many(Syntax.s_exp());
+        return Parser.flatMap(Syntax.s_exp())(sexp => {
+          return Parser.flatMap(Parser.many(Syntax.s_exp()))(sexps => {
+            return Parser.unit(Parser.cons(sexp, sexps));
+          });
+        });
+        // return Parser.flatMap(Parser.many1(Syntax.s_exp()))(sexps => {
+        //   console.log("list:" + sexps)
+        //   return Parser.unit(sexps)
+        // });
+        // return Parser.many1(Syntax.s_exp());
       },
-      Parser.char(")")
+      Parser.token(Parser.char(")"))
     )
   },
   atom: () => {

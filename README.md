@@ -10,13 +10,23 @@ The 'motto' of this library is to have 'enough power with less magic'.
 ## Usage
 
 ~~~
+$ npm install kansuu.js
+~~~
+
+## Testing
+
+The files inside test can be run with:
+
+~~~
 $ git clone https://github.com/akimichi/kansuu.js.git
 $ cd kansuu.js
 kansuu.js$ nvm use
 kansuu.js$ npm install
 kansuu.js$ npm install -g mocha
 kansuu.js$ npm test 
+kansuu.js$ npm test
 ~~~
+
 
 ## Examples
 
