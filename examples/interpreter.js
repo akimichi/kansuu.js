@@ -198,6 +198,28 @@ const Evaluator = {
       });
     };
   },
+  evaluateLambda: (tail) => {
+    return (oldEnv)  => {
+      const args = Array.head(tail),
+        body = Array.tail(tail);
+      if(__.typeOf(args) === 'array') {
+        return Array.foldl1(args)(n => {
+          return (m) => {
+            return (N) => {
+              return (M) => {
+                const newEnv = Env.extend(Pair.cons(m, M),Env.extend(Pair.cons(n, N), oldEnv));
+                return Evaluator.evaluate(body)(newEnv);
+              };
+            };
+          };
+        });
+      } else {
+        // 引数が配列でなければ、エラーである
+        // 例えば、(lambda x body) は不適切な式である
+        return ID.unit(Maybe.nothing());
+      }
+    };
+  },
   // ### Evaluator#evaluate
   evaluate: (exp) => {
     return (environment) => {
@@ -208,13 +230,23 @@ const Evaluator = {
         } else {
           const head = Array.head(exp),
             tail = Array.tail(exp);
-          const fun = buildin[head];
-          if(fun){
-            const actualArgs = Array.map(tail)(__.flip(Evaluator.evaluate)(environment));
-            return ID.unit(
-              Evaluator.apply(fun, actualArgs)(environment)
-            );
-          } 
+          if(__.typeOf(head) === 'array') {
+            return Maybe.flatMap(Evaluator.evaluate(head)(environment))(closure => {
+              const actualArgs = Array.map(tail)(__.flip(Evaluator.evaluate)(environment));
+              return Maybe.just(closure(actualArgs));
+            });
+          }
+          if(head === "lambda") {
+            return Evaluator.evaluateLambda(tail)(environment);
+          } else {
+            const fun = buildin[head];
+            if(fun){
+              const actualArgs = Array.map(tail)(__.flip(Evaluator.evaluate)(environment));
+              return ID.unit(
+                Evaluator.apply(fun, actualArgs)(environment)
+              );
+            }
+          }
           return ID.unit(Maybe.nothing());
         }
         return ID.unit(Maybe.just(exp));

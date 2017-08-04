@@ -34,10 +34,37 @@ describe("'interpreter' example", () => {
       );
       next();
     });
+    it('application', function(next) {
+      this.timeout(20000);
+      expect(
+        Interpreter.interpret("((lambda (x) x) 1)")
+      ).to.eql(
+        '5' 
+      );
+      next();
+    });
   
   });
   describe("syntax", () => {
     describe('s_exp', (next) => {
+      it('application as s_exp', function(next) {
+        this.timeout(20000);
+        expect(
+          Parser.parse(
+            Syntax.s_exp() 
+          )("((lambda (x) x) 1)")
+        ).to.eql(
+          [{value:[["lambda", ["x"], "x"], 1], remaining: ''}]
+        );
+        // expect(
+        //   Parser.parse(
+        //     Syntax.s_exp() 
+        //   )("(lambda (x) (x))")
+        // ).to.eql(
+        //   [{value:["lambda", ["x"], ["x"]], remaining: ''}]
+        // );
+        next();
+      });
       it('lambda as s_exp', function(next) {
         this.timeout(12000);
         expect(
