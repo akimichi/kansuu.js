@@ -168,34 +168,25 @@ const keywords = ["lambda"];
 
 const buildin = {
   // operators: {
-    "+": math.add, 
-    "-": math.subtract, 
-    "*": math.multiply, 
-    "/": math.divide,
-  // },
+  "+": math.add, 
+  "-": math.subtract, 
+  "*": math.multiply, 
+  "/": math.divide,
   // functions: {
-    "add": math.add, 
-    "subtract": math.subtract, 
-    "multiply": math.multiply, 
-    "divide": math.divide, 
-    "not": __.not(__.id),
-    "numberp": (arg) => {
-      return (__.typeOf(arg) === 'number');
-    }
-  // },
+  "add": math.add, 
+  "subtract": math.subtract, 
+  "multiply": math.multiply, 
+  "divide": math.divide, 
+  "not": __.not(__.id),
+  "numberp": (arg) => {
+    return (__.typeOf(arg) === 'number');
+  }
 };
 
 // ## Evaluator
 const Evaluator = {
   apply: (fun,args) => {
     return (environment) => {
-      // const ops = {
-      //   "+": math.add, 
-      //   "-": math.subtract, 
-      //   "*": math.multiply, 
-      //   "/": math.divide 
-      // };
-      // const operator = ops[op];
       return Array.foldl1(args)(N => {
         return (M) => {
           return Maybe.flatMap(M)(m => {
@@ -224,12 +215,6 @@ const Evaluator = {
               Evaluator.apply(fun, actualArgs)(environment)
             );
           } 
-          // if(buildin.functions[head]){
-          //   const actualArgs = Array.map(tail)(__.flip(Evaluator.evaluate)(environment));
-          //   return ID.unit(
-          //     Evaluator.apply(head, actualArgs)(environment)
-          //   );
-          // } 
           return ID.unit(Maybe.nothing());
         }
         return ID.unit(Maybe.just(exp));
