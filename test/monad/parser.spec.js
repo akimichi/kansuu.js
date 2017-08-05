@@ -55,11 +55,6 @@ describe("Monadic Parser", () => {
         ).to.eql(
           [{value:'A', remaining: 'BC'}]
         );
-        // expect(
-        //   Parser.letter()("ab,c")
-        // ).to.eql(
-        //   [{value:'A', remaining: 'BC'}]
-        // );
         next();
       });
       it("alphanum", (next) => {
@@ -235,6 +230,11 @@ describe("Monadic Parser", () => {
         Parser.parse(Parser.ident())("abc def")
       ).to.eql(
         [{value:"abc", remaining: ' def'}]
+      );
+      expect(
+        Parser.parse(Parser.ident())("xyz")
+      ).to.eql(
+        [{value:"xyz", remaining: ''}]
       );
       next();
     });

@@ -95,16 +95,15 @@ const Syntax = {
     return Parser.bracket(
       Parser.token(Parser.char("(")), 
       () => {
-        return Parser.many1(Syntax.s_exp());
+        // return Parser.many1(Syntax.s_exp());
         // return Parser.flatMap(Syntax.s_exp())(sexp => {
         //   return Parser.flatMap(Parser.many(Syntax.s_exp()))(sexps => {
         //     return Parser.unit(Parser.cons(sexp, sexps));
         //   });
         // });
-        // return Parser.flatMap(Parser.many1(Syntax.s_exp()))(sexps => {
-        //   console.log("list:" + sexps)
-        //   return Parser.unit(sexps)
-        // });
+        return Parser.flatMap(Parser.many1(Syntax.s_exp()))(sexps => {
+          return Parser.unit(sexps)
+        });
       },
       Parser.token(Parser.char(")"))
     )
@@ -223,36 +222,59 @@ const Evaluator = {
   // ### Evaluator#evaluate
   evaluate: (exp) => {
     return (environment) => {
-      if(__.typeOf(exp) === 'array') {
-        // application
-        if(Array.isEmpty(exp) === true) {
-          return ID.unit(Maybe.nothing());
-        } else {
-          const head = Array.head(exp),
-            tail = Array.tail(exp);
-          if(__.typeOf(head) === 'array') {
-            return Maybe.flatMap(Evaluator.evaluate(head)(environment))(closure => {
-              const actualArgs = Array.map(tail)(__.flip(Evaluator.evaluate)(environment));
-              return Maybe.just(closure(actualArgs));
-            });
-          }
-          if(head === "lambda") {
-            return Evaluator.evaluateLambda(tail)(environment);
-          } else {
-            const fun = buildin[head];
-            if(fun){
-              const actualArgs = Array.map(tail)(__.flip(Evaluator.evaluate)(environment));
-              return ID.unit(
-                Evaluator.apply(fun, actualArgs)(environment)
-              );
-            }
-          }
-          return ID.unit(Maybe.nothing());
+      if(__.typeOf(exp) === 'number') {
+        return ID.unit(Maybe.just(exp));
+      }
+      if(__.typeOf(exp) === 'boolean') {
+        return ID.unit(Maybe.just(exp));
+      }
+      if(__.typeOf(exp) === 'string') {
+        // case of buildin function/operator
+        const closure = buildin[exp];
+        if(closure){
+          return ID.unit(Maybe.just(closure)); 
+          // const actualArgs = Array.map(tail)(__.flip(Evaluator.evaluate)(environment));
+          // return ID.unit(
+          //   Evaluator.apply(fun, actualArgs)(environment)
+          // );
         }
-        return ID.unit(Maybe.just(exp));
-      } else {
-        // primitive values
-        return ID.unit(Maybe.just(exp));
+        // case of identifier
+        return ID.unit(Maybe.just(
+          Evaluator.evaluate(exp)(environment)
+        ));
+      }
+      // case of S-expression 
+      if(__.typeOf(exp) === 'array') {
+        const head = Array.head(exp),
+          tail = Array.tail(exp);
+        if(head === "lambda") {
+          // ["lambda", [arg], body]    
+          const args = Array.head(Array.tail(exp)),
+            body = Array.head(Array.tail(Array.tail(exp)));
+          expect(args).to.a('array');
+          return ID.unit(Maybe.just(
+            (actualArg) => {
+              const newEnv = Env.extend(Pair.cons(Array.head(args), actualArg),environment);
+              return Evaluator.evaluate(body)(newEnv);
+            }
+          ));
+        }
+        // application
+        const car = Evaluator.evaluate(head)(environment);
+        const cdr = Array.map(tail)(item => {
+          return Evaluator.evaluate(item)(environment);
+        });
+        return Array.foldl1(cdr)(N => {
+          return (M) => {
+            return Maybe.flatMap(M)(m => {
+              return Maybe.flatMap(N)(n => {
+                return Maybe.flatMap(car)(closure => {
+                  return Maybe.just(closure(n)(m));
+                });
+              });
+            });
+          };
+        });
       }
       // return Exp.match(exp, {
       //   fail: (_) => {

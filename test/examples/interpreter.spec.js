@@ -39,7 +39,7 @@ describe("'interpreter' example", () => {
       expect(
         Interpreter.interpret("((lambda (x) x) 1)")
       ).to.eql(
-        '5' 
+        '1' 
       );
       next();
     });
@@ -56,13 +56,13 @@ describe("'interpreter' example", () => {
         ).to.eql(
           [{value:[["lambda", ["x"], "x"], 1], remaining: ''}]
         );
-        // expect(
-        //   Parser.parse(
-        //     Syntax.s_exp() 
-        //   )("(lambda (x) (x))")
-        // ).to.eql(
-        //   [{value:["lambda", ["x"], ["x"]], remaining: ''}]
-        // );
+        expect(
+          Parser.parse(
+            Syntax.s_exp() 
+          )("(lambda (x) (x))")
+        ).to.eql(
+          [{value:["lambda", ["x"], ["x"]], remaining: ''}]
+        );
         next();
       });
       it('lambda as s_exp', function(next) {
@@ -74,13 +74,14 @@ describe("'interpreter' example", () => {
         ).to.eql(
           [{value:["lambda", ["x"], ["+", "x", "x"]], remaining: ''}]
         );
-        // expect(
-        //   Parser.parse(
-        //     Syntax.s_exp() 
-        //   )("(lambda (x) (x))")
-        // ).to.eql(
-        //   [{value:["lambda", ["x"], ["x"]], remaining: ''}]
-        // );
+        expect(
+          Parser.parse(
+            Syntax.s_exp() 
+          )("(lambda (x) x)")
+        ).to.eql(
+          [{value:["lambda", ["x"], "x"], remaining: ''}]
+          // []
+        );
         next();
       });
       it('simple s_exp', function(next) {
@@ -88,9 +89,23 @@ describe("'interpreter' example", () => {
         expect(
           Parser.parse(
             Syntax.s_exp() 
+          )("(+)")
+        ).to.eql(
+          [{value:['+'], remaining: ''}]
+        );
+        expect(
+          Parser.parse(
+            Syntax.s_exp() 
           )("(x)")
         ).to.eql(
           [{value:['x'], remaining: ''}]
+        );
+        expect(
+          Parser.parse(
+            Syntax.s_exp() 
+          )("(xyz)")
+        ).to.eql(
+          [{value:['xyz'], remaining: ''}]
         );
         expect(
           Parser.parse(
@@ -113,13 +128,13 @@ describe("'interpreter' example", () => {
         ).to.eql(
           [{value:['+', 2, 3, 4], remaining: ''}]
         );
-        // expect(
-        //   Parser.parse(
-        //     Syntax.s_exp() 
-        //   )("(+ (2) 3 4)")
-        // ).to.eql(
-        //   [{value:['+', [2], 3, 4], remaining: ''}]
-        // );
+        expect(
+          Parser.parse(
+            Syntax.s_exp() 
+          )("(+ (2) 3 4)")
+        ).to.eql(
+          [{value:['+', [2], 3, 4], remaining: ''}]
+        );
         expect(
           Parser.parse(
             Syntax.s_exp() 
@@ -190,13 +205,13 @@ describe("'interpreter' example", () => {
       ).to.eql(
         [{value:"abc", remaining: ' def'}]
       );
-      // expect(
-      //   Parser.parse(
-      //     Syntax.atom() 
-      //   )("this is a string")
-      // ).to.eql(
-      //   [{value:"this", remaining: 'is a string'}]
-      // );
+      expect(
+        Parser.parse(
+          Syntax.atom() 
+        )("xyz")
+      ).to.eql(
+        [{value:"xyz", remaining: ''}]
+      );
       next();
     }) 
     it('bool', (next) => {

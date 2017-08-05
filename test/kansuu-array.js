@@ -65,7 +65,8 @@ describe("array", () => {
     expect(
       Array.join(["a","b","c"])
     ).to.eql(
-      "abc" 
+      ["a","b","c"]
+      // "abc" 
     );
     next();
   });
@@ -280,7 +281,6 @@ describe("array", () => {
     )
     next();
   });
-
   describe("folding functions", () => {
     it("'reduce'", (next) => {
       var list = [1,2,3];

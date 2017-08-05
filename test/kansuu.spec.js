@@ -23,6 +23,11 @@ describe("Kansuu module", () => {
       'boolean'
     );
     expect(
+      __.typeOf("this is a string")
+    ).to.equal(
+      'string'
+    );
+    expect(
       __.typeOf(null)
     ).to.equal(
       'null'
