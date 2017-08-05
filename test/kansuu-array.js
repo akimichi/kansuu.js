@@ -27,6 +27,7 @@ describe("array", () => {
   });
   it("'tail' should return the tail element", (next) => {
     expect(Array.tail([0,1,2,3])).to.eql([1,2,3]);
+    expect(Array.tail([])).to.eql([]);
     next();
   });
   it("Array#elem", (next) =>  {
@@ -51,6 +52,11 @@ describe("array", () => {
     next();
   });
   it("Array#join", (next) =>  {
+    expect(
+      Array.join([[]])
+    ).to.eql(
+      []
+    );
     expect(
       Array.join([[1]])
     ).to.eql(
