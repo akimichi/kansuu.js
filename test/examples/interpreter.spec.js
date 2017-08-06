@@ -15,36 +15,179 @@ const expect = require('expect.js'),
   Pair = require('../../lib/kansuu.js').pair;
 
 describe("'interpreter' example", () => {
-  describe("interpret", () => {
-    it('number', function(next) {
-      this.timeout(9000);
-      expect(
-        Interpreter.interpret("1")
-      ).to.eql(
-        '1' 
-      );
+  describe("evaluator", () => {
+    const I = require('../../examples/interpreter.js').evaluator;
+
+    it('can evaluate number', (next) => {
+      Maybe.match(I.evaluate(2)(Env.empty),{
+        nothing: (_) => {
+          expect().fail()
+        },
+        just: (value) => {
+          expect(value).to.eql(2);
+        }
+      });
       next();
     });
-    it('operator', function(next) {
-      this.timeout(9000);
-      expect(
-        Interpreter.interpret("(+ 2 3)")
-      ).to.eql(
-        '5' 
-      );
+    it('can evaluate operator', (next) => {
+      Maybe.match(I.evaluate(['+', 1, 2])(Env.empty),{
+        nothing: (_) => {
+          expect().fail()
+        },
+        just: (value) => {
+          expect(value).to.eql(ID.unit(3));
+        }
+      });
+      Maybe.match(I.evaluate(['+', 1, ["*", 2, 3]])(Env.empty),{
+        nothing: (_) => {
+          expect().fail()
+        },
+        just: (value) => {
+          expect(value).to.eql(ID.unit(7));
+        }
+      });
       next();
     });
-    it('application', function(next) {
-      this.timeout(20000);
-      expect(
-        Interpreter.interpret("((lambda (x) x) 1)")
-      ).to.eql(
-        '1' 
-      );
+    it('can evaluate variable', (next) => {
+      const env = Env.extend(Pair.cons("a",1), Env.empty);
+
+      Maybe.match(I.evaluate("a")(env),{
+        nothing: (_) => {
+          expect().fail()
+        },
+        just: (value) => {
+          expect(value).to.eql(ID.unit(1));
+        }
+      });
       next();
     });
-  
+    it('can evaluate function application', (next) => {
+      // ~~~js
+      // ((x) => {
+      //   return x; 
+      // })(3)
+      // => 3
+      // ~~~
+      // Maybe.match(I.evaluate([["lambda", ["x"], "x"], 3])(Env.empty),{
+      //   nothing: (_) => {
+      //     expect().fail()
+      //   },
+      //   just: (value) => {
+      //     expect(value).to.eql(ID.unit(3));
+      //   }
+      // });
+      Maybe.match(I.evaluate([["lambda", ["x"], ["+", 1, "x"]], 3])(Env.empty),{
+        nothing: (_) => {
+          expect().fail()
+        },
+        just: (value) => {
+          expect(value).to.eql(ID.unit(3));
+        }
+      });
+      next();
+    });
+    // it("can't evaluate succ with boolean", (next) => {
+    //   var f = Exp.bool(false);
+    //   var succExp = Exp.succ(f);
+    //   Maybe.match(I.evaluate(succExp)(Env.empty),{
+    //     nothing: (_) => {
+    //       expect(true).to.be.ok()
+    //     },
+    //     just: (value) => {
+    //       expect().fail()
+    //     }
+    //   });
+    //   next();
+    // });
+    // it('can evaluate add', (next) => {
+    //   const one = Exp.number(1),
+    //     two = Exp.number(2),
+    //     addExp = Exp.add(one, two);
+    //   Maybe.match(I.evaluate(addExp)(Env.empty),{
+    //     nothing: (_) => {
+    //       expect().fail()
+    //     },
+    //     just: (value) => {
+    //       expect(value).to.eql(ID.unit(3));
+    //     }
+    //   });
+    //   next();
+    // });
+    // it('can evaluate nested add', (next) => {
+    //   const one = Exp.number(1),
+    //     two = Exp.number(2),
+    //     addExp = Exp.add(one, Exp.add(one, two));
+    //   Maybe.match(I.evaluate(addExp)(Env.empty),{
+    //     nothing: (_) => {
+    //       expect().fail()
+    //     },
+    //     just: (value) => {
+    //       expect(value).to.eql(ID.unit(4));
+    //     }
+    //   });
+    //   next();
+    // });
+    // it('can evaluate lambda expression', (next) => {
+    //   // ~~~js
+    //   // ((x) => {
+    //   //   return x; 
+    //   // })(3)
+    //   // => 3
+    //   // ~~~
+    //   const lambdaExp = Exp.lambda(Exp.variable("x"), Exp.variable("x"));
+    //   Maybe.match(I.evaluate(lambdaExp)(Env.empty),{
+    //     nothing: (_) => {
+    //       expect().fail()
+    //     },
+    //     just: (closure) => {
+    //       Maybe.flatMap(closure(3))(answer => {
+    //         expect(answer).to.eql(ID.unit(3));
+    //       });
+    //     }
+    //   });
+    //   next();
+    // });
   });
+  // describe("interpret", () => {
+  //   it('number', function(next) {
+  //     this.timeout(9000);
+  //     expect(
+  //       Interpreter.interpret("1")
+  //     ).to.eql(
+  //       '1' 
+  //     );
+  //     next();
+  //   });
+  //   it('operator', function(next) {
+  //     this.timeout(9000);
+  //     expect(
+  //       Interpreter.interpret("(+ 2 3)")
+  //     ).to.eql(
+  //       '5' 
+  //     );
+  //     next();
+  //   });
+  //   it('application', function(next) {
+  //     this.timeout(20000);
+  //     expect(
+  //       Interpreter.interpret("((lambda (x) x) 1)")
+  //     ).to.eql(
+  //       '1' 
+  //     );
+  //     expect(
+  //       Interpreter.interpret("((lambda (x) (+ 3 4)) 1)")
+  //     ).to.eql(
+  //       '1' 
+  //     );
+  //     expect(
+  //       Interpreter.interpret("(((lambda (x) (lambda (y) (+ x y))) 1) 2)")
+  //     ).to.eql(
+  //       '1' 
+  //     );
+  //     next();
+  //   });
+  
+  // });
   describe("syntax", () => {
     describe('s_exp', (next) => {
       it('application as s_exp', function(next) {
@@ -233,141 +376,6 @@ describe("'interpreter' example", () => {
     }) 
   });
 
-  describe("evaluator", () => {
-    const I = require('../../examples/interpreter.js').evaluator;
-
-    it('can evaluate number', (next) => {
-      Maybe.match(I.evaluate(2)(Env.empty),{
-        nothing: (_) => {
-          expect().fail()
-        },
-        just: (value) => {
-          expect(value).to.eql(2);
-        }
-      });
-      next();
-    });
-    it('can evaluate operator', (next) => {
-      Maybe.match(I.evaluate(['+', 1, 2])(Env.empty),{
-        nothing: (_) => {
-          expect().fail()
-        },
-        just: (value) => {
-          expect(value).to.eql(ID.unit(3));
-        }
-      });
-      Maybe.match(I.evaluate(['+', 1, ["*", 2, 3]])(Env.empty),{
-        nothing: (_) => {
-          expect().fail()
-        },
-        just: (value) => {
-          expect(value).to.eql(ID.unit(7));
-        }
-      });
-      next();
-    });
-    // it('can evaluate variable', (next) => {
-    //   var exp = Exp.variable("a");
-    //   var env = Env.extend(Pair.cons("a",1), Env.empty);
-    //   Maybe.match(I.evaluate(exp)(env),{
-    //     nothing: (_) => {
-    //       expect().fail()
-    //     },
-    //     just: (value) => {
-    //       expect(value).to.eql(ID.unit(1));
-    //     }
-    //   });
-    //   next();
-    // });
-    // it('can evaluate succ', (next) => {
-    //   var n = Exp.number(2);
-    //   var succExp = Exp.succ(n);
-    //   Maybe.match(I.evaluate(succExp)(Env.empty),{
-    //     nothing: (_) => {
-    //       expect().fail()
-    //     },
-    //     just: (value) => {
-    //       expect(value).to.eql(ID.unit(3));
-    //     }
-    //   });
-    //   next();
-    // });
-    // it("can't evaluate succ with boolean", (next) => {
-    //   var f = Exp.bool(false);
-    //   var succExp = Exp.succ(f);
-    //   Maybe.match(I.evaluate(succExp)(Env.empty),{
-    //     nothing: (_) => {
-    //       expect(true).to.be.ok()
-    //     },
-    //     just: (value) => {
-    //       expect().fail()
-    //     }
-    //   });
-    //   next();
-    // });
-    // it('can evaluate add', (next) => {
-    //   const one = Exp.number(1),
-    //     two = Exp.number(2),
-    //     addExp = Exp.add(one, two);
-    //   Maybe.match(I.evaluate(addExp)(Env.empty),{
-    //     nothing: (_) => {
-    //       expect().fail()
-    //     },
-    //     just: (value) => {
-    //       expect(value).to.eql(ID.unit(3));
-    //     }
-    //   });
-    //   next();
-    // });
-    // it('can evaluate nested add', (next) => {
-    //   const one = Exp.number(1),
-    //     two = Exp.number(2),
-    //     addExp = Exp.add(one, Exp.add(one, two));
-    //   Maybe.match(I.evaluate(addExp)(Env.empty),{
-    //     nothing: (_) => {
-    //       expect().fail()
-    //     },
-    //     just: (value) => {
-    //       expect(value).to.eql(ID.unit(4));
-    //     }
-    //   });
-    //   next();
-    // });
-    // it('can evaluate lambda expression', (next) => {
-    //   // ~~~js
-    //   // ((x) => {
-    //   //   return x; 
-    //   // })(3)
-    //   // => 3
-    //   // ~~~
-    //   const lambdaExp = Exp.lambda(Exp.variable("x"), Exp.variable("x"));
-    //   Maybe.match(I.evaluate(lambdaExp)(Env.empty),{
-    //     nothing: (_) => {
-    //       expect().fail()
-    //     },
-    //     just: (closure) => {
-    //       Maybe.flatMap(closure(3))(answer => {
-    //         expect(answer).to.eql(ID.unit(3));
-    //       });
-    //     }
-    //   });
-    //   next();
-    // });
-    // it('can evaluate function application', (next) => {
-    //   // ~~~js
-    //   // ((x) => {
-    //   //   return x; 
-    //   // })(3)
-    //   // => 3
-    //   // ~~~
-    //   const lambdaExp = Exp.lambda(Exp.variable("x"), Exp.variable("x"));
-    //   const appExp = Exp.apply(lambdaExp, Exp.number(7));  
-    //   Maybe.flatMap(I.evaluate(appExp)(Env.empty))(answer => {
-    //     expect(answer).to.eql(ID.unit(7));
-    //   });
-    //   next();
-    // });
-  });
   describe("environment", () => {
     it('can lookup empty env', (next) => {
       Maybe.match(Env.lookup("a", Env.empty),{

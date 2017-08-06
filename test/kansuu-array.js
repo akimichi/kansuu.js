@@ -295,6 +295,19 @@ describe("array", () => {
       );
       next();
     });
+    it("'foldr1'", (next) => {
+      var anArray = [1,2,3];
+      expect(
+        Array.foldr1(anArray)(item =>{
+          return (accumulator) => {
+            return item + accumulator;
+          };
+        })
+      ).to.be(
+        6
+      );
+      next();
+    });
     it("'and'", (next) => {
       expect(
         Array.and([true]) 

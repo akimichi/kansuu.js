@@ -166,12 +166,10 @@ const Syntax = {
 const keywords = ["lambda"]; 
 
 const buildin = {
-  // operators: {
   "+": math.add, 
   "-": math.subtract, 
   "*": math.multiply, 
   "/": math.divide,
-  // functions: {
   "add": math.add, 
   "subtract": math.subtract, 
   "multiply": math.multiply, 
@@ -184,41 +182,19 @@ const buildin = {
 
 // ## Evaluator
 const Evaluator = {
-  apply: (fun,args) => {
-    return (environment) => {
-      return Array.foldl1(args)(N => {
-        return (M) => {
-          return Maybe.flatMap(M)(m => {
-            return Maybe.flatMap(N)(n => {
-              return Maybe.just(fun(n)(m));
-            });
-          });
-        };
-      });
-    };
-  },
-  evaluateLambda: (tail) => {
-    return (oldEnv)  => {
-      const args = Array.head(tail),
-        body = Array.tail(tail);
-      if(__.typeOf(args) === 'array') {
-        return Array.foldl1(args)(n => {
-          return (m) => {
-            return (N) => {
-              return (M) => {
-                const newEnv = Env.extend(Pair.cons(m, M),Env.extend(Pair.cons(n, N), oldEnv));
-                return Evaluator.evaluate(body)(newEnv);
-              };
-            };
-          };
-        });
-      } else {
-        // 引数が配列でなければ、エラーである
-        // 例えば、(lambda x body) は不適切な式である
-        return ID.unit(Maybe.nothing());
-      }
-    };
-  },
+  // apply: (fun,args) => {
+  //   return (environment) => {
+  //     return Array.foldl1(args)(N => {
+  //       return (M) => {
+  //         return Maybe.flatMap(M)(m => {
+  //           return Maybe.flatMap(N)(n => {
+  //             return Maybe.just(fun(n)(m));
+  //           });
+  //         });
+  //       };
+  //     });
+  //   };
+  // },
   // ### Evaluator#evaluate
   evaluate: (exp) => {
     return (environment) => {
@@ -230,52 +206,80 @@ const Evaluator = {
       }
       if(__.typeOf(exp) === 'string') {
         // case of buildin function/operator
-        const closure = buildin[exp];
-        if(closure){
-          return ID.unit(Maybe.just(closure)); 
-          // const actualArgs = Array.map(tail)(__.flip(Evaluator.evaluate)(environment));
-          // return ID.unit(
-          //   Evaluator.apply(fun, actualArgs)(environment)
-          // );
+        const builtInClocure = buildin[exp];
+        if(builtInClocure){
+          return ID.unit(Maybe.just(builtInClocure)); 
         }
         // case of identifier
-        return ID.unit(Maybe.just(
-          Evaluator.evaluate(exp)(environment)
-        ));
+        return ID.unit(
+          Env.lookup(exp,environment)
+        );
       }
       // case of S-expression 
       if(__.typeOf(exp) === 'array') {
         const head = Array.head(exp),
           tail = Array.tail(exp);
+        // lambda function application
         if(head === "lambda") {
           // ["lambda", [arg], body]    
           const args = Array.head(Array.tail(exp)),
             body = Array.head(Array.tail(Array.tail(exp)));
+            // console.log(body)
           expect(args).to.a('array');
-          return ID.unit(Maybe.just(
-            (actualArg) => {
-              const newEnv = Env.extend(Pair.cons(Array.head(args), actualArg),environment);
-              return Evaluator.evaluate(body)(newEnv);
-            }
-          ));
+          const closure = (actualArg) => {
+            const newEnv = Env.extend(Pair.cons(Array.head(args), actualArg),environment);
+            return Evaluator.evaluate(body)(newEnv);
+          };
+          return Maybe.just(closure);
+          // return Maybe.just(Evaluator.apply(closure,tail)(environment)); 
+        } else {
+          const maybeClosure = Evaluator.evaluate(head)(environment);
+          console.log(head)
+          console.log(tail)
+          return Evaluator.apply(maybeClosure,tail)(environment); 
         }
-        // application
-        const car = Evaluator.evaluate(head)(environment);
-        const cdr = Array.map(tail)(item => {
-          return Evaluator.evaluate(item)(environment);
-        });
-        return Array.foldl1(cdr)(N => {
-          return (M) => {
+      }
+    };
+  },
+  apply: (maybeClosure, tail) => {
+    return (environment) => {
+      const operands = Array.map(tail)(item => {
+        return Evaluator.evaluate(item)(environment);
+      });
+      const answer = Array.foldr1(operands)(N => {
+        return (M) => {
+          return Maybe.flatMap(N)(n => {
+            console.log("n: " + n)
             return Maybe.flatMap(M)(m => {
-              return Maybe.flatMap(N)(n => {
-                return Maybe.flatMap(car)(closure => {
-                  return Maybe.just(closure(n)(m));
-                });
+              console.log("m: " + m)
+              return Maybe.flatMap(maybeClosure)(closure => {
+                console.log("closure(n)(m): " + closure(n)(m))
+                return Maybe.just(closure(n)(m));
+                // return closure(n)(m);
               });
             });
-          };
-        });
-      }
+          });
+        };
+      });
+      return answer;
+      // return Array.foldl1(operands)(N => {
+      //   return (M) => {
+      //     return Maybe.flatMap(N)(n => {
+      //       console.log("n: " + n)
+      //       return Maybe.flatMap(M)(m => {
+      //         console.log("m: " + m)
+      //         return Maybe.flatMap(maybeClosure)(closure => {
+      //           return Maybe.just(closure(n)(m));
+      //           // return closure(n)(m);
+      //         });
+      //       });
+      //     });
+      //   };
+      // });
+    };
+  },
+};
+
       // return Exp.match(exp, {
       //   fail: (_) => {
       //     return ID.unit(Maybe.nothing());
@@ -328,73 +332,69 @@ const Evaluator = {
       //     });
       //   }
       // });
-    };
-  },
-};
-
 
 // ## Exp
-const Exp = {
-  match : (exp, pattern) => {
-    return exp(pattern);
-  },
-  add: (n, m) => {
-    return (pattern) => {
-      return pattern.add(n,m);
-    };
-  },
-  fail: (_) => {
-    return (pattern) => {
-      return pattern.fail(_);
-    };
-  },
-  number: (n) => {
-    return (pattern) => {
-      return pattern.number(n);
-    };
-  },
-  string: (value) => {
-    return (pattern) => {
-      return pattern.string(value);
-    };
-  },
-  bool: (value) => {
-    return (pattern) => {
-      return pattern.bool(value);
-    };
-  },
-  atom: (value) => {
-    return (pattern) => {
-      return pattern.atom(value);
-    };
-  },
-  list: (items) => {
-    return (pattern) => {
-      return pattern.list(items);
-    };
-  },
-  variable: (name) => {
-    return (pattern) => {
-      return pattern.variable(name);
-    };
-  },
-  succ: (n) => {
-    return (pattern) => {
-      return pattern.succ(n);
-    };
-  },
-  lambda: (variable, exp) => {
-    expect(variable).to.a('function');
-    return (pattern) => {
-      return pattern.lambda(variable, exp);
-    };
-  },
-  apply: (rator,rand) => {
-    return (pattern) => {
-      return pattern.apply(rator, rand);
-    };
-  }
-};
+// const Exp = {
+//   match : (exp, pattern) => {
+//     return exp(pattern);
+//   },
+//   add: (n, m) => {
+//     return (pattern) => {
+//       return pattern.add(n,m);
+//     };
+//   },
+//   fail: (_) => {
+//     return (pattern) => {
+//       return pattern.fail(_);
+//     };
+//   },
+//   number: (n) => {
+//     return (pattern) => {
+//       return pattern.number(n);
+//     };
+//   },
+//   string: (value) => {
+//     return (pattern) => {
+//       return pattern.string(value);
+//     };
+//   },
+//   bool: (value) => {
+//     return (pattern) => {
+//       return pattern.bool(value);
+//     };
+//   },
+//   atom: (value) => {
+//     return (pattern) => {
+//       return pattern.atom(value);
+//     };
+//   },
+//   list: (items) => {
+//     return (pattern) => {
+//       return pattern.list(items);
+//     };
+//   },
+//   variable: (name) => {
+//     return (pattern) => {
+//       return pattern.variable(name);
+//     };
+//   },
+//   succ: (n) => {
+//     return (pattern) => {
+//       return pattern.succ(n);
+//     };
+//   },
+//   lambda: (variable, exp) => {
+//     expect(variable).to.a('function');
+//     return (pattern) => {
+//       return pattern.lambda(variable, exp);
+//     };
+//   },
+//   apply: (rator,rand) => {
+//     return (pattern) => {
+//       return pattern.apply(rator, rand);
+//     };
+//   }
+// };
 
 const Interpreter = {
   // interpret :: String => Maybe[Any]
@@ -425,7 +425,6 @@ const Interpreter = {
 module.exports = {
   env: Env,
   evaluator: Evaluator, 
-  exp: Exp, 
   syntax: Syntax,
   interpreter: Interpreter
 };
