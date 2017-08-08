@@ -236,7 +236,7 @@ const Evaluator = {
         expect(closure).to.a('function');
         expect(rest).to.a('array');
         // console.log("Maybe.get(closure(5)): " + Maybe.get(closure(5)))
-        
+
         // const operands = Array.map(rest)(item => {
         //   console.log("item: " + item)
         //   return Evaluator.evaluate(item)(environment);
@@ -247,21 +247,17 @@ const Evaluator = {
         return Array.foldl1(rest)(N => {
           console.log("N: " + N)
           return (M) => {
-          console.log("M: " + M)
-            return Maybe.flatMap(Evaluator.evaluate(N)(environment))(n => {
-                console.log("n: " + n)
-                return Maybe.just(closure(n));
-              // return Maybe.flatMap(Evaluator.evaluate(M)(environment))(m => {
-              //   console.log("m: " + m)
-              //   console.log("return from evaluateApplication")
-              //   // return closure(n)(m);
-              //   return Maybe.just(closure(n)(m));
-              // });
+            return Maybe.flatMap(Evaluator.evaluate(M)(environment))(m => {
+              console.log("m: " + m)
+              const answer = closure(n);
+              console.log("answer: " + answer)
+              // return closure(n)(m);
+              return Maybe.just(answer);
             });
           };
         });
-        // return closure(Array.head(operands));
       });
+      // return closure(Array.head(operands));
     };
   },
   // ### Evaluator#evaluate
