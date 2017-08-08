@@ -306,6 +306,15 @@ describe("array", () => {
       ).to.be(
         6
       );
+      expect(
+        Array.foldr1([1])(item =>{
+          return (accumulator) => {
+            return item + accumulator;
+          };
+        })
+      ).to.be(
+        1
+      );
       next();
     });
     it("'and'", (next) => {
