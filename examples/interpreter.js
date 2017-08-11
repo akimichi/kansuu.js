@@ -343,8 +343,16 @@ const Evaluator = {
           console.log("rest: " + rest)
           const answer = Array.foldl1(rest)(N => {
             return (M) => {
-              console.log(`N: ${N}, M:${M} `)
-              return Maybe.just(builtInClocure(N)(M));
+              return Maybe.flatMap(Evaluator.evaluate(N)(environment))(n => {
+                return Maybe.flatMap(Evaluator.evaluate(M)(environment))(m => {
+                  return Maybe.just(builtInClocure(n)(m));
+                });
+              });
+              // console.log(`N: ${N}, M:${M} `);
+              // const maybeN = Evaluator.evaluate(N)(environment);
+              // const maybeM = Evaluator.evaluate(M)(environment);
+              // console.log(`Maybe.get(maybeN): ${Maybe.get(maybeN)}`)
+              // console.log(`Maybe.get(maybeM): ${Maybe.get(maybeM)}`)
             };
           });
           console.log(`Maybe.get(answer): ${Maybe.get(answer)}`)
