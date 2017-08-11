@@ -177,6 +177,7 @@ const buildin = {
   "-": math.subtract, 
   "*": math.multiply, 
   "/": math.divide,
+  "succ": math.succ, 
   "add": math.add, 
   "subtract": math.subtract, 
   "multiply": math.multiply, 
@@ -280,7 +281,7 @@ const Evaluator = {
       
       // console.log(`EVALUATE apply: (${head})(${rest})`)
       // return Evaluator.apply(Evaluator.evaluate(head)(environment), rest)(environment);
-      const answer = Array.foldr1(args)(N => {
+      const answer = Array.foldl1(args)(N => {
         return (M) => {
           console.log(`M: ${M}, N:${N} `)
           return Maybe.flatMap(Evaluator.evaluateLambda(lambda))(closure => {
@@ -328,9 +329,7 @@ const Evaluator = {
       }
       // case of S-expression 
       if(__.typeOf(exp) === 'array') {
-        const head = Array.head(exp),
-          rest = Array.tail(exp);
-        expect(rest).to.a('array');
+        const head = Array.head(exp);
         // λ式の評価
         if(head === "lambda") {
           console.log("EVALUATE lambda: " + exp)
@@ -339,24 +338,34 @@ const Evaluator = {
         } 
         if(buildin[head]) {
           const builtInClocure = buildin[head];
+          const args = Array.tail(exp);
+          expect(args).to.a('array');
           console.log("EVALUATE builtInClocure: " + head)
-          console.log("rest: " + rest)
-          const answer = Array.foldl1(rest)(N => {
-            return (M) => {
-              return Maybe.flatMap(Evaluator.evaluate(N)(environment))(n => {
-                return Maybe.flatMap(Evaluator.evaluate(M)(environment))(m => {
-                  return Maybe.just(builtInClocure(n)(m));
+          console.log("args: " + args)
+          const firstArg = Array.head(args),
+            restArgs = Array.tail(args);
+          if(Array.length(args) === 1) {
+            const arg = Array.head(args);
+            const answer = Maybe.flatMap(Evaluator.evaluate(arg)(environment))(oneArg => {
+              return Maybe.just(builtInClocure(oneArg));
+            });
+            console.log(`Maybe.get(answer): ${Maybe.get(answer)}`)
+            return answer;
+          } else {
+            const answer = Array.foldl1(args)(N => {
+              return (M) => {
+                return Maybe.flatMap(Evaluator.evaluate(N)(environment))(n => {
+                  return Maybe.flatMap(Evaluator.evaluate(M)(environment))(m => {
+                    return Maybe.just(builtInClocure(n)(m));
+                  });
                 });
-              });
-              // console.log(`N: ${N}, M:${M} `);
-              // const maybeN = Evaluator.evaluate(N)(environment);
-              // const maybeM = Evaluator.evaluate(M)(environment);
-              // console.log(`Maybe.get(maybeN): ${Maybe.get(maybeN)}`)
-              // console.log(`Maybe.get(maybeM): ${Maybe.get(maybeM)}`)
-            };
-          });
-          console.log(`Maybe.get(answer): ${Maybe.get(answer)}`)
-          return answer;
+              };
+            });
+            console.log(`Maybe.get(answer): ${Maybe.get(answer)}`)
+            return answer;
+          }
+          // console.log(`Maybe.get(answer): ${Maybe.get(answer)}`)
+          // return answer;
         } else {
           console.log("EVALUATE application: " + exp)
           return Evaluator.evaluateApplication(exp)(environment);

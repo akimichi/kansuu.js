@@ -36,4 +36,6 @@ docs/
 
 # neovim
 Session.vim
+# vim
+*.swp
 
