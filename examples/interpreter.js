@@ -207,8 +207,9 @@ const Evaluator = {
     return (environment) => {
       const arg = Array.head(Array.tail(exp)),
         body = Array.head(Array.tail(Array.tail(exp)));
-      expect(arg).to.a('string');
-      // expect(arg).to.a('array');
+      console.log(`arg: ${arg}`)
+      // expect(arg).to.a('string');
+      expect(arg).to.a('array');
       console.log("arg:" + arg)
       console.log("body: " + body)
 
@@ -219,7 +220,7 @@ const Evaluator = {
       };
       console.log("return from evaluateLambda")
       // return closure;
-      return Maybe.just(closure);
+      return closure;
     };
   },
   apply: (maybeClosure, args) => {
@@ -278,29 +279,40 @@ const Evaluator = {
       console.log("lambda: " + lambda)
       console.log("typeOf(args): " + __.typeOf(args))
       console.log(`args: ${args}`)
-      
-      // console.log(`EVALUATE apply: (${head})(${rest})`)
-      // return Evaluator.apply(Evaluator.evaluate(head)(environment), rest)(environment);
-      const answer = Array.foldl1(args)(N => {
-        return (M) => {
-          console.log(`M: ${M}, N:${N} `)
-          return Maybe.flatMap(Evaluator.evaluateLambda(lambda))(closure => {
-            console.log(`closure(2)(3): ${closure(2)(3)}`)
-            return Maybe.just(closure(N)(M));
-            // return Maybe.flatMap(N)(n => {
-            //   console.log("n: " + n)
-            //   return Maybe.flatMap(M)(m => {
-            //     console.log("m: " + m)
-            //     console.log("closure(n)(m): " + closure(n)(m))
-            //     return Maybe.just(closure(m)(n));
-            //     // return closure(n)(m);
-            //   });
-            // });
+      const closure = Evaluator.evaluateLambda(lambda);
+      if(Array.length(args) === 1) {
+        const arg = Array.head(args);
+        console.log(`arg: ${arg}`)
+          const answer = Maybe.flatMap(Evaluator.evaluate(arg)(environment))(oneArg => {
+              console.log(`oneArg: ${oneArg}`)
+              return closure(oneArg);
           });
-        };
-      });
-      console.log(`answer: ${answer}`)
-      return Maybe.just(answer);
+          // console.log(`Maybe.get(answer): ${Maybe.get(answer)}`)
+          return answer;
+      } else {
+        const answer = Array.foldl1(args)(N => {
+          return (M) => {
+            return Maybe.flatMap(Evaluator.evaluate(N)(environment))(n => {
+              return Maybe.flatMap(Evaluator.evaluate(M)(environment))(m => {
+                return Maybe.just(closure(n)(m));
+              });
+            });
+          };
+        });
+        console.log(`Maybe.get(answer): ${Maybe.get(answer)}`)
+          return answer;
+      }
+      // const answer = Array.foldl1(args)(N => {
+      //   return (M) => {
+      //     console.log(`M: ${M}, N:${N} `)
+      //     return Maybe.flatMap(Evaluator.evaluateLambda(lambda))(closure => {
+      //       console.log(`closure(2)(3): ${closure(2)(3)}`)
+      //       return Maybe.just(closure(N)(M));
+      //     });
+      //   };
+      // });
+      // console.log(`answer: ${answer}`)
+      // return Maybe.just(answer);
     };
   },
   // ### Evaluator#evaluate
