@@ -18,86 +18,127 @@ describe("evaluator", () => {
   describe("evaluator", () => {
     const I = require('../../examples/interpreter.js').evaluator;
 
-    // it('can evaluate number', (next) => {
-    //   Maybe.match(I.evaluate(2)(Env.empty),{
-    //     nothing: (_) => {
-    //       expect().fail()
-    //     },
-    //     just: (value) => {
-    //       expect(value).to.eql(2);
-    //     }
-    //   });
-    //   next();
-    // });
-    // describe("evaluate operator", () => {
-    //   it('can evaluate unary operator', (next) => {
-    //     Maybe.match(I.evaluate(['succ', 5])(Env.empty),{
-    //       nothing: (_) => {
-    //         expect().fail()
-    //       },
-    //       just: (value) => {
-    //         expect(value).to.eql(ID.unit(6));
-    //       }
-    //     });
-    //     next();
-    //   });
-    //   it('can evaluate binary operator', (next) => {
-    //     Maybe.match(I.evaluate(['add', 2,3])(Env.empty),{
-    //       nothing: (_) => {
-    //         expect().fail()
-    //       },
-    //       just: (value) => {
-    //         expect(value).to.eql(ID.unit(5));
-    //       }
-    //     });
-    //     Maybe.match(I.evaluate(['+', 1, 2])(Env.empty),{
-    //       nothing: (_) => {
-    //         expect().fail()
-    //       },
-    //       just: (value) => {
-    //         expect(value).to.eql(ID.unit(3));
-    //       }
-    //     });
-    //     Maybe.match(I.evaluate(['+', 1, 'x'])( Env.extend(Pair.cons("x",2), Env.empty)),{
-    //       nothing: (_) => {
-    //         expect().fail()
-    //       },
-    //       just: (value) => {
-    //         expect(value).to.eql(ID.unit(3));
-    //       }
-    //     });
-    //     Maybe.match(I.evaluate(['+', 1, ["*", 2, 3]])(Env.empty),{
-    //       nothing: (_) => {
-    //         expect().fail()
-    //       },
-    //       just: (value) => {
-    //         expect(value).to.eql(ID.unit(7));
-    //       }
-    //     });
-    //     Maybe.match(I.evaluate(['+', 1, ["*", 'x', 3]])(Env.extend(Pair.cons("x",4), Env.empty)),{
-    //       nothing: (_) => {
-    //         expect().fail()
-    //       },
-    //       just: (value) => {
-    //         expect(value).to.eql(ID.unit(13));
-    //       }
-    //     });
-    //     next();
-    //   });
-    // });
-    // it('can evaluate variable', (next) => {
-    //   const env = Env.extend(Pair.cons("a",1), Env.empty);
+    it('can evaluate number', (next) => {
+      expect(
+        I.evaluate(2)(Env.empty)
+      ).to.eql(
+        2
+      )
+      // Maybe.match(I.evaluate(2)(Env.empty),{
+      //   nothing: (_) => {
+      //     expect().fail()
+      //   },
+      //   just: (value) => {
+      //     expect(value).to.eql(2);
+      //   }
+      // });
+      next();
+    });
+    describe("evaluate operator", () => {
+      it('can evaluate unary operator', (next) => {
+        expect(
+          I.evaluate(['succ', 5])(Env.empty)
+        ).to.eql(
+          6
+        )
+        // Maybe.match(I.evaluate(['succ', 5])(Env.empty),{
+        //   nothing: (_) => {
+        //     expect().fail()
+        //   },
+        //   just: (value) => {
+        //     expect(value).to.eql(ID.unit(6));
+        //   }
+        // });
+        next();
+      });
+      it('can evaluate binary operator', (next) => {
+        expect(
+          I.evaluate(['add', 2,3])(Env.empty)
+        ).to.eql(
+          5
+        )
+        // Maybe.match(I.evaluate(['add', 2,3])(Env.empty),{
+        //   nothing: (_) => {
+        //     expect().fail()
+        //   },
+        //   just: (value) => {
+        //     expect(value).to.eql(ID.unit(5));
+        //   }
+        // });
+        expect(
+          I.evaluate(['+', 1, 2])(Env.empty)
+        ).to.eql(
+          3 
+        )
+        //     Maybe.match(I.evaluate(['+', 1, 2])(Env.empty),{
+        //       nothing: (_) => {
+        //         expect().fail()
+        //       },
+        //       just: (value) => {
+        //         expect(value).to.eql(ID.unit(3));
+        //       }
+        //     });
+        expect(
+          I.evaluate(['+', 1, 'x'])( Env.extend(Pair.cons("x",2), Env.empty))
+        ).to.eql(
+          3
+        )
 
-    //   Maybe.match(I.evaluate("a")(env),{
-    //     nothing: (_) => {
-    //       expect().fail()
-    //     },
-    //     just: (value) => {
-    //       expect(value).to.eql(ID.unit(1));
-    //     }
-    //   });
-    //   next();
-    // });
+        //     Maybe.match(I.evaluate(['+', 1, 'x'])( Env.extend(Pair.cons("x",2), Env.empty)),{
+        //       nothing: (_) => {
+        //         expect().fail()
+        //       },
+        //       just: (value) => {
+        //         expect(value).to.eql(ID.unit(3));
+        //       }
+        //     });
+        expect(
+          I.evaluate(['+', 1, ["*", 2, 3]])(Env.empty)
+        ).to.eql(
+          7 
+        )
+        //     Maybe.match(I.evaluate(['+', 1, ["*", 2, 3]])(Env.empty),{
+        //       nothing: (_) => {
+        //         expect().fail()
+        //       },
+        //       just: (value) => {
+        //         expect(value).to.eql(ID.unit(7));
+        //       }
+        //     });
+        expect(
+          I.evaluate(['+', 1, ["*", 'x', 3]])(Env.extend(Pair.cons("x",4), Env.empty))
+        ).to.eql(
+          13
+        )
+        //     Maybe.match(I.evaluate(['+', 1, ["*", 'x', 3]])(Env.extend(Pair.cons("x",4), Env.empty)),{
+        //       nothing: (_) => {
+        //         expect().fail()
+        //       },
+        //       just: (value) => {
+        //         expect(value).to.eql(ID.unit(13));
+        //       }
+        //     });
+        next();
+        // });
+      });
+    });
+    it('can evaluate variable', (next) => {
+      const env = Env.extend(Pair.cons("a",1), Env.empty);
+      expect(
+        I.evaluate("a")(env)
+      ).to.eql(
+        1
+      )
+      // Maybe.match(I.evaluate("a")(env),{
+      //   nothing: (_) => {
+      //     expect().fail()
+      //   },
+      //   just: (value) => {
+      //     expect(value).to.eql(ID.unit(1));
+      //   }
+      // });
+      next();
+    });
     it('can evaluate function application', (next) => {
       // ~~~js
       // ((x) => {
@@ -105,15 +146,47 @@ describe("evaluator", () => {
       // })(3)
       // => 3
       // ~~~
-      Maybe.match(I.evaluateApplication([["lambda", "x", "x"], [3]])(Env.empty),{
-        nothing: (_) => {
-          expect().fail()
-        },
-        just: (value) => {
-          console.log(value) 
-          expect(value).to.eql(ID.unit(4));
-        }
-      });
+      expect(
+        I.evaluateLambda(["lambda", "x", "x"])(Env.empty)
+      ).to.an(
+        'function' 
+      )
+      expect(
+        I.evaluateLambda(["lambda", "x", "x"])(Env.empty)(3)
+      ).to.eql(
+        3  
+      )
+      const closure = I.evaluate(["lambda", "x", "x"])(Env.empty)
+      expect(
+        I.applyClosure(closure, [3])(Env.empty)
+      ).to.eql(
+        3  
+      )
+      expect(
+        I.evaluate([["lambda", "x", "x"], 3])(Env.empty)
+      ).to.eql(
+        3  
+      )
+      expect(
+        I.evaluate([["lambda", "x", ["+", 1, "x"]], 3])(Env.empty)
+      ).to.eql(
+        4  
+      )
+      // (\x -> \y -> x+y)(2)(3)
+      expect(
+        I.evaluate([[["lambda", "x", ["lambda", "y", ["+", "x", "y"]]], 2], 3])(Env.empty)
+      ).to.eql(
+        4  
+      )
+      // Maybe.match(I.evaluateApplication([["lambda", "x", "x"], [3]])(Env.empty),{
+      //   nothing: (_) => {
+      //     expect().fail()
+      //   },
+      //   just: (value) => {
+      //     console.log(value) 
+      //     expect(value).to.eql(ID.unit(4));
+      //   }
+      // });
       // const answer  = I.evaluate([["lambda", "x", ["+", 1, "x"]], 3])(Env.empty);
       // console.log("answer: " + answer)
       // Maybe.match(answer,{
