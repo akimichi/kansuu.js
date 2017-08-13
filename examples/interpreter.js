@@ -168,23 +168,54 @@ const Syntax = {
 const keywords = ["lambda"]; 
 
 const buildin = {
-  // "+": (n) => {
-  //   return (m) => {
-  //     return Maybe.just(n+m);
-  //   };
-  // },
-  "+": math.add, 
-  "-": math.subtract, 
-  "*": math.multiply, 
-  "/": math.divide,
-  "succ": math.succ, 
-  "add": math.add, 
-  "subtract": math.subtract, 
-  "multiply": math.multiply, 
-  "divide": math.divide, 
-  "not": __.not(__.id),
+  "+": (n) => {
+    return (m) => {
+      return Maybe.just(n+m);
+    };
+  },
+  "-": (n) => {
+    return (m) => {
+      return Maybe.just(n-m);
+    };
+  },
+  "*": (n) => {
+    return (m) => {
+      return Maybe.just(n*m);
+    };
+  },
+  "/": (n) => {
+    return (m) => {
+      return Maybe.just(n/m);
+    };
+  },
+  "succ": (n) => {
+    return Maybe.just(n+1);
+  },
+  "add": (n) => {
+    return (m) => {
+      return Maybe.just(n+m);
+    };
+  },
+  "subtract": (n) => {
+    return (m) => {
+      return Maybe.just(n-m);
+    };
+  },
+  "multiply": (n) => {
+    return (m) => {
+      return Maybe.just(n*m);
+    };
+  },
+  "divide": (n) => {
+    return (m) => {
+      return Maybe.just(n/m);
+    };
+  },
+  "not": (arg) => {
+    return Maybe.just(!arg);
+  },
   "numberp": (arg) => {
-    return (__.typeOf(arg) === 'number');
+    return Maybe.just((__.typeOf(arg) === 'number'));
   }
 };
 
@@ -205,12 +236,11 @@ const Evaluator = {
   // },
   evaluateLambda: (exp) => {
     return (environment) => {
+      console.log(`EVALUATE lambda: ${exp}`)
       const arg = Array.head(Array.tail(exp)),
         body = Array.head(Array.tail(Array.tail(exp)));
+      expect(arg).to.a('string');
       console.log(`arg: ${arg}`)
-      // expect(arg).to.a('string');
-      expect(arg).to.a('array');
-      console.log("arg:" + arg)
       console.log("body: " + body)
 
       const closure = (actualArg) => {
@@ -221,53 +251,6 @@ const Evaluator = {
       console.log("return from evaluateLambda")
       // return closure;
       return closure;
-    };
-  },
-  apply: (maybeClosure, args) => {
-    expect(args).to.a('array');
-    return (environment) => {
-      // const answer = Array.foldr1(tail)(N => {
-      //   console.log("N: " + N)
-      //   return (M) => {
-      //   console.log("M: " + M)
-      //     return Maybe.flatMap(maybeClosure)(closure => {
-      //       return Maybe.just(closure(N)(M));
-      //       // return closure(n)(m);
-      //     });
-      //   };
-      // });
-      // return answer;
-      const answer = Array.foldr1(args)(N => {
-        return (M) => {
-          console.log("M: " + M)
-          return Maybe.flatMap(maybeClosure)(closure => {
-            return Maybe.flatMap(N)(n => {
-              console.log("n: " + n)
-              return Maybe.flatMap(M)(m => {
-                console.log("m: " + m)
-                console.log("closure(n)(m): " + closure(n)(m))
-                return Maybe.just(closure(n)(m));
-                // return closure(n)(m);
-              });
-            });
-          });
-        };
-      });
-      return answer;
-      // return Array.foldl1(operands)(N => {
-      //   return (M) => {
-      //     return Maybe.flatMap(N)(n => {
-      //       console.log("n: " + n)
-      //       return Maybe.flatMap(M)(m => {
-      //         console.log("m: " + m)
-      //         return Maybe.flatMap(maybeClosure)(closure => {
-      //           return Maybe.just(closure(n)(m));
-      //           // return closure(n)(m);
-      //         });
-      //       });
-      //     });
-      //   };
-      // });
     };
   },
   evaluateApplication: (exp) => {
@@ -283,15 +266,17 @@ const Evaluator = {
       if(Array.length(args) === 1) {
         const arg = Array.head(args);
         console.log(`arg: ${arg}`)
-          const answer = Maybe.flatMap(Evaluator.evaluate(arg)(environment))(oneArg => {
-              console.log(`oneArg: ${oneArg}`)
-              return closure(oneArg);
+          const answer = Maybe.flatMap(Evaluator.evaluate(arg)(environment))(actualArg => {
+              console.log(`actualArg: ${actualArg}`)
+              return closure(actualArg);
           });
-          // console.log(`Maybe.get(answer): ${Maybe.get(answer)}`)
+          console.log(`Maybe.get(answer): ${Maybe.get(answer)}`)
           return answer;
       } else {
         const answer = Array.foldl1(args)(N => {
+          console.log(`N: ${N}`)
           return (M) => {
+            console.log(`M: ${M}`)
             return Maybe.flatMap(Evaluator.evaluate(N)(environment))(n => {
               return Maybe.flatMap(Evaluator.evaluate(M)(environment))(m => {
                 return Maybe.just(closure(n)(m));
@@ -302,17 +287,6 @@ const Evaluator = {
         console.log(`Maybe.get(answer): ${Maybe.get(answer)}`)
           return answer;
       }
-      // const answer = Array.foldl1(args)(N => {
-      //   return (M) => {
-      //     console.log(`M: ${M}, N:${N} `)
-      //     return Maybe.flatMap(Evaluator.evaluateLambda(lambda))(closure => {
-      //       console.log(`closure(2)(3): ${closure(2)(3)}`)
-      //       return Maybe.just(closure(N)(M));
-      //     });
-      //   };
-      // });
-      // console.log(`answer: ${answer}`)
-      // return Maybe.just(answer);
     };
   },
   // ### Evaluator#evaluate
@@ -359,7 +333,7 @@ const Evaluator = {
           if(Array.length(args) === 1) {
             const arg = Array.head(args);
             const answer = Maybe.flatMap(Evaluator.evaluate(arg)(environment))(oneArg => {
-              return Maybe.just(builtInClocure(oneArg));
+              return builtInClocure(oneArg);
             });
             console.log(`Maybe.get(answer): ${Maybe.get(answer)}`)
             return answer;
@@ -368,7 +342,7 @@ const Evaluator = {
               return (M) => {
                 return Maybe.flatMap(Evaluator.evaluate(N)(environment))(n => {
                   return Maybe.flatMap(Evaluator.evaluate(M)(environment))(m => {
-                    return Maybe.just(builtInClocure(n)(m));
+                    return builtInClocure(n)(m);
                   });
                 });
               };
@@ -380,7 +354,8 @@ const Evaluator = {
           // return answer;
         } else {
           console.log("EVALUATE application: " + exp)
-          return Evaluator.evaluateApplication(exp)(environment);
+          return Maybe.just(exp);
+          // return Evaluator.evaluateApplication(exp)(environment);
         }
       }
     };
@@ -537,3 +512,50 @@ module.exports = {
 };
 
 
+  // apply: (maybeClosure, args) => {
+  //   expect(args).to.a('array');
+  //   return (environment) => {
+  //     // const answer = Array.foldr1(tail)(N => {
+  //     //   console.log("N: " + N)
+  //     //   return (M) => {
+  //     //   console.log("M: " + M)
+  //     //     return Maybe.flatMap(maybeClosure)(closure => {
+  //     //       return Maybe.just(closure(N)(M));
+  //     //       // return closure(n)(m);
+  //     //     });
+  //     //   };
+  //     // });
+  //     // return answer;
+  //     const answer = Array.foldr1(args)(N => {
+  //       return (M) => {
+  //         console.log("M: " + M)
+  //         return Maybe.flatMap(maybeClosure)(closure => {
+  //           return Maybe.flatMap(N)(n => {
+  //             console.log("n: " + n)
+  //             return Maybe.flatMap(M)(m => {
+  //               console.log("m: " + m)
+  //               console.log("closure(n)(m): " + closure(n)(m))
+  //               return Maybe.just(closure(n)(m));
+  //               // return closure(n)(m);
+  //             });
+  //           });
+  //         });
+  //       };
+  //     });
+  //     return answer;
+  //     // return Array.foldl1(operands)(N => {
+  //     //   return (M) => {
+  //     //     return Maybe.flatMap(N)(n => {
+  //     //       console.log("n: " + n)
+  //     //       return Maybe.flatMap(M)(m => {
+  //     //         console.log("m: " + m)
+  //     //         return Maybe.flatMap(maybeClosure)(closure => {
+  //     //           return Maybe.just(closure(n)(m));
+  //     //           // return closure(n)(m);
+  //     //         });
+  //     //       });
+  //     //     });
+  //     //   };
+  //     // });
+  //   };
+  // },

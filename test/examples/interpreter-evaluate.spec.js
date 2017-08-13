@@ -105,15 +105,16 @@ describe("evaluator", () => {
       // })(3)
       // => 3
       // ~~~
-      Maybe.match(I.evaluate([["lambda", ["x"], "x"], 3])(Env.empty),{
+      Maybe.match(I.evaluateApplication([["lambda", "x", "x"], [3]])(Env.empty),{
         nothing: (_) => {
           expect().fail()
         },
         just: (value) => {
-          expect(value).to.eql(ID.unit(3));
+          console.log(value) 
+          expect(value).to.eql(ID.unit(4));
         }
       });
-      // const answer  = I.evaluate([["lambda", ["x"], ["+", 1, "x"]], 3])(Env.empty);
+      // const answer  = I.evaluate([["lambda", "x", ["+", 1, "x"]], 3])(Env.empty);
       // console.log("answer: " + answer)
       // Maybe.match(answer,{
       //   nothing: (_) => {
@@ -121,7 +122,7 @@ describe("evaluator", () => {
       //   },
       //   just: (value) => {
       //     // expect().fail()
-      //     expect(value).to.eql(ID.unit(3));
+      //     expect(value).to.eql(ID.unit(4));
       //   }
       // });
       next();
