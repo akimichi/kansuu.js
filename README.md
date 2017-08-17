@@ -24,7 +24,10 @@ kansuu.js$ nvm use
 kansuu.js$ npm install
 kansuu.js$ npm install -g mocha
 kansuu.js$ npm test 
-kansuu.js$ npm test
+~~~
+
+~~~
+kansuu.js$ npm run test:watch
 ~~~
 
 

@@ -139,6 +139,39 @@ describe("evaluator", () => {
       // });
       next();
     });
+    describe('can apply builtin application', () => {
+      it('can apply builtin application with primitive value', (next) => {
+        // [+ 1 2] -> 3 
+        expect(
+          I.applyBuiltin(["+", 1, 2])(Env.empty)
+        ).to.eql(
+          3 
+        )
+        next();
+      });
+      it('can apply builtin application with variable', (next) => {
+        // [+ x 3]:x->2 -> 3 
+        const env =  Env.extend(Pair.cons("x",2), Env.empty);
+        expect(
+          I.applyBuiltin(["+", "x", 3])(env)
+        ).to.eql(
+          5 
+        )
+        const newEnv =  Env.extend(Pair.cons("y",3), env);
+        expect(
+          I.applyBuiltin(["+", "x", "y"])(newEnv)
+        ).to.eql(
+          5 
+        )
+        // [+ x [+ y x]] -> [+ 2 [+ 3 2]] -> 7
+        expect(
+          I.applyBuiltin(["+", "x", ["+", "y", "x"]])(newEnv)
+        ).to.eql(
+          7 
+        )
+        next();
+      });
+    });
     it('can evaluate function application', (next) => {
       // ~~~js
       // ((x) => {
@@ -158,7 +191,7 @@ describe("evaluator", () => {
       )
       const closure = I.evaluate(["lambda", "x", "x"])(Env.empty)
       expect(
-        I.applyClosure(closure, [3])(Env.empty)
+        I.applyClosure(closure, 3)(Env.empty)
       ).to.eql(
         3  
       )
@@ -167,6 +200,13 @@ describe("evaluator", () => {
       ).to.eql(
         3  
       )
+      // expect((() => {
+      //   const closure = I.evaluateLambda(["lambda", "x", ["+", 1, "x"]])(Env.empty)
+      //   return I.applyClosure(closure, [3])(Env.empty)
+      //   // return I.evaluate([["lambda", "x", ["+", 1, "x"]], 3])(Env.empty)
+      // })()).to.eql(
+      //   4  
+      // )
       expect(
         I.evaluate([["lambda", "x", ["+", 1, "x"]], 3])(Env.empty)
       ).to.eql(
@@ -174,7 +214,9 @@ describe("evaluator", () => {
       )
       // (\x -> \y -> x+y)(2)(3)
       expect(
-        I.evaluate([[["lambda", "x", ["lambda", "y", ["+", "x", "y"]]], 2], 3])(Env.empty)
+        I.evaluate(
+          [[["lambda", "x", ["lambda", "y", ["+", "x", "y"]]], 2], 3]
+        )(Env.empty)
       ).to.eql(
         4  
       )
