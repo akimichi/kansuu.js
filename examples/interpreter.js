@@ -168,49 +168,118 @@ const Syntax = {
 const keywords = ["lambda"]; 
 
 const buildin = {
-  // "+": (n) => {
-  //   return (m) => {
-  //     return Maybe.just(n+m);
-  //   };
-  // },
-  "+": math.add, 
-  "-": math.subtract, 
-  "*": math.multiply, 
-  "/": math.divide,
-  "succ": math.succ, 
-  "add": math.add, 
-  "subtract": math.subtract, 
-  "multiply": math.multiply, 
-  "divide": math.divide, 
-  "not": __.not(__.id),
+  "+": (n) => {
+    return (m) => {
+      return ID.unit(n+m);
+    };
+  },
+  "-": (n) => {
+    return (m) => {
+      return ID.unit(n-m);
+    };
+  },
+  "*": (n) => {
+    return (m) => {
+      return ID.unit(n*m);
+    };
+  },
+  "/": (n) => {
+    return (m) => {
+      return ID.unit(n/m);
+    };
+  },
+  "succ": (n) => {
+    return ID.unit(n+1);
+  },
+  "add": (n) => {
+    return (m) => {
+      return ID.unit(n+m);
+    };
+  },
+  "subtract": (n) => {
+    return (m) => {
+      return ID.unit(n-m);
+    };
+  },
+  "multiply": (n) => {
+    return (m) => {
+      return ID.unit(n*m);
+    };
+  },
+  "divide": (n) => {
+    return (m) => {
+      return ID.unit(n/m);
+    };
+  },
+  "not": (arg) => {
+    return ID.unit(!arg);
+  },
   "numberp": (arg) => {
-    return (__.typeOf(arg) === 'number');
+    return ID.unit((__.typeOf(arg) === 'number'));
   }
 };
 
 // ## Evaluator
 const Evaluator = {
-  // apply: (fun,args) => {
-  //   return (environment) => {
-  //     return Array.foldl1(args)(N => {
-  //       return (M) => {
-  //         return Maybe.flatMap(M)(m => {
-  //           return Maybe.flatMap(N)(n => {
-  //             return Maybe.just(fun(n)(m));
-  //           });
-  //         });
-  //       };
-  //     });
-  //   };
-  // },
+  // ### Evaluator#evaluate
+  // evaluate:: Exp => ID[Value]
+  evaluate: (exp) => {
+    return (environment) => {
+      console.log(`EVALUATE : ${exp}`)
+      if(__.typeOf(exp) === 'number') {
+        console.log("EVALUATE number: " + exp)
+        return ID.unit(exp);
+      }
+      if(__.typeOf(exp) === 'boolean') {
+        return ID.unit(exp);
+      }
+      if(__.typeOf(exp) === 'string') {
+        // case of buildin function/operator
+        const builtInClocure = buildin[exp];
+        if(builtInClocure){
+          console.log("EVALUATE builtInClocure: " + exp)
+          return ID.unit(builtInClocure); 
+        } else {
+          // case of identifier
+          console.log("EVALUATE variable: " + exp)
+          const answer = Env.lookup(exp,environment)
+          return Maybe.match(answer, {
+            nothing: (_) => {
+              throw new Error(`variable ${exp} not found`)
+            },
+            just: (value) => {
+              return value;
+            }
+          });
+        }
+      }
+      // case of S-expression 
+      if(__.typeOf(exp) === 'array') {
+        const head = Array.head(exp);
+        // λ式の評価
+        if(head === "lambda") {
+          // ["lambda", [arg], body]    
+          return Evaluator.evaluateLambda(exp)(Env.empty);
+        } 
+        if(buildin[head]) {
+          // const builtInClocure = buildin[head];
+          return Evaluator.applyBuiltin(exp)(environment);
+        } else {
+          return Evaluator.apply(exp)(environment);
+        }
+      }
+    };
+  },
+  // evaluateLambda:: Exp => ID[Closure]
+  // convert lambda expression ["lambda", "x", "x"] to the closure
+  //                                      arg  body
   evaluateLambda: (exp) => {
     return (environment) => {
+      console.log(`EVALUATE lambda: ${exp}`)
       const arg = Array.head(Array.tail(exp)),
         body = Array.head(Array.tail(Array.tail(exp)));
+      expect(arg).to.a('string');
       console.log(`arg: ${arg}`)
-      // expect(arg).to.a('string');
-      expect(arg).to.a('array');
-      console.log("arg:" + arg)
       console.log("body: " + body)
 
       const closure = (actualArg) => {
@@ -219,172 +288,147 @@ const Evaluator = {
         return Evaluator.evaluate(body)(newEnv);
       };
       console.log("return from evaluateLambda")
-      // return closure;
-      return closure;
+      return ID.unit(closure);
     };
   },
-  apply: (maybeClosure, args) => {
-    expect(args).to.a('array');
+  apply: (exp) => {
+    expect(exp).to.a('array');
     return (environment) => {
-      // const answer = Array.foldr1(tail)(N => {
-      //   console.log("N: " + N)
+      const head = Array.head(exp),
+        arg = Array.head(Array.tail(exp));
+      if(__.typeOf(head) === 'array') {
+        const closure = Evaluator.evaluateLambda(head)(environment);
+        return Evaluator.applyClosure(closure, arg)(environment);
+      } else {
+        console.log("EVALUATE application: " + exp)
+        const head = Array.head(exp);
+        console.log(`head: ${head}`)
+        const args = Array.tail(exp);
+        expect(args).to.a('array');
+        return ID.flatMap(Evaluator.evaluate(head)(environment))(closure => {
+          return Evaluator.applyClosure(closure, args)(environment);
+        });
+      }
+    };
+  },
+  // applyBuiltin:: Exp => ID[Value]
+  // ["+", 1, "x"] to the value
+  applyBuiltin: (exp) => {
+    return (environment) => {
+      const head = Array.head(exp),
+       args = Array.tail(exp);
+      expect(args).to.a('array');
+      console.log("applyBuiltin: " + head)
+      console.log("args: " + args)
+      const first = Array.head(args),
+        rest = Array.tail(args);
+      console.log(`first: ${first}`)
+      console.log(`rest: ${rest}`)
+
+      const builtInClocure = buildin[head];
+
+      if(Array.length(args) === 1) {
+        const value = ID.flatMap(Evaluator.evaluate(Array.head(args))(environment))(N => {
+          console.log(`N: ${N}`)
+          return ID.unit(builtInClocure(N));
+        });
+        return value;
+      } else {
+        const evaluatedArgs = Array.map(args)(item => {
+          return Evaluator.evaluate(item)(environment);
+        });
+        const value = Array.foldl(Array.tail(evaluatedArgs))(Array.head(evaluatedArgs))(N => {
+          console.log(`N: ${N}`)
+          return (M) => {
+            console.log(`M: ${M}`)
+            return ID.unit(builtInClocure(N)(M));
+          };
+        });
+        return value;
+      }
+      // const value = Array.foldl(rest)(Evaluator.evaluate(first)(environment))(N => {
+      // const value = Array.foldl(rest)(first)(N => {
+      //   console.log(`N: ${N}`)
       //   return (M) => {
-      //   console.log("M: " + M)
-      //     return Maybe.flatMap(maybeClosure)(closure => {
-      //       return Maybe.just(closure(N)(M));
-      //       // return closure(n)(m);
-      //     });
-      //   };
-      // });
-      // return answer;
-      const answer = Array.foldr1(args)(N => {
-        return (M) => {
-          console.log("M: " + M)
-          return Maybe.flatMap(maybeClosure)(closure => {
-            return Maybe.flatMap(N)(n => {
-              console.log("n: " + n)
-              return Maybe.flatMap(M)(m => {
-                console.log("m: " + m)
-                console.log("closure(n)(m): " + closure(n)(m))
-                return Maybe.just(closure(n)(m));
-                // return closure(n)(m);
-              });
-            });
-          });
-        };
-      });
-      return answer;
-      // return Array.foldl1(operands)(N => {
-      //   return (M) => {
-      //     return Maybe.flatMap(N)(n => {
-      //       console.log("n: " + n)
-      //       return Maybe.flatMap(M)(m => {
-      //         console.log("m: " + m)
-      //         return Maybe.flatMap(maybeClosure)(closure => {
-      //           return Maybe.just(closure(n)(m));
-      //           // return closure(n)(m);
-      //         });
+      //     console.log(`M: ${M}`)
+      //     return ID.flatMap(Evaluator.evaluate(N)(environment))(n => {
+      //       return ID.flatMap(Evaluator.evaluate(M)(environment))(m => {
+      //         return ID.unit(builtInClocure(n)(m));
       //       });
       //     });
       //   };
       // });
     };
   },
-  evaluateApplication: (exp) => {
-    const lambda = Array.head(exp),
-      args = Array.tail(exp);
+  applyClosure: (closure, arg) => {
+    console.log(`EVALUATE apply: arg=${arg}`)
+    expect(arg).not.to.a('array');
     return (environment) => {
-      console.log("typeOf(exp): " + __.typeOf(exp))
-      console.log(`exp: ${exp}`)
-      console.log("lambda: " + lambda)
-      console.log("typeOf(args): " + __.typeOf(args))
-      console.log(`args: ${args}`)
-      const closure = Evaluator.evaluateLambda(lambda);
-      if(Array.length(args) === 1) {
-        const arg = Array.head(args);
-        console.log(`arg: ${arg}`)
-          const answer = Maybe.flatMap(Evaluator.evaluate(arg)(environment))(oneArg => {
-              console.log(`oneArg: ${oneArg}`)
-              return closure(oneArg);
-          });
-          // console.log(`Maybe.get(answer): ${Maybe.get(answer)}`)
-          return answer;
-      } else {
-        const answer = Array.foldl1(args)(N => {
-          return (M) => {
-            return Maybe.flatMap(Evaluator.evaluate(N)(environment))(n => {
-              return Maybe.flatMap(Evaluator.evaluate(M)(environment))(m => {
-                return Maybe.just(closure(n)(m));
-              });
-            });
-          };
-        });
-        console.log(`Maybe.get(answer): ${Maybe.get(answer)}`)
-          return answer;
-      }
-      // const answer = Array.foldl1(args)(N => {
-      //   return (M) => {
-      //     console.log(`M: ${M}, N:${N} `)
-      //     return Maybe.flatMap(Evaluator.evaluateLambda(lambda))(closure => {
-      //       console.log(`closure(2)(3): ${closure(2)(3)}`)
-      //       return Maybe.just(closure(N)(M));
-      //     });
-      //   };
-      // });
-      // console.log(`answer: ${answer}`)
-      // return Maybe.just(answer);
+      const answer = ID.flatMap(Evaluator.evaluate(arg)(environment))(actualArg => {
+        console.log(`actualArg: ${actualArg}`)
+        return ID.unit(closure(actualArg));
+      });
+      return answer;
+      // expect(Array.length(args)).to.eql(1)
+      // if(Array.length(args) === 1) {
+      //   const arg = Array.head(args);
+      //   console.log(`arg: ${arg}`)
+      //   const answer = ID.flatMap(Evaluator.evaluate(arg)(environment))(actualArg => {
+      //     console.log(`actualArg: ${actualArg}`)
+      //     return ID.unit(closure(actualArg));
+      //   });
+      //   return answer;
+      // } else {
+      //   const answer = Array.foldl1(args)(N => {
+      //     console.log(`N: ${N}`)
+      //     return (M) => {
+      //       console.log(`M: ${M}`)
+      //       return ID.flatMap(Evaluator.evaluate(N)(environment))(n => {
+      //         return ID.flatMap(Evaluator.evaluate(M)(environment))(m => {
+      //           return ID.unit(closure(n)(m));
+      //         });
+      //       });
+      //     };
+      //   });
+      //   return answer;
+      // }
     };
   },
-  // ### Evaluator#evaluate
-  evaluate: (exp) => {
-    return (environment) => {
-      if(__.typeOf(exp) === 'number') {
-        console.log("EVALUATE number: " + exp)
-        return ID.unit(Maybe.just(exp));
-      }
-      if(__.typeOf(exp) === 'boolean') {
-        return ID.unit(Maybe.just(exp));
-      }
-      if(__.typeOf(exp) === 'string') {
-        // case of buildin function/operator
-        const builtInClocure = buildin[exp];
-        if(builtInClocure){
-          console.log("EVALUATE builtInClocure: " + exp)
-          return Maybe.just(builtInClocure); 
-        } else {
-          // case of identifier
-          console.log("EVALUATE variable: " + exp)
-          const answer = Env.lookup(exp,environment)
-          console.log(`variable: ${exp}:${Maybe.get(answer)}`)
-          return answer;
-        }
-      }
-      // case of S-expression 
-      if(__.typeOf(exp) === 'array') {
-        const head = Array.head(exp);
-        // λ式の評価
-        if(head === "lambda") {
-          console.log("EVALUATE lambda: " + exp)
-          // ["lambda", [arg], body]    
-          return Evaluator.evaluateLambda(exp)(environment);
-        } 
-        if(buildin[head]) {
-          const builtInClocure = buildin[head];
-          const args = Array.tail(exp);
-          expect(args).to.a('array');
-          console.log("EVALUATE builtInClocure: " + head)
-          console.log("args: " + args)
-          const firstArg = Array.head(args),
-            restArgs = Array.tail(args);
-          if(Array.length(args) === 1) {
-            const arg = Array.head(args);
-            const answer = Maybe.flatMap(Evaluator.evaluate(arg)(environment))(oneArg => {
-              return Maybe.just(builtInClocure(oneArg));
-            });
-            console.log(`Maybe.get(answer): ${Maybe.get(answer)}`)
-            return answer;
-          } else {
-            const answer = Array.foldl1(args)(N => {
-              return (M) => {
-                return Maybe.flatMap(Evaluator.evaluate(N)(environment))(n => {
-                  return Maybe.flatMap(Evaluator.evaluate(M)(environment))(m => {
-                    return Maybe.just(builtInClocure(n)(m));
-                  });
-                });
-              };
-            });
-            console.log(`Maybe.get(answer): ${Maybe.get(answer)}`)
-            return answer;
-          }
-          // console.log(`Maybe.get(answer): ${Maybe.get(answer)}`)
-          // return answer;
-        } else {
-          console.log("EVALUATE application: " + exp)
-          return Evaluator.evaluateApplication(exp)(environment);
-        }
-      }
-    };
-  },
+  // evaluateApplication: (exp) => {
+  //   const lambda = Array.head(exp),
+  //     args = Array.tail(exp);
+  //   return (environment) => {
+  //     console.log("typeOf(exp): " + __.typeOf(exp))
+  //     console.log(`exp: ${exp}`)
+  //     console.log("lambda: " + lambda)
+  //     console.log("typeOf(args): " + __.typeOf(args))
+  //     console.log(`args: ${args}`)
+  //     const closure = Evaluator.evaluateLambda(lambda);
+  //     if(Array.length(args) === 1) {
+  //       const arg = Array.head(args);
+  //       console.log(`arg: ${arg}`)
+  //         const answer = ID.flatMap(Evaluator.evaluate(arg)(environment))(actualArg => {
+  //             console.log(`actualArg: ${actualArg}`)
+  //             return closure(actualArg);
+  //         });
+  //         return answer;
+  //     } else {
+  //       const answer = Array.foldl1(args)(N => {
+  //         console.log(`N: ${N}`)
+  //         return (M) => {
+  //           console.log(`M: ${M}`)
+  //           return ID.flatMap(Evaluator.evaluate(N)(environment))(n => {
+  //             return ID.flatMap(Evaluator.evaluate(M)(environment))(m => {
+  //               return ID.unit(closure(n)(m));
+  //             });
+  //           });
+  //         };
+  //       });
+  //       console.log(`Maybe.get(answer): ${Maybe.get(answer)}`)
+  //         return answer;
+  //     }
+  //   };
+  // },
 };
 
       // return Exp.match(exp, {
