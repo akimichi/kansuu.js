@@ -16,11 +16,6 @@ describe("'record' module", () => {
   };
 
   it("'record'", (next) => {
-    // expect(function(){
-    //   return Record.empty(1);
-    // }()).to.eql(
-    //   nothing
-    // );
     const record = Record.set('a',0)(Record.empty);
     expect(
       isEqual(
@@ -42,17 +37,29 @@ describe("'record' module", () => {
         )
       }
     })
-    expect(function(){
-      Record.flatMap(Record.set('b',2)(Record.empty))(newRecord => {
-        Record.flatMap(Record.set('c',3)(newRecord))(finalRecord => {
-            return Record.unit(finalRecord); 
-        });
-      });
-      var array = Record.set('b',2))(1)('b');
-      return array(1);
-    }()).to.eql(
-      some('b')
-    );
+    // const newRecord = Record.flatMap(Record.unit('b',2))((key, value) => {
+    //   return Record.unit(key,value); 
+    //   // return Record.flatMap(Record.set('c',3)(newRecord))(finalRecord => {
+    //   //   return Record.unit(finalRecord); 
+    //   // });
+    // });
+    // Maybe.match(Record.get('b')(newRecord), {
+    //   empty: () => {
+    //     expect().to.fail();
+    //   },
+    //   just: (value) => {
+    //     expect(
+    //       value
+    //     ).to.eql(
+    //       0 
+    //     )
+    //   }
+    // })
+    // expect(
+
+    // ).to.eql(
+    //   some('b')
+    // );
     next();
   });
 });

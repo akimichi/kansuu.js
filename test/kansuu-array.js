@@ -33,10 +33,14 @@ describe("array", () => {
   it("Array#elem", (next) =>  {
     expect(
       Array.elem([1,2,3])(1)
-    ).to.eql(true);
+    ).to.eql(
+      true
+    );
     expect(
       Array.elem([1,2,3])(0)
-    ).to.eql(false);
+    ).to.eql(
+      false
+    );
     next();
   });
   it("Array#concat", (next) =>  {
