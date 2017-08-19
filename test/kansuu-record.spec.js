@@ -10,6 +10,7 @@ const expect = require('expect.js'),
 describe("'record' module", () => {
   const toArray = List.toArray,
     nothing = Maybe.nothing;
+  const isEqual = Maybe.isEqual;
   var some = (n) => {
     return Maybe.unit(n);
   };
@@ -20,24 +21,38 @@ describe("'record' module", () => {
     // }()).to.eql(
     //   nothing
     // );
-    expect(() => {
-      const record = Record.set('a',0);
-      return Record.get('a');
-    })()).to.eql(
-      some('a')
+    const record = Record.set('a',0)(Record.empty);
+    expect(
+      isEqual(
+        Record.get('a')(record),
+        some('1')
+      )
+    ).to.eql(
+      false 
     );
-    // expect(function(){
-    //   var array = __.record.extend.bind(__)(__.record.extend.bind(__)(__.record.empty.bind(__))(0)('a'))(1)('b');
-    //   return array(1);
-    // }()).to.eql(
-    //   some('b')
-    // );
+    Maybe.match(Record.get('a')(record), {
+      empty: () => {
+        expect().to.fail();
+      },
+      just: (value) => {
+        expect(
+          value
+        ).to.eql(
+          0 
+        )
+      }
+    })
     expect(function(){
-      // var object = __.record.extend.bind(__)(__.record.empty.bind(__))('key')('value');
-      // return object('key');
-    // }()).to.eql(
-      // some('value')
-    // );
+      Record.flatMap(Record.set('b',2)(Record.empty))(newRecord => {
+        Record.flatMap(Record.set('c',3)(newRecord))(finalRecord => {
+            return Record.unit(finalRecord); 
+        });
+      });
+      var array = Record.set('b',2))(1)('b');
+      return array(1);
+    }()).to.eql(
+      some('b')
+    );
     next();
   });
 });
