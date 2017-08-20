@@ -15,7 +15,51 @@ describe("'record' module", () => {
     return Maybe.unit(n);
   };
 
-  it("record set", (next) => {
+  it("Record#fromObject", (next) => {
+    const record = Record.fromObject({'a': 1, 'b':2 });
+    Maybe.match(Record.get('a')(record), {
+      nothing: () => {
+        expect().to.fail();
+      },
+      just: (value) => {
+        expect(
+          value
+        ).to.eql(
+          1 
+        )
+      }
+    })
+    Maybe.match(Record.get('b')(record), {
+      nothing: () => {
+        expect().to.fail();
+      },
+      just: (value) => {
+        expect(
+          value
+        ).to.eql(
+          2 
+        )
+      }
+    })
+    next();
+  });
+  it("Record.setを重ねる", (next) => {
+    const record = Record.set('a',1)(Record.set('a',2)(Record.empty));
+    Maybe.match(Record.get('a')(record), {
+      empty: () => {
+        expect().to.fail();
+      },
+      just: (value) => {
+        expect(
+          value
+        ).to.eql(
+          1 
+        )
+      }
+    })
+    next();
+  });
+  it("record set sequence", (next) => {
     const record = Record.set('a',1)(Record.set('b',2)(Record.empty));
     Maybe.match(Record.get('a')(record), {
       empty: () => {
@@ -26,6 +70,18 @@ describe("'record' module", () => {
           value
         ).to.eql(
           1 
+        )
+      }
+    })
+    Maybe.match(Record.get('b')(record), {
+      nothing: () => {
+        expect().to.fail();
+      },
+      just: (value) => {
+        expect(
+          value
+        ).to.eql(
+          2 
         )
       }
     })
