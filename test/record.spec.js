@@ -15,6 +15,22 @@ describe("'record' module", () => {
     return Maybe.unit(n);
   };
 
+  it("record set", (next) => {
+    const record = Record.set('a',1)(Record.set('b',2)(Record.empty));
+    Maybe.match(Record.get('a')(record), {
+      empty: () => {
+        expect().to.fail();
+      },
+      just: (value) => {
+        expect(
+          value
+        ).to.eql(
+          1 
+        )
+      }
+    })
+    next();
+  });
   it("'record'", (next) => {
     const record = Record.set('a',0)(Record.empty);
     expect(
