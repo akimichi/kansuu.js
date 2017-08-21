@@ -78,36 +78,126 @@ describe("'maybe' monad", () => {
       next();
     });
   });
-  describe("functor laws on maybeMonad", function() {
-    it("map id == id", (next) => {
-      var justOne = just(1);
-      expect(
-        isEqual(Maybe.map(justOne)(__.id), __.id(justOne))
-      ).to.be(
-        true
-      );
-      expect(
-        isEqual(Maybe.map(nothing())(__.id),__.id(nothing()))
-      ).to.be(
-        true
-      );
-      next();
+  describe("Maybe as Applicative functor", () => {
+    describe("Maybe#apply", () => {
+      it("unit(succ) <*> Just(1) === Just(2)", (next) => {
+        const succ = (n) => {
+          return n+1;
+        };
+        expect(
+          isEqual(
+            Maybe.apply(just(succ))(just(1)),
+            just(1) 
+          )
+        ).to.eql(
+          false
+        );
+        expect(
+          isEqual(
+            Maybe.apply(just(succ))(just(1)),
+            just(2) 
+          )
+        ).to.eql(
+          true
+        );
+        next();
+      });
+      it("just(add) <*> Just(1) <*> Just(2) === Just(3)", (next) => {
+        const add = (n) => {
+          return (m) => {
+            return n+m;
+          };
+        };
+        expect(
+          isEqual(
+            Maybe.apply(Maybe.apply(just(add))(just(1)))(just(2)),
+            just(3) 
+          )
+        ).to.eql(
+          true
+        );
+        next();
+      });
     });
-    it("map (f . g)  == map f . map g", function(next){
-      var justOne = Maybe.just(1);
-      var f = (n) => {
-        return n + 1;
-      };
-      var g = (n) => {
-        return - n;
-      };
-      expect(
-        isEqual(__.flip(Maybe.map)(__.compose(f,g))(justOne),__.compose(__.flip(Maybe.map)(f),__.flip(Maybe.map)(g))(justOne))
-        // isEqual(Maybe.map(justOne)(__.compose(f,g)),__.compose(__.flip(Maybe.map,f),__.flip(Maybe.map)(g))(justOne))
-      ).to.be(
-        true
-      );
-      next();
+  });
+  describe("Maybe as functor", () => {
+    describe("Maybe#map", () => {
+      it("map +1 Nothing == Nothing", (next) => {
+        const succ = (n) => {
+          return n+1;
+        };
+        expect(
+          isEqual(
+            Maybe.map(nothing())(succ),
+            just(1) 
+          )
+        ).to.be(
+          false
+        );
+        expect(
+          isEqual(
+            Maybe.map(nothing())(succ),
+            nothing()
+          )
+        ).to.be(
+          true
+        );
+        next();
+      });
+      it("map +1 Just(1) == Just(2)", (next) => {
+        const succ = (n) => {
+          return n+1;
+        };
+        expect(
+          isEqual(
+            Maybe.map(just(1))(succ),
+            just(1) 
+          )
+        ).to.be(
+          false
+        );
+        expect(
+          isEqual(
+            Maybe.map(just(1))(succ),
+            just(2) 
+          )
+        ).to.be(
+          true
+        );
+        next();
+      });
+    });
+    describe("functor laws on Maybe", () => {
+      it("map id == id", (next) => {
+        var justOne = just(1);
+        expect(
+          isEqual(Maybe.map(justOne)(__.id), __.id(justOne))
+        ).to.be(
+          true
+        );
+        expect(
+          isEqual(Maybe.map(nothing())(__.id),__.id(nothing()))
+        ).to.be(
+          true
+        );
+        next();
+      });
+      it("map (f . g)  == map f . map g", function(next){
+        var justOne = Maybe.just(1);
+        var f = (n) => {
+          return n + 1;
+        };
+        var g = (n) => {
+          return - n;
+        };
+        expect(
+          isEqual(__.flip(Maybe.map)(__.compose(f,g))(justOne),__.compose(__.flip(Maybe.map)(f),__.flip(Maybe.map)(g))(justOne))
+          // isEqual(Maybe.map(justOne)(__.compose(f,g)),__.compose(__.flip(Maybe.map,f),__.flip(Maybe.map)(g))(justOne))
+        ).to.be(
+          true
+        );
+        next();
+      });
     });
   });
   describe("monad laws on maybeMonad", () => {
