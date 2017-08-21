@@ -1,7 +1,7 @@
 "use strict";
 
 const expect = require('expect.js'),
-  // __ = require('../lib/kansuu.js'),
+  __ = require('../lib/kansuu.js'),
   Array = require('../lib/kansuu-array.js'),
   Pair = require('../lib/kansuu-pair.js'),
   math = require('../lib/kansuu-math.js');
@@ -96,7 +96,6 @@ describe("array", () => {
       Array.join([["a"],["b"],["c"]])
     ).to.eql(
       ["a","b","c"]
-      // "abc" 
     );
     expect(
       Array.join([[1,2,3],[4],[]])
@@ -323,6 +322,49 @@ describe("array", () => {
       );
       next();
     });
+    it("Array#foldr", (next) => {
+      const sum = (anArray) => {
+        const add = (x) => {
+          return (y) => {
+            return x + y;
+          };
+        };
+        return Array.foldr(anArray)(0)(add);
+      };
+      expect(
+        sum([1,2,3])
+      ).to.eql(
+        6
+      );
+      const product = (anArray) => {
+        const multiply = (x) => {
+          return (y) => {
+            return x * y;
+          };
+        };
+        return Array.foldr(anArray)(1)(multiply);
+      };
+      expect(
+        product([1,2,3,4])
+      ).to.eql(
+        24 
+      );
+      const reverse = (anArray) => {
+        const snoc = __.curry(Array.snoc);
+        // const snoc = (value) => {
+        //   return (anArray) => {
+        //     return Array.concat(anArray,[value]);
+        //   };
+        // };
+        return Array.foldr(anArray)(Array.empty)(snoc);
+      };
+      expect(
+        reverse([1,2,3,4])
+      ).to.eql(
+        [4,3,2,1] 
+      );
+      next();
+    });
     it("'foldr1'", (next) => {
       var anArray = [1,2,3];
       expect(
@@ -376,6 +418,15 @@ describe("array", () => {
       next();
     });
     it("'foldl'", (next) => {
+      expect(
+        Array.foldl([1,2,3])(0)(n => {
+          return (accumulator) => {
+            return n + accumulator;
+          };
+        })
+      ).to.eql(
+        6
+      );
       const sum = (anArray) => {
         return Array.foldl(anArray)(0)(n => {
           return (m) => {
@@ -397,13 +448,8 @@ describe("array", () => {
     });
     it("'foldl1'", (next) => {
       const sum = (anArray) => {
-        const add = (n) => {
-          return (m) => {
-            return n + m;
-          };
-        };
-        return Array.foldl1(anArray)(accumulator => {
-          return (item) => {
+        return Array.foldl1(anArray)(item => {
+          return (accumulator) => {
             return item + accumulator; 
           };
         })
@@ -422,12 +468,12 @@ describe("array", () => {
       // Prelude> foldl1 f [1..5]
       // 57
       expect(
-        Array.foldl1([1,2,3,4,5])(x =>{
+        Array.foldl1([1,2,3,4,5])(x => {
           return (y) => {
             return 2 * x + y;
           };
         })
-      ).to.be(
+      ).to.eql(
         57 
       );
       next();

@@ -95,7 +95,7 @@ describe("'interpreter' example", () => {
         next();
       });
       it('simple s_exp', function(next) {
-        this.timeout(20000);
+        this.timeout(30000);
         expect(
           Parser.parse(
             Syntax.s_exp() 
