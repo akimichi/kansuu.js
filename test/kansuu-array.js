@@ -21,6 +21,32 @@ describe("array", () => {
     );
     next();
   });
+  it("'Array#snoc' should construct a list", (next) => {
+    expect(
+      Array.snoc(1,[])
+    ).to.eql(
+      [1]
+    );
+    expect(
+      Array.snoc("a",["b","c"])
+    ).to.eql(
+      ["b","c", "a"]
+    );
+    next();
+  });
+  it("'Array#push'", (next) => {
+    expect(
+      Array.push([], 1)
+    ).to.eql(
+      [1]
+    );
+    expect(
+      Array.snoc("a",["b","c"])
+    ).to.eql(
+      ["b","c", "a"]
+    );
+    next();
+  });
   it("'head' should return the 1st element", (next) => {
     expect(Array.head([0,1,2,3])).to.eql(0);
     next();
@@ -67,10 +93,15 @@ describe("array", () => {
       [1]
     );
     expect(
-      Array.join(["a","b","c"])
+      Array.join([["a"],["b"],["c"]])
     ).to.eql(
       ["a","b","c"]
       // "abc" 
+    );
+    expect(
+      Array.join([[1,2,3],[4],[]])
+    ).to.eql(
+      [1,2,3,4]
     );
     next();
   });
@@ -81,9 +112,9 @@ describe("array", () => {
     next();
   });
   it("'init' uses compose", (next) =>  {
-    var array = [0,1,2];
-    expect(Array.init(array)).to.eql([0,1]);
-    expect(array).to.eql([0,1,2]);
+    var anArray = [0,1,2];
+    expect(Array.init(anArray)).to.eql([0,1]);
+    expect(anArray).to.eql([0,1,2]);
     expect(Array.init([0])).to.eql([]);
     next();
   });
@@ -292,6 +323,58 @@ describe("array", () => {
       );
       next();
     });
+    it("'foldr1'", (next) => {
+      var anArray = [1,2,3];
+      expect(
+        Array.foldr1(anArray)(item =>{
+          return (accumulator) => {
+            return item + accumulator;
+          };
+        })
+      ).to.be(
+        6
+      );
+      expect(
+        Array.foldr1([1])(item =>{
+          return (accumulator) => {
+            return item + accumulator;
+          };
+        })
+      ).to.be(
+        1
+      );
+      const succ = (n) => {
+        return n + 1;
+      };
+      expect(
+        Array.foldr1([3,4])(item =>{
+          return (accumulator) => {
+            return item * accumulator; 
+          };
+        })
+      ).to.be(
+        12
+      );
+      expect(
+        Array.foldr1([3])(item =>{
+          return (accumulator) => {
+            return item * accumulator; 
+          };
+        })
+      ).to.be(
+        3
+      );
+      expect(
+        Array.foldr1([1,2,3,4,5])(x =>{
+          return (y) => {
+            return 2 * x + y;
+          };
+        })
+      ).to.be(
+        25 
+      );
+      next();
+    });
     it("'foldl'", (next) => {
       const sum = (anArray) => {
         return Array.foldl(anArray)(0)(n => {
@@ -361,58 +444,6 @@ describe("array", () => {
         Array.last([0])
       ).to.eql(
         0
-      );
-      next();
-    });
-    it("'foldr1'", (next) => {
-      var anArray = [1,2,3];
-      expect(
-        Array.foldr1(anArray)(item =>{
-          return (accumulator) => {
-            return item + accumulator;
-          };
-        })
-      ).to.be(
-        6
-      );
-      expect(
-        Array.foldr1([1])(item =>{
-          return (accumulator) => {
-            return item + accumulator;
-          };
-        })
-      ).to.be(
-        1
-      );
-      const succ = (n) => {
-        return n + 1;
-      };
-      expect(
-        Array.foldr1([3,4])(item =>{
-          return (accumulator) => {
-            return item * accumulator; 
-          };
-        })
-      ).to.be(
-        12
-      );
-      expect(
-        Array.foldr1([3])(item =>{
-          return (accumulator) => {
-            return item * accumulator; 
-          };
-        })
-      ).to.be(
-        3
-      );
-      expect(
-        Array.foldr1([1,2,3,4,5])(x =>{
-          return (y) => {
-            return 2 * x + y;
-          };
-        })
-      ).to.be(
-        25 
       );
       next();
     });
