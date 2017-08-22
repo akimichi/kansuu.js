@@ -10,14 +10,14 @@ const util = require('util'),
   Random = require("random-js"),
   rng = Random.engines.mt19937();
 
-describe("'maybe' monad", () => {
+describe("'Maybe' monad", () => {
   const isEqual = Maybe.isEqual;
   const unit = Maybe.unit;
   const nothing = Maybe.nothing;
   const just = Maybe.just;
   const map = Maybe.map;
   
-  it("maybe#unit", (next) => {
+  it("Maybe#unit", (next) => {
     expect(
       isEqual(unit(1), unit(1))
     ).to.be(
@@ -30,7 +30,7 @@ describe("'maybe' monad", () => {
     );
     next();
   });
-  it("maybe#getOrElse", (next) => {
+  it("Maybe#getOrElse", (next) => {
     expect(
       Maybe.getOrElse(unit(1))(null)
     ).to.be(
@@ -43,7 +43,7 @@ describe("'maybe' monad", () => {
     );
     next();
   });
-  it("maybeMonad#get", (next) => {
+  it("MaybeMonad#get", (next) => {
     expect(
       Maybe.get(unit(1))
     ).to.be(

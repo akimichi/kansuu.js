@@ -14,7 +14,7 @@ const expect = require('expect.js'),
 describe("Monadic Parser", () => {
   var abc = List.fromString("abc");
   describe("parse", (next) => {
-    it("Parser#item", (next) => {
+    it("Parser#itemは先頭の一文字を取得する", (next) => {
       expect(
         Parser.item("")
       ).to.eql(
@@ -27,7 +27,7 @@ describe("Monadic Parser", () => {
       );
       next();
     });
-    it("Parser#zero", (next) => {
+    it("Parser#zeroは、何もしない", (next) => {
       expect(
         Parser.parse(Parser.zero)("abc")
       ).to.eql(
@@ -35,7 +35,7 @@ describe("Monadic Parser", () => {
       );
       next();
     });
-    it("Parser#unit", (next) => {
+    it("Parser#unitは、入力にはなにもせず、結果に値を格納する", (next) => {
       expect(
         Parser.parse(Parser.unit(1))("abc")
       ).to.eql(
@@ -44,7 +44,7 @@ describe("Monadic Parser", () => {
       next();
     });
     describe("Parser#append", () => {
-      it("Parser#letter", (next) => {
+      it("Parser#letterは、アルファベット文字を文字だけ認識する", (next) => {
         expect(
           Parser.parse(Parser.letter())("letter")
         ).to.eql(
@@ -75,7 +75,7 @@ describe("Monadic Parser", () => {
         );
         next();
       });
-      it("chars", (next) => {
+      it("charsは指定した文字列を認識する", (next) => {
         expect(
           Parser.chars("abc")("abcdef")
         ).to.eql(
