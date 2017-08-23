@@ -8,7 +8,6 @@ const expect = require('expect.js'),
   Pair = require('../../lib/kansuu-pair.js');
 
 describe("'Cont' monad module", () => {
-
   describe("Cont#unit", () => {
     it('square', (next) => {
       // ~~~haskell
@@ -28,7 +27,6 @@ describe("'Cont' monad module", () => {
     });
   });
   describe("Cont#flatMap", () => {
-    const Cont = require('../../lib/kansuu.js').monad.cont;
     it('Cont.flatMapで算術演算を組み合わせる例', (next) => {
       const addCPS = (n,m) => {
         const add = (n,m) => {

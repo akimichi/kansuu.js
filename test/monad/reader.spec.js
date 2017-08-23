@@ -1,12 +1,12 @@
 "use strict";
 
-var util = require('util');
-var expect = require('expect.js');
-var __ = require('../lib/kansuu.js');
-var math = require('../lib/kansuu-math.js');
-var seedrandom = require('seedrandom');
-var Random = require("random-js");
-var rng = Random.engines.mt19937();
+// var util = require('util');
+// var expect = require('expect.js');
+// var __ = require('../lib/kansuu.js');
+// var math = require('../lib/kansuu-math.js');
+// var seedrandom = require('seedrandom');
+// var Random = require("random-js");
+// var rng = Random.engines.mt19937();
 
   // describe("Readerモナド",() => {
   //   it("add10", (next) => {
