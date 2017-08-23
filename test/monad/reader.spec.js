@@ -8,8 +8,6 @@ var seedrandom = require('seedrandom');
 var Random = require("random-js");
 var rng = Random.engines.mt19937();
 
-describe("'monad' module", function() {
-  // ### Contモナドのテスト
   // describe("Readerモナド",() => {
   //   it("add10", (next) => {
   //     // main = print $ runReader add10 1
@@ -37,5 +35,4 @@ describe("'monad' module", function() {
   //     );
   //     next();
   //   });
-  // });
-});
+
