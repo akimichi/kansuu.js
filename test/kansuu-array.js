@@ -8,6 +8,24 @@ const expect = require('expect.js'),
 
 
 describe("array", () => {
+  it("Array#flatMap", (next) => {
+    /*
+    scala> val nestedNumbers = List(List(1, 2), List(3, 4))
+    scala> nestedNumbers.flatMap(x => x.map(_ * 2))
+    res0: List[Int] = List(2, 4, 6, 8)
+    */
+    const nestedArray = [[1,2],[3,4]];
+    expect(
+      Array.flatMap(nestedArray)(x => {
+        return Array.map(x)(n => {
+          return n * 2;
+        });
+      })
+    ).to.eql(
+      [2,4,6,8]
+    )
+    next();
+  });
   it("'cons' should construct a list", (next) => {
     expect(
       Array.cons(1,[])
