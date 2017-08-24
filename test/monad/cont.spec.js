@@ -102,27 +102,49 @@ describe("'Cont' monad module", () => {
     });
   });
   describe("Cont#flatMap", () => {
+    it('loopを回数分だけ実行する', (next) => {
+      const loop = (n) => {
+        return (cont) => {
+          const body = (n) => {
+            return n-1; 
+          };
+          return Cont.flatMap(Cont.unit(body(n)))(mainResult => {
+            if(mainResult === 0){
+              return Cont.unit(mainResult);
+            } else {
+              return loop(mainResult);
+            }
+          })(cont);
+        };
+      };
+      expect(
+        loop(3)(Cont.stop)
+      ).to.eql(
+        0
+      );
+      next();
+    });
     it('mainLevelとsubLevel', (next) => {
       var initialSession = {
         count: 0
       };
       const mainLevel = (session) => {
-        // const mainBody = (session) => {
-        //   session.count = session.count + 1;
-        //   return session; 
-        // };
-        // return Cont.flatMap(Cont.unit(mainBody(session)))(mainResult => {
-        //   return Cont.unit(subLevel(mainResult));
-        // });
-        return (cont) => {
-          const mainBody = (session) => {
-            session.count = session.count + 1;
-            return session; 
-          };
-          return Cont.flatMap(Cont.unit(mainBody(session)))(mainResult => {
-            return subLevel(mainResult);
-          })(cont);
+        const mainBody = (session) => {
+          session.count = session.count + 1;
+          return session; 
         };
+        return Cont.flatMap(Cont.unit(mainBody(session)))(mainResult => {
+          return subLevel(mainResult);
+        });
+        // return (cont) => {
+        //   const mainBody = (session) => {
+        //     session.count = session.count + 1;
+        //     return session; 
+        //   };
+        //   return Cont.flatMap(Cont.unit(mainBody(session)))(mainResult => {
+        //     return subLevel(mainResult);
+        //   })(cont);
+        // };
       };
       const subLevel = (session) => {
         const subBody = (session) => {
