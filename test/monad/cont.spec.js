@@ -8,25 +8,144 @@ const expect = require('expect.js'),
   Pair = require('../../lib/kansuu-pair.js');
 
 describe("'Cont' monad module", () => {
+  describe("Cont monad and state transition", () => {
+    it('mainLevel', (next) => {
+      var initialSession = {
+        count: 0
+      };
+      const mainLevel = (session) => {
+        const main = (session) => {
+          session.count = session.count + 1;
+          return session;
+        };
+        return Cont.unit(main(session));
+      };
+      expect(
+        mainLevel(initialSession)(Cont.stop).count
+      ).to.eql(
+        1
+      );
+      next();
+    });
+    it('mainLevelとcont', (next) => {
+      var initialSession = {
+        count: 0
+      };
+      const mainLevel = (session) => {
+        return (cont) => {
+          const main = (session) => {
+            session.count = session.count + 1;
+            return session; 
+          };
+          return Cont.unit(main(session))(cont);
+        };
+      };
+      expect(
+        mainLevel(initialSession)(Cont.stop).count
+      ).to.eql(
+        1
+      );
+      next();
+    });
+    it('mainLevelとsubLevel', (next) => {
+      var initialSession = {
+        count: 0
+      };
+      const mainLevel = (session) => {
+        return (cont) => {
+          const mainBody = (session) => {
+            session.count = session.count + 1;
+            return session; 
+          };
+          return subLevel(mainBody(session))(cont);
+        };
+      };
+      const subLevel = (session) => {
+        return (cont) => {
+          const subBody = (session) => {
+            session.count = session.count + 1;
+            return session;
+          };
+          return Cont.unit(subBody(session))(cont);
+        };
+      };
+      expect(
+        mainLevel(initialSession)(Cont.stop).count
+      ).to.eql(
+        2
+      );
+      next();
+    });
+  });
   describe("Cont#unit", () => {
     it('square', (next) => {
       // ~~~haskell
       // square :: Int -> ((Int -> r) -> r)
       // square x = \k -> k (x * x)
       // ~~~
-      var square = (n) => {
+      const square = (n) => {
         return n * n;
       };
-      var square3 = Cont.unit(square(3)); 
+      const square3 = Cont.unit(square(3)); 
       expect(
         square3(Cont.stop)
       ).to.eql(
         9
       );
+      const squareCPS = Cont.unit(square);
+      expect(
+        squareCPS(Cont.stop)(4)
+      ).to.eql(
+        16 
+      );
       next();
     });
   });
   describe("Cont#flatMap", () => {
+    it('mainLevelとsubLevel', (next) => {
+      var initialSession = {
+        count: 0
+      };
+      const mainLevel = (session) => {
+        // const mainBody = (session) => {
+        //   session.count = session.count + 1;
+        //   return session; 
+        // };
+        // return Cont.flatMap(Cont.unit(mainBody(session)))(mainResult => {
+        //   return Cont.unit(subLevel(mainResult));
+        // });
+        return (cont) => {
+          const mainBody = (session) => {
+            session.count = session.count + 1;
+            return session; 
+          };
+          return Cont.flatMap(Cont.unit(mainBody(session)))(mainResult => {
+            return subLevel(mainResult);
+          })(cont);
+        };
+      };
+      const subLevel = (session) => {
+        const subBody = (session) => {
+          session.count = session.count + 1;
+          return session;
+        };
+        return Cont.unit(subBody(session));
+        // return (cont) => {
+        //   const subBody = (session) => {
+        //     session.count = session.count + 1;
+        //     return session;
+        //   };
+        //   // return subBody(session)(cont);
+        //   return Cont.unit(subBody(session));
+        // };
+      };
+      expect(
+        mainLevel(initialSession)(Cont.stop).count
+      ).to.eql(
+        2
+      );
+      next();
+    });
     it('Cont.flatMapで算術演算を組み合わせる例', (next) => {
       const addCPS = (n,m) => {
         const add = (n,m) => {
