@@ -104,18 +104,28 @@ describe("'Cont' monad module", () => {
   describe("Cont#flatMap", () => {
     it('loopを回数分だけ実行する', (next) => {
       const loop = (n) => {
-        return (cont) => {
-          const body = (n) => {
-            return n-1; 
-          };
-          return Cont.flatMap(Cont.unit(body(n)))(mainResult => {
-            if(mainResult === 0){
-              return Cont.unit(mainResult);
-            } else {
-              return loop(mainResult);
-            }
-          })(cont);
+        const body = (n) => {
+          return n-1; 
         };
+        return Cont.flatMap(Cont.unit(body(n)))(result => {
+          if(result === 0){
+            return Cont.unit(result);
+          } else {
+            return loop(result);
+          }
+        });
+        // return (cont) => {
+        //   const body = (n) => {
+        //     return n-1; 
+        //   };
+        //   return Cont.flatMap(Cont.unit(body(n)))(mainResult => {
+        //     if(mainResult === 0){
+        //       return Cont.unit(mainResult);
+        //     } else {
+        //       return loop(mainResult);
+        //     }
+        //   })(cont);
+        // };
       };
       expect(
         loop(3)(Cont.stop)
