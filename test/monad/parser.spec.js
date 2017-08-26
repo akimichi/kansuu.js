@@ -266,6 +266,23 @@ describe("Monadic Parser", () => {
     });
   });
   describe("manyパーサ", (next) => {
+    it("manyの用法", (next) => {
+      expect(
+        Parser.parse(
+          Parser.flatMap(Parser.many(Parser.alphanum()))(xs => {
+            console.log(xs)
+            return Parser.unit(Array.foldl1(xs)(x => {
+              return (accumulator) => {
+              return x + accumulator;
+              };
+            }));
+          })
+        )("123abc")
+      ).to.eql(
+        [{value:"123abc", remaining: ''}]
+      );
+      next();
+    });
     it("many digit", (next) => {
       expect(
         Parser.parse(

@@ -4,9 +4,6 @@ const util = require('util'),
   expect = require('expect.js'),
   __ = require('../../lib/kansuu.js'),
   ID = require('../../lib/kansuu-monad.js').identity;
-// var seedrandom = require('seedrandom');
-// var Random = require("random-js");
-// var rng = Random.engines.mt19937();
 
 describe("ID monad", () => {
   it("ID#flatMap", (next) => {
