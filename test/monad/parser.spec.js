@@ -67,7 +67,28 @@ describe("Monadic Parser", () => {
       });
     });
     describe("Parser#sat", () => {
-      it("char", (next) => {
+      it("anyCharは、空白、改行、タブ以外の全ての一文字にマッチする", (next) => {
+        expect(
+          Parser.anyChar()("ア")
+        ).to.eql(
+          [{value:'ア', remaining: ''}]
+        );
+        next();
+      });
+      it("anyStringは、空白、改行、タブ以外の全ての文字列にマッチする", (next) => {
+        expect(
+          Parser.anyString()("アイウエオ")
+        ).to.eql(
+          [{value:'アイウエオ', remaining: ''}]
+        );
+        expect(
+          Parser.anyString()("example.address@mail.com")
+        ).to.eql(
+          [{value:'example.address@mail.com', remaining: ''}]
+        );
+        next();
+      });
+      it("charは、指定した一文字だけを認識する", (next) => {
         expect(
           Parser.char("a")("a")
         ).to.eql(
