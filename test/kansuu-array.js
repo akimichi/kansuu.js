@@ -128,7 +128,7 @@ describe("array", () => {
     expect(array).to.eql([0,1,2]);
     next();
   });
-  it("'init' uses compose", (next) =>  {
+  it("'init'は配列の末尾より先方の要素をとりだす ", (next) =>  {
     var anArray = [0,1,2];
     expect(Array.init(anArray)).to.eql([0,1]);
     expect(anArray).to.eql([0,1,2]);
@@ -285,6 +285,14 @@ describe("array", () => {
       //   left: [ 1, 2, 3 ],
       //   right: [ ]
       // }
+    );
+    next();
+  });
+  it("Array.unlines", (next) =>  {
+    expect(
+      Array.unlines(["a","b","c"])
+    ).to.eql(
+      "a\nb\nc\n"  
     );
     next();
   });
