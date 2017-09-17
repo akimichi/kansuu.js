@@ -6,7 +6,6 @@ const expect = require('expect.js'),
   Pair = require('../lib/kansuu-pair.js'),
   math = require('../lib/kansuu-math.js');
 
-
 describe("array", () => {
   it("Array#flatMap", (next) => {
     /*
@@ -36,6 +35,19 @@ describe("array", () => {
       Array.cons("a",["b","c"])
     ).to.eql(
       ["a","b","c"]
+    );
+    next();
+  });
+  it("isEmpty", (next) => {
+    expect(
+      Array.isEmpty([])
+    ).to.eql(
+      true 
+    );
+    expect(
+      Array.isEmpty(null)
+    ).to.eql(
+      true 
     );
     next();
   });
