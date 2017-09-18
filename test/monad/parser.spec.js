@@ -340,6 +340,16 @@ describe("Monadic Parser", () => {
       );
       next();
     });
+    it("hex", (next) => {
+      expect(
+        Parser.parse(
+          Parser.hex()
+        )("123abc")
+      ).to.eql(
+        [{value:"123abc", remaining: ''}]
+      );
+      next();
+    });
     // it("some digit", (next) => {
     //   expect(
     //     PP.print(
