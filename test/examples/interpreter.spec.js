@@ -58,7 +58,7 @@ describe("'interpreter' example", () => {
   describe("syntax", () => {
     describe('s_exp', (next) => {
       it('application as s_exp', function(next) {
-        this.timeout(20000);
+        this.timeout(40000);
         expect(
           Parser.parse(
             Syntax.s_exp() 

@@ -38,17 +38,25 @@ describe("array", () => {
     );
     next();
   });
+  it("fromString", (next) => {
+    expect(
+      Array.fromString("abc")
+    ).to.eql(
+      ['a','b','c'] 
+    );
+    next();
+  });
   it("isEmpty", (next) => {
     expect(
       Array.isEmpty([])
     ).to.eql(
       true 
     );
-    expect(
-      Array.isEmpty(null)
-    ).to.eql(
-      true 
-    );
+    // expect(
+    //   Array.isEmpty(null)
+    // ).to.eql(
+    //   true 
+    // );
     next();
   });
   it("'Array#snoc' should construct a list", (next) => {
@@ -300,6 +308,18 @@ describe("array", () => {
     );
     next();
   });
+  it("'lines'", (next) =>  {
+    // lines "hello world\nit's me,\neric\n"
+    // ["hello world", "it's me,", "eric"]
+    expect(
+      Array.lines( "hello world\nit's me,\neric\n")
+    ).to.eql(
+      ['hello world',
+        'it\'s me,',
+        'eric'] 
+    );
+    next();
+  });
   it("Array.unlines", (next) =>  {
     expect(
       Array.unlines(["a","b","c"])
@@ -308,16 +328,6 @@ describe("array", () => {
     );
     next();
   });
-  // it("'lines'", (next) =>  {
-  //   // lines "hello world\nit's me,\neric\n"
-  //   // ["hello world", "it's me,", "eric"]
-  //   expect(
-  //   Array.lines("abc\ndef")
-  //   ).to.eql(
-  //   [ [ 'a', 'b', 'c', '\n', 'd', 'e', 'f' ] ]
-  //   );
-  //   next();
-  // });
   it("'dropWhile'", (next) =>  {
     var list = [2,4,6,1,5,6];
     var even = function(n){
