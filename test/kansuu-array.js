@@ -2,6 +2,7 @@
 
 const expect = require('expect.js'),
   __ = require('../lib/kansuu.js'),
+  string = require('../lib/kansuu.js').string,
   Array = require('../lib/kansuu-array.js'),
   Pair = require('../lib/kansuu-pair.js'),
   math = require('../lib/kansuu-math.js');
@@ -641,6 +642,48 @@ describe("array", () => {
         Array.filter([1,2,3])(odd)
       ).to.eql(
         [1,3]
+      );
+      next();
+    });
+    it("先頭に#のある行を除去する", (next) =>  {
+      const __ = require('../lib/kansuu.js');
+
+      const lines = [
+        "# 処方新規入力画面",
+        "",
+        "[",
+        "  {",
+        `    medical_class         : "210",`, 
+        `    department_code       : "01",`,  
+        `    drug_code             : "",`,  
+        `    amount                : "",`,  
+        `    yoho_code             : "",`,    
+        `    duration              : "7",`,   
+        "  }",
+        "]",
+      ];
+      const condition = (line) => {
+        if(string.head(line) === "#" ) {
+          return false;
+        } else  {
+          return true;
+        }
+      };
+      expect(
+        Array.filter(lines)(condition)
+      ).to.eql(
+        ["",
+          "[",
+          "  {",
+          `    medical_class         : "210",`, 
+          `    department_code       : "01",`,  
+          `    drug_code             : "",`,  
+          `    amount                : "",`,  
+          `    yoho_code             : "",`,    
+          `    duration              : "7",`,   
+          "  }",
+          "]",
+        ]
       );
       next();
     });
