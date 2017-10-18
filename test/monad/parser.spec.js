@@ -44,6 +44,20 @@ describe("Monadic Parser", () => {
       next();
     });
     describe("Parser#append", () => {
+      it("Parser#appendは、パースの論理和を意味する", (next) => {
+        const all_or_nothing = 
+        expect(
+          Parser.parse(Parser.letter())("letter")
+        ).to.eql(
+          [{value:'l', remaining: 'etter'}]
+        );
+        expect(
+          Parser.letter()("ABC")
+        ).to.eql(
+          [{value:'A', remaining: 'BC'}]
+        );
+        next();
+      });
       it("Parser#letterは、アルファベット文字を文字だけ認識する", (next) => {
         expect(
           Parser.parse(Parser.letter())("letter")
@@ -156,39 +170,6 @@ describe("Monadic Parser", () => {
       );
       next();
     });
-  });
-  describe("monad", (next) => {
-    // it("three", (next) => {
-    //   var input = List.fromString("abcdef");
-    //   var three = Parser.flatMap(Parser.item)((x) => {
-    //     return Parser.flatMap(Parser.item)((_) => {
-    //       return Parser.flatMap(Parser.item)((z) => {
-    //         return Parser.unit(Pair.cons(x,z));
-    //       });
-    //     });
-    //   });
-    //   expect(
-    //     PP.print(
-    //       three(input)
-    //     )
-    //   ).to.eql(
-    //     '[((a,c),[d,e,f,nil]),nil]'
-    //   );
-    //   next();
-    // });
-    // it("flapMap", (next) => {
-    //   var input = List.fromString("  +  ");
-    //   var add_or_subtract = Parser.alt(Parser.symbol(List.fromString("+")), Parser.symbol(List.fromString("-")));
-    //   var parser = Parser.flatMap(add_or_subtract)((operator) => {
-    //     return Parser.unit(operator);
-    //   });
-    //   expect(
-    //     PP.print(
-    //       Parser.parse(parser)(input)
-    //     )
-    //   ).to.eql('[(+,[]),nil]');
-    //   next();
-    // });
   });
   describe("alternative", (next) => {
     it("alt", (next) => {
