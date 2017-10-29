@@ -24,6 +24,15 @@ describe("array", () => {
     ).to.eql(
       [2,4,6,8]
     )
+    expect(
+      Array.flatMap([[],[2,3]])(x => {
+        return Array.map(x)(n => {
+          return n * 2;
+        });
+      })
+    ).to.eql(
+      [4,6]
+    )
     next();
   });
   it("'cons' should construct a list", (next) => {
