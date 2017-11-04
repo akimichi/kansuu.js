@@ -42,6 +42,16 @@ describe("Kansuu module", () => {
     ).to.equal(
       'undefined'
     );
+    expect(
+      __.typeOf([])
+    ).to.equal(
+      'array'
+    );
+    expect(
+      __.typeOf({})
+    ).to.equal(
+      'object'
+    );
     next();
   });
   describe("judgment predicates", function() {
