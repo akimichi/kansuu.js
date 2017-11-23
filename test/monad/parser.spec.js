@@ -321,6 +321,39 @@ describe("Monadic Parser", () => {
       );
       next();
     });
+    it("digits", (next) => {
+      expect(
+        Parser.parse(
+          Parser.digits()
+        )("1")
+      ).to.eql(
+        [{value:"1", remaining: ''}]
+      );
+      expect(
+        Parser.parse(
+          Parser.digits()
+        )("abc")
+      ).to.eql(
+        [] 
+      );
+      expect(
+        Parser.parse(
+          Parser.digits()
+        )("123abc")
+      ).to.eql(
+        [{value:"123", remaining: 'abc'}]
+      );
+      expect(
+        Parser.parse(
+          Parser.flatMap(Parser.digits())(digits => {
+            return Parser.unit(digits);
+          })
+        )("123abc")
+      ).to.eql(
+        [{value:"123", remaining: 'abc'}]
+      );
+      next();
+    });
     it("hex", (next) => {
       expect(
         Parser.parse(
