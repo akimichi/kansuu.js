@@ -208,6 +208,46 @@ describe("Monadic Parser", () => {
       );
       next();
     });
+    it("digits", (next) => {
+      expect(
+        Parser.parse(
+          Parser.digits()
+        )("1")
+      ).to.eql(
+        [{value:"1", remaining: ''}]
+      );
+      expect(
+        Parser.parse(
+          Parser.digits()
+        )("abc")
+      ).to.eql(
+        [{value:"", remaining: 'abc'}]
+      );
+      expect(
+        Parser.parse(
+          Parser.digits()
+        )("123")
+      ).to.eql(
+        [{value:"123", remaining: ''}]
+      );
+      expect(
+        Parser.parse(
+          Parser.digits()
+        )("123abc")
+      ).to.eql(
+        [{value:"123", remaining: 'abc'}]
+      );
+      expect(
+        Parser.parse(
+          Parser.flatMap(Parser.digits())(digits => {
+            return Parser.unit(digits);
+          })
+        )("123abc")
+      ).to.eql(
+        [{value:"123", remaining: 'abc'}]
+      );
+      next();
+    });
     it("word", (next) => {
       expect(
         Array.length(Parser.parse(Parser.word())("Yes!"))
@@ -313,39 +353,6 @@ describe("Monadic Parser", () => {
       expect(
         Parser.parse(
           Parser.flatMap(Parser.many1(Parser.digit()))(digits => {
-            return Parser.unit(digits);
-          })
-        )("123abc")
-      ).to.eql(
-        [{value:"123", remaining: 'abc'}]
-      );
-      next();
-    });
-    it("digits", (next) => {
-      expect(
-        Parser.parse(
-          Parser.digits()
-        )("1")
-      ).to.eql(
-        [{value:"1", remaining: ''}]
-      );
-      expect(
-        Parser.parse(
-          Parser.digits()
-        )("abc")
-      ).to.eql(
-        [] 
-      );
-      expect(
-        Parser.parse(
-          Parser.digits()
-        )("123abc")
-      ).to.eql(
-        [{value:"123", remaining: 'abc'}]
-      );
-      expect(
-        Parser.parse(
-          Parser.flatMap(Parser.digits())(digits => {
             return Parser.unit(digits);
           })
         )("123abc")

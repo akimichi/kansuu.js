@@ -358,13 +358,23 @@ describe("array", () => {
     expect(Array.zip(listX)(listY)).to.eql([[0,'h'],[1,'a'],[2,'l'],[3,'l'],[4,'o']]);
     next();
   });
-  it("Array#flatten", (next) =>  {
-    expect(
-      Array.flatten([[1]])
-    ).to.eql(
-       [1] 
-    )
-    next();
+  describe("Array#flatten", () => {
+    it("flatten [[1]]", (next) =>  {
+      expect(
+        Array.flatten([[1]])
+      ).to.eql(
+        [1] 
+      )
+      next();
+    });
+    it("flatten []", (next) =>  {
+      expect(
+        Array.flatten([])
+      ).to.eql(
+        [] 
+      )
+      next();
+    });
   });
   describe("folding functions", () => {
     it("'reduce'", (next) => {
