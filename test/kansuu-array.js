@@ -318,17 +318,32 @@ describe("array", () => {
     );
     next();
   });
-  it("'lines'", (next) =>  {
-    // lines "hello world\nit's me,\neric\n"
-    // ["hello world", "it's me,", "eric"]
-    expect(
-      Array.lines( "hello world\nit's me,\neric\n")
-    ).to.eql(
-      ['hello world',
-        'it\'s me,',
-        'eric'] 
-    );
-    next();
+  describe("'lines'", () =>  {
+    it("'Array.lines'", (next) =>  {
+      // lines "hello world\nit's me,\neric\n"
+      // ["hello world", "it's me,", "eric"]
+      expect(
+        Array.lines( "hello world\nit's me,\neric\n")
+      ).to.eql(
+        ['hello world',
+          'it\'s me,',
+          'eric'] 
+      );
+      next();
+    });
+    it("Array#split", (next) =>  {
+      expect(
+        "hello world\nit's me,\neric\n".split("\n")
+      ).to.eql(
+        [
+          'hello world',
+          'it\'s me,',
+          'eric',
+          ''
+        ] 
+      );
+      next();
+    });
   });
   it("Array.unlines", (next) =>  {
     expect(
