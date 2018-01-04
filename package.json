@@ -31,7 +31,7 @@
     "seedrandom": "^2.3.11"
   },
   "devDependencies": {
-    "docco": "^0.7.0",
+    "docco": "0.8.0",
     "gulp": "^3.8.11",
     "gulp-docco": "0.0.4",
     "gulp-exit": "0.0.2",
