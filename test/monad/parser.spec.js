@@ -102,6 +102,14 @@ describe("Monadic Parser", () => {
         );
         next();
       });
+      // it("quotedStringは、クオートされた文字列にマッチする", (next) => {
+      //   expect(
+      //     Parser.quotedString()("\"string\"")
+      //   ).to.eql(
+      //     [{value:'アイウエオ', remaining: ''}]
+      //   );
+      //   next();
+      // });
       it("charは、指定した一文字だけを認識する", (next) => {
         expect(
           Parser.char("a")("a")
@@ -285,6 +293,11 @@ describe("Monadic Parser", () => {
         Parser.parse(Parser.string())("\"abc\"")
       ).to.eql(
         [{value:"abc", remaining: ''}]
+      );
+      expect(
+        Parser.parse(Parser.string())("\"これはParser.stringのテストです\"")
+      ).to.eql(
+        [{value:"これはParser.stringのテストです", remaining: ''}]
       );
       // expect(
       //   PP.print(

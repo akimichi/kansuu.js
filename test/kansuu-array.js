@@ -145,6 +145,11 @@ describe("array", () => {
     ).to.eql(
       ["a","b","c"]
     );
+    // expect(
+    //   Array.flatten(["a","b","c"])
+    // ).to.eql(
+    //   ["a","b","c"]
+    // );
     expect(
       Array.join([[1,2,3],[4],[]])
     ).to.eql(
@@ -445,6 +450,18 @@ describe("array", () => {
         reverse([1,2,3,4])
       ).to.eql(
         [4,3,2,1] 
+      );
+      const stringConcat = (arrayOfString) => {
+        return Array.foldr(arrayOfString)("")(item => {
+          return (accumulator) => {
+            return `${item}${accumulator}`
+          };
+        });
+      };
+      expect(
+        stringConcat(["a","b","c"])
+      ).to.eql(
+        'abc'
       );
       next();
     });
