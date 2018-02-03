@@ -12,6 +12,30 @@ describe("'List' module", () => {
   };
 
   describe("mkList", () => {
+    it("fromVector", (next) => {
+      var theList = List.fromVector(["1","a"]);
+      expect(
+        List.head(theList)
+      ).to.eql(
+        '1'
+      );
+      // expect(
+      //   theList.tail.head
+      // ).to.eql(
+      //   'h'
+      // );
+      // expect(
+      //   list.fromString("これは文字列です").head
+      // ).to.eql(
+      //   'こ'
+      // );
+      // expect(
+      //   list.fromString("これは文字列です").tail.head
+      // ).to.eql(
+      //   'れ'
+      // );
+      next();
+    });
     it("fromString", (next) => {
       var theList = List.fromString("this is a string");
       expect(
