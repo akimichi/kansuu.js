@@ -63,7 +63,7 @@ describe("array", () => {
       true 
     );
     // expect(
-    //   Array.isEmpty(null)
+    //   Array.isEmpty({})
     // ).to.eql(
     //   true 
     // );
