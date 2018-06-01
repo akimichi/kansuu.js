@@ -8,6 +8,15 @@ const expect = require('expect.js'),
   math = require('../lib/kansuu-math.js');
 
 describe("array", () => {
+  it("Array#match", (next) => {
+    Array.match([0,1,2], {
+      cons: (head, tail) => {
+        expect(head).to.equal(0)
+        expect(tail).to.equal([1,2])
+      }
+    })
+    next()
+  });
   it("Array#flatMap", (next) => {
     /*
     scala> val nestedNumbers = List(List(1, 2), List(3, 4))
