@@ -213,33 +213,13 @@ describe("evaluator", () => {
         4  
       )
       // (\x -> \y -> x+y)(2)(3)
-      expect(
-        I.evaluate(
-          [[["lambda", "x", ["lambda", "y", ["+", "x", "y"]]], 2], 3]
-        )(Env.empty)
-      ).to.eql(
-        4  
-      )
-      // Maybe.match(I.evaluateApplication([["lambda", "x", "x"], [3]])(Env.empty),{
-      //   nothing: (_) => {
-      //     expect().fail()
-      //   },
-      //   just: (value) => {
-      //     console.log(value) 
-      //     expect(value).to.eql(ID.unit(4));
-      //   }
-      // });
-      // const answer  = I.evaluate([["lambda", "x", ["+", 1, "x"]], 3])(Env.empty);
-      // console.log("answer: " + answer)
-      // Maybe.match(answer,{
-      //   nothing: (_) => {
-      //     expect().fail()
-      //   },
-      //   just: (value) => {
-      //     // expect().fail()
-      //     expect(value).to.eql(ID.unit(4));
-      //   }
-      // });
+      // expect(
+      //   I.evaluate(
+      //     [[["lambda", "x", ["lambda", "y", ["+", "x", "y"]]], 2], 3]
+      //   )(Env.empty)
+      // ).to.eql(
+      //   4  
+      // )
       next();
     });
     // it("can't evaluate succ with boolean", (next) => {

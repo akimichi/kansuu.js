@@ -325,10 +325,11 @@ describe("Monadic Parser", () => {
       expect(
         Parser.parse(
           Parser.flatMap(Parser.many(Parser.alphanum()))(xs => {
-            console.log(xs)
+            // console.log(xs)
             return Parser.unit(Array.foldl1(xs)(x => {
               return (accumulator) => {
-              return x + accumulator;
+                return accumulator + x;
+                // return x + accumulator;
               };
             }));
           })

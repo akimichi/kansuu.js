@@ -1,8 +1,8 @@
 "use strict";
 
-const expect = require('expect.js');
-const list = require('../lib/kansuu-list.js');
-const Pair = require('../lib/kansuu-pair.js');
+// const expect = require('expect.js');
+// const list = require('../lib/kansuu-list.js');
+// const Pair = require('../lib/kansuu-pair.js');
 
 // describe("'list' module", function() {
 
