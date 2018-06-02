@@ -8,11 +8,20 @@ const expect = require('expect.js'),
   math = require('../lib/kansuu-math.js');
 
 describe("array", () => {
+  it("Array#find", (next) => {
+    const odd = (n) => {
+      return (n % 2) !== 0;
+    };
+    expect( Array.find(odd)([0,1,2])).to.eql(1)
+    expect( Array.find(odd)([1,2])).to.eql(1)
+    expect( Array.find(odd)([2,4])).to.eql(undefined)
+    next()
+  });
   it("Array#match", (next) => {
     Array.match([0,1,2], {
       cons: (head, tail) => {
         expect(head).to.equal(0)
-        expect(tail).to.equal([1,2])
+        expect(tail).to.eql([1,2])
       }
     })
     next()
@@ -563,23 +572,15 @@ describe("array", () => {
           };
         })
       };
-      expect(
-        sum([0])
-      ).to.eql(
-        0
-      );
-      expect(
-        sum([1,2,3])
-      ).to.eql(
-        6
-      );
+      expect( sum([0])).to.eql( 0);
+      expect( sum([1,2,3])).to.eql( 6);
       // Prelude> let f x y = 2 * x + y
       // Prelude> foldl1 f [1..5]
       // 57
       expect(
-        Array.foldl1([1,2,3,4,5])(x => {
-          return (y) => {
-            return 2 * x + y;
+        Array.foldl1([1,2,3,4,5])(item => {
+          return (accumulator) => {
+            return 2 * accumulator + item;
           };
         })
       ).to.eql(
