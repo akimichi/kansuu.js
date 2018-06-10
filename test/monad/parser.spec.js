@@ -621,39 +621,16 @@ describe("Monadic Parser", () => {
       ).to.eql(
         [{value:'abc', remaining: ''}]
       );
-      // expect(
-      //   List.toString(Pair.left(
-      //     List.head(
-      //       Parser.parse(
-      //         Parser.identifier(["lambda"])
-      //       )(List.fromString("anonymous function"))
-      //     )))
-      // ).to.eql(
-      //   'anonymous'
-      //   // '[(+,[]),nil]'
-      // );
-      // expect(
-      //   List.toString(Pair.left(
-      //     List.head(
-      //       Parser.parse(
-      //         Parser.identifier(["lambda"])
-      //       )(List.fromString("lambda function"))
-      //     )))
-      // ).to.eql(
-      //   ''
-      //   // '[(+,[]),nil]'
-      // );
-      // expect(
-      //   List.toString(Pair.left(
-      //     List.head(
-      //       Parser.parse(
-      //         Parser.identifier(["lambda"])
-      //       )(List.fromString("lam "))
-      //     )))
-      // ).to.eql(
-      //   'lam'
-      //   // '[(+,[]),nil]'
-      // );
+      next();
+    });
+    it("string", (next) => {
+      expect(
+        Parser.parse(
+          Parser.string()
+        )('"abcd"')
+      ).to.eql(
+        [{value:'abcd', remaining: ''}]
+      );
       next();
     });
   });
