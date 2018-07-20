@@ -8,6 +8,19 @@ const expect = require('expect.js'),
   math = require('../lib/kansuu-math.js');
 
 describe("array", () => {
+  it("Array#nub", (next) => {
+    expect(
+      Array.nub([])
+    ).to.eql(
+      []
+    )
+    expect(
+      Array.nub(["Quentin Tarantino","Harrison Ford","Quentin Tarantino"])
+    ).to.eql(
+      ["Quentin Tarantino","Harrison Ford"]
+    )
+    next()
+  });
   it("Array#find", (next) => {
     const odd = (n) => {
       return (n % 2) !== 0;
