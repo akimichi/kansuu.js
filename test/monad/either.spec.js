@@ -8,7 +8,7 @@ const util = require('util'),
 // ### Eitherモナドのテスト
 describe("Eitherモナドをテストする",() => {
   it("数値のときだけ計算が成功するテスト", (next) => {
-    Either.match(Either.flatMap(Either.left("wrong"))((n) => {
+    Either.match(Either.flatMap(Either.left("wrong"))(n => {
       return Either.unit(n + 1);
     }),{
       right: (value) => {
@@ -18,7 +18,7 @@ describe("Eitherモナドをテストする",() => {
         expect(value).to.eql("wrong");
       }
     });
-    Either.match(Either.flatMap(Either.unit(2))((n) => {
+    Either.match(Either.flatMap(Either.unit(2))(n => {
       return Either.unit(n + 1);
     }),{
       right: (value) => {
@@ -33,5 +33,17 @@ describe("Eitherモナドをテストする",() => {
       }
     });
     next();
+  });
+  it("Either.flatMap(right)", (next) => {
+    Either.flatMap(Either.right(100))((n) => {
+      expect(n).to.eql(100);
+      next();
+    });
+  });
+  it("Either.flatMap(left)", (next) => {
+    Either.flatMap(Either.left(100))(n => {
+      expect(n).to.eql(10);
+      next();
+    });
   });
 });
