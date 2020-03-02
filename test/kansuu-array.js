@@ -30,14 +30,24 @@ describe("array", () => {
     expect( Array.find(odd)([2,4])).to.eql(undefined)
     next()
   });
-  it("Array#match", (next) => {
-    Array.match([0,1,2], {
-      cons: (head, tail) => {
-        expect(head).to.equal(0)
-        expect(tail).to.eql([1,2])
-      }
-    })
-    next()
+  describe("Array#match", () => {
+    it("match([1,2,3])", (next) => {
+      Array.match([0,1,2], {
+        cons: (head, tail) => {
+          expect(head).to.equal(0)
+          expect(tail).to.eql([1,2])
+        }
+      })
+      next()
+    });
+    it("match([])", (next) => {
+      Array.match([], {
+        empty: () => {
+          expect(true).to.be(true)
+        }
+      })
+      next()
+    });
   });
   it("Array#flatMap", (next) => {
     /*
