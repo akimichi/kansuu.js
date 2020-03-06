@@ -48,6 +48,15 @@ describe("array", () => {
       })
       next()
     });
+    it("match([1])", (next) => {
+      Array.match([1], {
+        cons: (head, tail) => {
+          expect(head).to.equal(1)
+          expect(tail).to.eql([])
+        }
+      })
+      next()
+    });
   });
   it("Array#flatMap", (next) => {
     /*
